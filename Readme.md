@@ -1,7 +1,7 @@
 # Личный проект «Большое путешествие» [![Build status][travis-image]][travis-url]
 
 * Студент: [Sergey Kirpik](https://up.htmlacademy.ru/ecmascript/9/user/247812).
-* Наставник: `Неизвестно`.
+* Наставник: [Виталий Кравцов](https://htmlacademy.ru/profile/id64132).
 
 ---
 
