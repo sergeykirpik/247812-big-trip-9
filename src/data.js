@@ -1,6 +1,13 @@
+import {formatDate_MMM_D} from './utils.js';
+
+const MAX_DATE_INTERVAL = 10;   // hours
+const MAX_ROUTE_POINTS = 20;
+
 const getRandom = (n) => Math.floor(Math.random() * n);
 const getRandomBool = () => [true, false][getRandom(2)];
-const toHours = (mSec) => mSec * 1000 * 3600;
+const toHours = (h) => h * 1000 * 3600;
+const toDays = (d) => toHours(24 * d);
+const getRandomDate = () => new Date(Date.now() + getRandom(toDays(6)) - getRandom(toDays(3)));
 const shuffle = (array) => array.sort(() => Math.random() - 0.5);
 
 export const transferType = [
@@ -66,8 +73,8 @@ const getRandomDescription = () => shuffle(lorem.slice()).slice(0, getRandom(2) 
 const getRandomPhoto = () => `http://picsum.photos/300/150?r=${Math.random()}`;
 
 const getTripEvent = () => ({
-  startTime: new Date(),
-  endTime: new Date(Date.now() + getRandom(toHours(5))),
+  startTime: null,
+  endTime: null,
   price: getRandom(999) + 20,
   isFavorite: getRandomBool(),
   offers: new Set(shuffle(Object.keys(availableOffers)).slice(0, getRandom(2 + 1))),
@@ -78,18 +85,62 @@ const getTripEvent = () => ({
   get title() {
     return labels[this.type] + ` ` + this.destination;
   },
+  get label() {
+    return labels[this.type];
+  },
 });
 
-export const tripEvent = getTripEvent();
 
-const getOffersTotal = (te) => {
-  Array.from(te.offers).reduce((acc, it) => acc + availableOffers[it].price, 0);
+const getTripEventList = (pointCount) => {
+  let startTime = getRandomDate();
+  return new Array(pointCount).fill(``).map(() => {
+    const it = getTripEvent();
+    it.startTime = startTime;
+    it.endTime = new Date(it.startTime.valueOf() + getRandom(toHours(MAX_DATE_INTERVAL)));
+    startTime = it.endTime;
+    return it;
+  });
 };
 
-export const tripEventList = new Array(5).fill(``).map(getTripEvent);
-tripEventList.getTotal = () => {
-  return tripEventList.reduce((acc, it) => {
-    return acc + it.price + getOffersTotal(it);
-  }, 0);
+export const filters = {
+  everything: () => tripEventList.slice(),
+  future: () => tripEventList.filter((it) => it.startTime > new Date()),
+  past: () => tripEventList.filter((it) => it.endTime < new Date()),
 };
 
+export const menuData = [`table`, `stats`];
+
+export const sortMethods = {
+  event: () => {},
+  time: () => {},
+  price: () => {},
+};
+
+const getOffersTotal = (te) => Array.from(te.offers).reduce((acc, it) => acc + availableOffers[it].price, 0);
+export const route = {
+  points: getTripEventList(getRandom(MAX_ROUTE_POINTS)),
+  get total() {
+    return this.points.reduce((acc, it) => acc + it.price + getOffersTotal(it), 0);
+  },
+  get title() {
+    if (this.points.length === 0) {
+      return ``;
+    }
+    if (this.points.length > 3) {
+      return [
+        this.points[0].destination,
+        this.points[this.points.length - 1].destination
+      ].join(` &mdash; ... &mdash; `);
+    }
+    return this.points.map((it) => it.destination).join(` &mdash; `);
+  },
+  get dates() {
+    if (this.points.length === 0) {
+      return ``;
+    }
+    return [
+      formatDate_MMM_D(this.points[0].startTime),
+      formatDate_MMM_D(this.points[this.points.length - 1].endTime),
+    ].join(` &mdash; `);
+  },
+};

@@ -1,13 +1,7 @@
 import {transferType, activityType, destinationList, availableOffers} from '../data.js';
-import {tripEvent} from '../data.js';
+import {capitalize, formatDate} from '../utils.js';
 
-const capitalize = (s) => s.charAt(0).toUpperCase() + s.slice(1);
-const formatDate = (date) => {
-  const [, year, month, day, hour, min] = date.toISOString().match(/\d{2}(\d{2})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/);
-  return `${day}/${month}/${year} ${hour}:${min}`;
-};
-
-export const getEventEditFormMarkup = () => {
+export const getEventEditFormMarkup = (tripEvent) => {
   return `
     <li class="trip-events__item">
       <form class="event  event--edit" action="#" method="post">
@@ -15,7 +9,7 @@ export const getEventEditFormMarkup = () => {
           <div class="event__type-wrapper">
             <label class="event__type  event__type-btn" for="event-type-toggle-1">
               <span class="visually-hidden">Choose event type</span>
-              <img class="event__type-icon" width="17" height="17" src="img/icons/flight.png" alt="Event type icon">
+              <img class="event__type-icon" width="17" height="17" src="img/icons/${tripEvent.type}.png" alt="Event type icon">
             </label>
             <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
@@ -42,9 +36,9 @@ export const getEventEditFormMarkup = () => {
 
           <div class="event__field-group  event__field-group--destination">
             <label class="event__label  event__type-output" for="event-destination-1">
-              Sightseeing at
+              ${tripEvent.label}
             </label>
-            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destinationList[0]}" list="destination-list-1">
+            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${tripEvent.destination}" list="destination-list-1">
             <datalist id="destination-list-1">
               ${destinationList.map((d) => `<option value="${d}"></option>`).join(``)}
             </datalist>
@@ -109,7 +103,7 @@ export const getEventEditFormMarkup = () => {
 
             <div class="event__photos-container">
               <div class="event__photos-tape">
-                ${tripEvent.photos.map((it) => `<img 
+                ${tripEvent.photos.map((it) => `<img
                   class="event__photo" src="${it}" alt="Event photo">
                 `).join(``)}
               </div>
