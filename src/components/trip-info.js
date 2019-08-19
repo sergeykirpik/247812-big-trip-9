@@ -1,3 +1,5 @@
+import {tripEventList} from '../data.js';
+
 export const getTripInfoMarkup = () => {
   return `
     <div class="trip-info__main">

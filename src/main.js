@@ -6,6 +6,7 @@ import {getTripDaysMarkup} from './components/day-list';
 import {getTripEventMarkup} from './components/trip-event';
 import {getEventEditFormMarkup} from './components/event-edit-form';
 
+import {tripEventList} from './data.js';
 
 const render = (container, markup, place) => {
   container.insertAdjacentHTML(place, markup);
@@ -29,6 +30,9 @@ render(tripEventsSection, getTripDaysMarkup(), 'beforeEnd');
 const dayEventsInsertPoint = tripEventsSection.querySelector(`.trip-events__list`);
 render(dayEventsInsertPoint, getEventEditFormMarkup(), 'beforeEnd');
 
-new Array(3).fill(``).forEach(() =>
-  render(dayEventsInsertPoint, getTripEventMarkup(), `beforeEnd`)
+tripEventList.forEach((it) =>
+  render(dayEventsInsertPoint, getTripEventMarkup(it), `beforeEnd`)
 );
+
+const tripInfoCost = tripMain.querySelector(`.trip-info__cost-value`);
+tripInfoCost.textContent = tripEventList.getTotal();
