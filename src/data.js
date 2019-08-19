@@ -1,4 +1,4 @@
-import {formatDate_MMM_D} from './utils.js';
+import {formatDate} from './utils.js';
 
 const MAX_DATE_INTERVAL = 10;   // hours
 const MAX_ROUTE_POINTS = 20;
@@ -139,8 +139,8 @@ export const route = {
       return ``;
     }
     return [
-      formatDate_MMM_D(this.points[0].startTime),
-      formatDate_MMM_D(this.points[this.points.length - 1].endTime),
+      formatDate(this.points[0].startTime, `MMM D`),
+      formatDate(this.points[this.points.length - 1].endTime, `MMM D`),
     ].join(` &mdash; `);
   },
 };

@@ -1,5 +1,5 @@
 import {capitalize} from '../utils.js';
-import {menuData} from '../data.js'
+import {menuData} from '../data.js';
 
 let activeMenuItem = `table`;
 
