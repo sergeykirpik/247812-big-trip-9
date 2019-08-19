@@ -5,7 +5,7 @@
   "description": "Личный проект «Большое путешествие» от HTML Academy",
   "scripts": {
     "build": "webpack",
-    "start": "webpack-dev-server --open",
+    "start": "webpack-dev-server",
     "eslint": "eslint src/**/*.js",
     "test": "npm run eslint"
   },

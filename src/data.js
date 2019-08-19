@@ -1,6 +1,6 @@
 import {formatDate} from './utils.js';
 
-const MAX_DATE_INTERVAL = 10;   // hours
+const MAX_DATE_INTERVAL = 10; // hours
 const MAX_ROUTE_POINTS = 20;
 
 const getRandom = (n) => Math.floor(Math.random() * n);
@@ -9,6 +9,7 @@ const toHours = (h) => h * 1000 * 3600;
 const toDays = (d) => toHours(24 * d);
 const getRandomDate = () => new Date(Date.now() + getRandom(toDays(6)) - getRandom(toDays(3)));
 const shuffle = (array) => array.sort(() => Math.random() - 0.5);
+const getDuration = (tripEvent) => tripEvent.endTime.valueOf() - tripEvent.startTime.valueOf();
 
 export const transferType = [
   `taxi`, `bus`, `train`, `ship`, `transport`, `drive`, `flight`,
@@ -26,9 +27,9 @@ export const labels = {
   transport: `Transport to`,
   drive: `Drive to`,
   flight: `Flight to`,
-  [`check-in`]: `Check into hotel`,
-  sightseeing: `Sightseeing at`,
-  restaurant: `Restaurant`,
+  [`check-in`]: `Check-in`,
+  sightseeing: `Sightseeing in`,
+  restaurant: `Restaurant in`,
 };
 
 export const destinationList = [
@@ -90,7 +91,6 @@ const getTripEvent = () => ({
   },
 });
 
-
 const getTripEventList = (pointCount) => {
   let startTime = getRandomDate();
   return new Array(pointCount).fill(``).map(() => {
@@ -102,18 +102,18 @@ const getTripEventList = (pointCount) => {
   });
 };
 
-export const filters = {
-  everything: () => tripEventList.slice(),
-  future: () => tripEventList.filter((it) => it.startTime > new Date()),
-  past: () => tripEventList.filter((it) => it.endTime < new Date()),
+export const filterMethods = {
+  everything: () => route.points,
+  future: () => route.points.filter((it) => it.startTime > new Date()),
+  past: () => route.points.filter((it) => it.endTime < new Date()),
 };
 
 export const menuData = [`table`, `stats`];
 
 export const sortMethods = {
-  event: () => {},
-  time: () => {},
-  price: () => {},
+  event: () => route.points,
+  time: () => route.points.slice().sort((a, b) => getDuration(a) - getDuration(b)),
+  price: () => route.points.slice().sort((a, b) => a.price - b.price),
 };
 
 const getOffersTotal = (te) => Array.from(te.offers).reduce((acc, it) => acc + availableOffers[it].price, 0);
