@@ -1,10 +1,13 @@
 import {TripInfo} from './components/trip-info.js';
-import {Menu} from './components/menu';
-import {Filter} from './components/filter';
-import {Sort} from './components/trip-sort';
-import {TripDays} from './components/day-list';
-import {EventEditForm} from './components/event-edit-form';
+import {Menu} from './components/menu.js';
+import {Filter} from './components/filter.js';
+import {Sort} from './components/trip-sort.js';
+import {TripDays} from './components/day-list.js';
 import {NoPoints} from './components/no-points.js';
+
+import {TripEvent} from './components/trip-event.js'
+import {EventEditForm} from './components/event-edit-form.js';
+
 
 import {route, filterMethods, menuData, sortMethods} from './data.js';
 import {render, Position} from './utils.js';
@@ -23,10 +26,27 @@ const tripEventsSection = document.querySelector(`.trip-events`);
 
 if (route.points.length > 0) {
   render(tripEventsSection, new Sort(sortMethods), Position.BEFORE_END);
-  render(tripEventsSection, new TripDays(route), Position.BEFORE_END);
-  const dayEventsInsertPoint = tripEventsSection.querySelector(`.trip-events__list`);
-  dayEventsInsertPoint.firstElementChild.remove();
-  render(dayEventsInsertPoint, new EventEditForm(route.points[0]), Position.AFTER_BEGIN);
+  render(tripEventsSection,
+    new TripDays(route, (point) => {
+      const tripEvent = new TripEvent(point);
+      const eventEditForm = new EventEditForm(point);
+      tripEvent.element.querySelector(`.event__rollup-btn`)
+        .addEventListener(`click`, () => {
+          tripEvent.element.parentNode.replaceChild(eventEditForm.element, tripEvent.element);
+        });
+      eventEditForm.element.querySelector(`.event__rollup-btn`)
+        .addEventListener(`click`, () => {
+          eventEditForm.element.parentNode.replaceChild(tripEvent.element, eventEditForm.element);
+        });
+      eventEditForm.element.querySelector(`form`)
+        .addEventListener(`submit`, (evt) => {
+          evt.preventDefault();
+          eventEditForm.element.parentNode.replaceChild(tripEvent.element, eventEditForm.element);
+        });
+      return tripEvent;
+    }),
+    Position.BEFORE_END
+  );
 } else {
   render(tripEventsSection, new NoPoints(), Position.BEFORE_END);
 }
