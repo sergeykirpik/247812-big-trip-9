@@ -46,8 +46,7 @@ export class TripDays {
   get template() {
     return `
       <ul class="trip-days">
-        ${this._pointsByDay.map(([dayDate, eventList], index) =>
-          new DayItem({dayCounter: index + 1, dayDate, eventList}).template)
+        ${this._pointsByDay.map(([dayDate, eventList], index) => new DayItem({dayCounter: index + 1, dayDate, eventList}).template)
         .join(``)}
       </ul>
     `;
