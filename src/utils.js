@@ -1,3 +1,40 @@
+export const Position = {
+  BEFORE_BEGIN: `beforeBegin`,
+  AFTER_BEGIN: `afterBegin`,
+  BEFORE_END: `beforeEnd`,
+  AFTER_END: `afterEnd`
+};
+
+export const render = (container, component, place) => {
+  if (!(component instanceof HTMLElement)) {
+    component = component.element;
+  }
+  switch (place) {
+    case Position.BEFORE_BEGIN:
+    case Position.AFTER_BEGIN:
+    case Position.BEFORE_END:
+    case Position.AFTER_END:
+      container.insertAdjacentElement(place, component);
+      break;
+    default:
+      throw new Error(`Invalid insertion point: ${place}`);
+  }
+};
+
+export const unrender = (component) => {
+  if (component) {
+    component.element.remove();
+    component.removeElement();
+  }
+};
+
+export const createElement = (template) => {
+  const div = document.createElement(`div`);
+  div.innerHTML = template;
+  return div.firstElementChild;
+};
+
+
 export const capitalize = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 export const formatDate = (date, fmt) => {
 
@@ -9,6 +46,10 @@ export const formatDate = (date, fmt) => {
   switch (fmt) {
     case `MMM D`: return date.toDateString().slice(4, 10);
     case `YYYY-MM-DD`: return date.toISOString().slice(0, 10);
-    default: throw new Exceception(`Invalid date format`);
+    default: throw new Error(`Invalid date format`);
   }
+};
+
+export const renderTemplate = (container, markup, place) => {
+  container.insertAdjacentHTML(place, markup);
 };

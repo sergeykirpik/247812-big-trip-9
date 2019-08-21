@@ -1,15 +1,31 @@
-import {sortMethods} from '../data.js';
+import {createElement} from '../utils.js';
 
-let currentSort = `event`;
+export class Sort {
+  constructor(sortMethods, currentSort) {
+    this._sortMethods = sortMethods;
+    this._currentSort = currentSort || Object.keys(sortMethods)[0];
+    this._element = null;
+  }
 
-export const getTripSortMarkup = () => {
-  return `
+  get element() {
+    if (!this._element) {
+      this._element = createElement(this.template);
+    }
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+
+  get template() {
+    return `
     <form class="trip-events__trip-sort  trip-sort" action="#" method="get">
       <span class="trip-sort__item  trip-sort__item--day">Day</span>
 
-      ${Object.keys(sortMethods).map((k) => `<div class="trip-sort__item  trip-sort__item--${k}">
+      ${Object.keys(this._sortMethods).map((k) => `<div class="trip-sort__item  trip-sort__item--${k}">
         <input id="sort-${k}" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort"
-               value="sort-${k}" ${k === currentSort ? `checked` : ``}>
+               value="sort-${k}" ${k === this._currentSort ? `checked` : ``}>
         <label class="trip-sort__btn" for="sort-${k}">
           ${k}
           <svg class="trip-sort__direction-icon" width="8" height="10" viewBox="0 0 8 10">
@@ -21,4 +37,5 @@ export const getTripSortMarkup = () => {
       <span class="trip-sort__item  trip-sort__item--offers">Offers</span>
     </form>
   `;
-};
+  }
+}
