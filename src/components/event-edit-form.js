@@ -1,5 +1,6 @@
 import {transferType, activityType, destinationList, availableOffers} from '../data.js';
 import {capitalize, formatDate, createElement} from '../utils.js';
+import {EventManager} from '../event-manager.js';
 
 export class EventEditForm {
   constructor({type, label, destination, startTime, endTime, price, isFavorite, offers, destDescription, photos}) {
@@ -14,6 +15,16 @@ export class EventEditForm {
     this._destDescription = destDescription;
     this._photos = photos;
     this._element = null;
+    this._eventManager = new EventManager();
+    this.on = this._eventManager.on.bind(this._eventManager);
+  }
+
+  _attachedToDOM() {
+    this._eventManager.attachEventHandlers();
+  }
+
+  _detachedFromDOM() {
+    this._eventManager.detachEventHandlers();
   }
 
   removeElement() {

@@ -5,16 +5,24 @@ export const Position = {
   AFTER_END: `afterEnd`
 };
 
-export const render = (container, component, place) => {
-  if (!(component instanceof HTMLElement)) {
-    component = component.element;
+export const KeyCode = {
+  ESC: 27,
+}
+
+const _callMethod = (component, methodName) => {
+  if (typeof component[methodName] === `function`) {
+    return component[methodName]();
   }
+}
+
+export const render = (container, component, place) => {
   switch (place) {
     case Position.BEFORE_BEGIN:
     case Position.AFTER_BEGIN:
     case Position.BEFORE_END:
     case Position.AFTER_END:
-      container.insertAdjacentElement(place, component);
+      container.insertAdjacentElement(place, component.element);
+      _callMethod(component, `_attachedToDOM`);
       break;
     default:
       throw new Error(`Invalid insertion point: ${place}`);
@@ -23,6 +31,7 @@ export const render = (container, component, place) => {
 
 export const unrender = (component) => {
   if (component) {
+    _callMethod(component, `_detachedFromDOM`);
     component.element.remove();
     component.removeElement();
   }
@@ -33,6 +42,12 @@ export const createElement = (template) => {
   div.innerHTML = template;
   return div.firstElementChild;
 };
+
+export const replaceComponent = (oldComponent, newComponent) => {
+  oldComponent.element.parentNode.replaceChild(newComponent.element, oldComponent.element);
+  _callMethod(oldComponent, `_detachedFromDOM`);
+  _callMethod(newComponent, `_attachedToDOM`);
+}
 
 
 export const capitalize = (s) => s.charAt(0).toUpperCase() + s.slice(1);

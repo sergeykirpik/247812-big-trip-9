@@ -10,7 +10,7 @@ import {EventEditForm} from './components/event-edit-form.js';
 
 
 import {route, filterMethods, menuData, sortMethods} from './data.js';
-import {render, Position} from './utils.js';
+import {render, Position, KeyCode, replaceComponent} from './utils.js';
 
 const tripMain = document.querySelector(`.trip-main`);
 const tripInfoContainer = tripMain.querySelector(`.trip-info`);
@@ -30,19 +30,26 @@ if (route.points.length > 0) {
     new TripDays(route, (point) => {
       const tripEvent = new TripEvent(point);
       const eventEditForm = new EventEditForm(point);
-      tripEvent.element.querySelector(`.event__rollup-btn`)
-        .addEventListener(`click`, () => {
-          tripEvent.element.parentNode.replaceChild(eventEditForm.element, tripEvent.element);
-        });
-      eventEditForm.element.querySelector(`.event__rollup-btn`)
-        .addEventListener(`click`, () => {
-          eventEditForm.element.parentNode.replaceChild(tripEvent.element, eventEditForm.element);
-        });
-      eventEditForm.element.querySelector(`form`)
-        .addEventListener(`submit`, (evt) => {
-          evt.preventDefault();
-          eventEditForm.element.parentNode.replaceChild(tripEvent.element, eventEditForm.element);
-        });
+
+      tripEvent.on(tripEvent.element.querySelector(`.event__rollup-btn`), `click`, () => {
+        replaceComponent(tripEvent, eventEditForm);
+      });
+
+      eventEditForm.on(eventEditForm.element.querySelector(`.event__rollup-btn`), `click`, () => {
+        replaceComponent(eventEditForm, tripEvent);
+      });
+
+      eventEditForm.on(eventEditForm.element.querySelector(`form`), `submit`, (evt) => {
+        evt.preventDefault();
+        replaceComponent(eventEditForm, tripEvent);
+      });
+
+      eventEditForm.on(document, `keydown`, (evt) => {
+        if (evt.keyCode === KeyCode.ESC) {
+          replaceComponent(eventEditForm, tripEvent);
+        }
+      });
+
       return tripEvent;
     }),
     Position.BEFORE_END
