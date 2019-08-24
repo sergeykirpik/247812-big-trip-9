@@ -1,9 +1,10 @@
 import {createElement} from '../utils.js';
 
 export class TripInfo {
-  constructor({title, dates}) {
+  constructor({title, dates, cost}) {
     this._title = title;
     this._dates = dates;
+    this._cost = cost;
     this._element = null;
   }
 
@@ -24,7 +25,10 @@ export class TripInfo {
       <h1 class="trip-info__title">${this._title}</h1>
       <p class="trip-info__dates">${this._dates}</p>
     </div>
-  `;
+    <p class="trip-info__cost">
+    Total: &euro;&nbsp;<span class="trip-info__cost-value">${this._cost}</span>
+    </p>
+  `.trim();
   }
 }
 

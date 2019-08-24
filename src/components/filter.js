@@ -23,7 +23,8 @@ export class Filter {
   }
 
   get template() {
-    return `
+    return `<div>
+    <h2 class="visually-hidden">Filter events</h2>
     <form class="trip-filters" action="#" method="get">
       ${Object.keys(this._filterMethods).map((k) => `<div class="trip-filters__filter">
         <input id="filter-${k}" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="${k}" ${this._checked(k)}>
@@ -31,7 +32,7 @@ export class Filter {
       </div>`).join(``)}
 
       <button class="visually-hidden" type="submit">Accept filter</button>
-    </form>
-  `;
+    </form></div>
+  `.trim();
   }
 }

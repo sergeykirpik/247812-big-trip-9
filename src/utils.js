@@ -6,15 +6,12 @@ export const Position = {
 };
 
 export const render = (container, component, place) => {
-  if (!(component instanceof HTMLElement)) {
-    component = component.element;
-  }
   switch (place) {
     case Position.BEFORE_BEGIN:
     case Position.AFTER_BEGIN:
     case Position.BEFORE_END:
     case Position.AFTER_END:
-      container.insertAdjacentElement(place, component);
+      container.insertAdjacentElement(place, component.element);
       break;
     default:
       throw new Error(`Invalid insertion point: ${place}`);
@@ -48,8 +45,4 @@ export const formatDate = (date, fmt) => {
     case `YYYY-MM-DD`: return date.toISOString().slice(0, 10);
     default: throw new Error(`Invalid date format`);
   }
-};
-
-export const renderTemplate = (container, markup, place) => {
-  container.insertAdjacentHTML(place, markup);
 };

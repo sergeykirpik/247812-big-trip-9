@@ -1,12 +1,32 @@
 import {formatDate, createElement, render, Position} from '../utils.js';
-import {DayItem} from '../components/day-item.js';
+import {DayItem} from './day-item.js';
+import {TripEvent} from './trip-event.js';
+import {EventEditForm} from './event-edit-form.js';
 
 export class TripDays {
-  constructor(route, tripEventFactory) {
+  constructor(route) {
     this._route = route;
-    this._tripEventFactory = tripEventFactory;
     this._element = null;
     this._dayItems = [];
+  }
+
+  _tripEventFactory(point) {
+    const tripEvent = new TripEvent(point);
+    const eventEditForm = new EventEditForm(point);
+    tripEvent.element.querySelector(`.event__rollup-btn`)
+    .addEventListener(`click`, () => {
+      tripEvent.element.parentNode.replaceChild(eventEditForm.element, tripEvent.element);
+    });
+    eventEditForm.element.querySelector(`.event__rollup-btn`)
+    .addEventListener(`click`, () => {
+      eventEditForm.element.parentNode.replaceChild(tripEvent.element, eventEditForm.element);
+    });
+    eventEditForm.element.querySelector(`form`)
+    .addEventListener(`submit`, (evt) => {
+      evt.preventDefault();
+      eventEditForm.element.parentNode.replaceChild(tripEvent.element, eventEditForm.element);
+    });
+    return tripEvent;
   }
 
   get _pointsByDay() {
@@ -27,7 +47,7 @@ export class TripDays {
 
   get element() {
     if (!this._element) {
-      this._element = createElement(this._emptyTemplate);
+      this._element = createElement(this.template);
       this._dayItems = this._pointsByDay.map(([dayDate, eventList], index) =>
         new DayItem({dayCounter: index + 1, dayDate, eventList, tripEventFactory: this._tripEventFactory})
       );
@@ -36,18 +56,9 @@ export class TripDays {
     return this._element;
   }
 
-  get _emptyTemplate() {
-    return `
-      <ul class="trip-days">
-      </ul>
-    `;
-  }
-
   get template() {
     return `
       <ul class="trip-days">
-        ${this._pointsByDay.map(([dayDate, eventList], index) => new DayItem({dayCounter: index + 1, dayDate, eventList}).template)
-        .join(``)}
       </ul>
     `;
   }
