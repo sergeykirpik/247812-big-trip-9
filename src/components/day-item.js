@@ -18,27 +18,12 @@ export class DayItem {
 
   get element() {
     if (!this._element) {
-      this._element = createElement(this.emptyTemplate);
+      this._element = createElement(this.template);
       this._tripEventItems = this._eventList.map((it) => this._tripEventFactory(it));
       const tripEventsContainer = this._element.querySelector(`.trip-events__list`);
       this._tripEventItems.forEach((it) => render(tripEventsContainer, it, Position.BEFORE_END));
     }
     return this._element;
-  }
-
-  get emptyTemplate() {
-    return `
-      <li class="trip-days__item  day">
-        <div class="day__info">
-          <span class="day__counter">${this._dayCounter}</span>
-          <time class="day__date" datetime="${this._dayDate}">${formatDate(new Date(this._dayDate), `MMM D`)}</time>
-        </div>
-
-        <ul class="trip-events__list">
-
-        </ul>
-      </li>
-    `;
   }
 
   get template() {
@@ -50,7 +35,7 @@ export class DayItem {
         </div>
 
         <ul class="trip-events__list">
-          ${this._eventList.map((it) => new TripEvent(it).template).join(``)}
+
         </ul>
       </li>
     `;

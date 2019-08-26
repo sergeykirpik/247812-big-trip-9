@@ -64,7 +64,3 @@ export const formatDate = (date, fmt) => {
     default: throw new Error(`Invalid date format`);
   }
 };
-
-export const renderTemplate = (container, markup, place) => {
-  container.insertAdjacentHTML(place, markup);
-};
