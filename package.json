@@ -10,6 +10,7 @@
     "test": "npm run eslint"
   },
   "devDependencies": {
+    "error-overlay-webpack-plugin": "^0.4.0",
     "eslint": "6.1.0",
     "eslint-config-htmlacademy": "0.5.2",
     "webpack": "4.39.1",
