@@ -1,32 +1,11 @@
-import {formatDate, createElement, render, Position} from '../utils.js';
+import {formatDate, createElement, render} from '../utils.js';
 import {DayItem} from './day-item.js';
-import {TripEvent} from './trip-event.js';
-import {EventEditForm} from './event-edit-form.js';
 
-export class TripDays {
+export class DayList {
   constructor(route) {
     this._route = route;
     this._element = null;
     this._dayItems = [];
-  }
-
-  _tripEventFactory(point) {
-    const tripEvent = new TripEvent(point);
-    const eventEditForm = new EventEditForm(point);
-    tripEvent.element.querySelector(`.event__rollup-btn`)
-    .addEventListener(`click`, () => {
-      tripEvent.element.parentNode.replaceChild(eventEditForm.element, tripEvent.element);
-    });
-    eventEditForm.element.querySelector(`.event__rollup-btn`)
-    .addEventListener(`click`, () => {
-      eventEditForm.element.parentNode.replaceChild(tripEvent.element, eventEditForm.element);
-    });
-    eventEditForm.element.querySelector(`form`)
-    .addEventListener(`submit`, (evt) => {
-      evt.preventDefault();
-      eventEditForm.element.parentNode.replaceChild(tripEvent.element, eventEditForm.element);
-    });
-    return tripEvent;
   }
 
   get _pointsByDay() {
@@ -48,10 +27,10 @@ export class TripDays {
   get element() {
     if (!this._element) {
       this._element = createElement(this.template);
-      this._dayItems = this._pointsByDay.map(([dayDate, eventList], index) =>
-        new DayItem({dayCounter: index + 1, dayDate, eventList, tripEventFactory: this._tripEventFactory})
+      this._dayItems = this._pointsByDay.map(([dayDate, events], index) =>
+        new DayItem({dayCounter: index + 1, dayDate, events})
       );
-      this._dayItems.forEach((it) => render(this._element, it, Position.BEFORE_END));
+      this._dayItems.forEach((it) => render(this._element, it));
     }
     return this._element;
   }
@@ -60,6 +39,6 @@ export class TripDays {
     return `
       <ul class="trip-days">
       </ul>
-    `;
+    `.trim();
   }
 }
