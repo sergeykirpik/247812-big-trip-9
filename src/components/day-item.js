@@ -1,5 +1,5 @@
 import {formatDate, createElement, render} from '../utils.js';
-import { EventList } from './event-list.js';
+import {EventList} from './event-list.js';
 
 export class DayItem {
   constructor({dayDate, events, dayCounter}) {
