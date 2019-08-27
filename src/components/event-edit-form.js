@@ -2,8 +2,9 @@ import {transferType, activityType, destinationList, availableOffers} from '../d
 import {capitalize, formatDate, createElement} from '../utils.js';
 import {EventManager} from '../event-manager.js';
 
-export class EventEditForm {
+export class EventEditForm extends EventManager {
   constructor({type, label, destination, startTime, endTime, price, isFavorite, offers, destDescription, photos}) {
+    super();
     this._type = type;
     this._label = label;
     this._destination = destination;
@@ -15,20 +16,26 @@ export class EventEditForm {
     this._destDescription = destDescription;
     this._photos = photos;
     this._element = null;
-    this._eventManager = new EventManager();
-    this.on = this._eventManager.on.bind(this._eventManager);
+
+    this.destination = this.element.querySelector(`#event-destination-1`);
+    this.on(this.destination, `keydown`, (evt) => evt.stopPropagation());
+
+    this.startTime = this.element.querySelector(`#event-start-time-1`);
+    this.on(this.startTime, `keydown`, (evt) => evt.stopPropagation());
+
+    this.endTime = this.element.querySelector(`#event-end-time-1`);
+    this.on(this.endTime, `keydown`, (evt) => evt.stopPropagation());
+
+    this.eventPrice = this.element.querySelector(`#event-price-1`);
+    this.on(this.eventPrice, `keydown`, (evt) => evt.stopPropagation());
   }
 
-  _attachedToDOM() {
-    this._eventManager.attachEventHandlers();
+  get rollupBtn() {
+    return this.element.querySelector(`.event__rollup-btn`);
   }
 
-  _detachedFromDOM() {
-    this._eventManager.detachEventHandlers();
-  }
-
-  removeElement() {
-    this._element = null;
+  get form() {
+    return this.element.querySelector(`form`);
   }
 
   get element() {
@@ -36,6 +43,10 @@ export class EventEditForm {
       this._element = createElement(this.template);
     }
     return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
   }
 
   get template() {
@@ -149,6 +160,6 @@ export class EventEditForm {
         </section>
       </form>
     </li>
-  `;
+  `.trim();
   }
 }

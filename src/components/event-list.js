@@ -1,4 +1,4 @@
-import {createElement, render, replaceComponent} from "../utils";
+import {createElement, render, replaceComponent, KeyCode} from "../utils";
 import {EventItem} from "./event-item";
 import {EventEditForm} from "./event-edit-form";
 
@@ -15,24 +15,22 @@ export class EventList {
     eventItem.on(eventItem.rollupBtn, `click`, () => {
       replaceComponent(eventItem, eventEditForm);
     });
-
-    // eventItem.element.querySelector(`.event__rollup-btn`)
-    // .addEventListener(`click`, () => {
-    //   replaceComponent(eventItem, eventEditForm);
-    // });
-
-    eventEditForm.element.querySelector(`.event__rollup-btn`)
-    .addEventListener(`click`, () => {
+    eventEditForm.on(eventEditForm.rollupBtn, `click`, () => {
       replaceComponent(eventEditForm, eventItem);
     });
-    eventEditForm.element.querySelector(`form`)
-    .addEventListener(`submit`, (evt) => {
+    eventEditForm.on(eventEditForm.form, `submit`, (evt) => {
       evt.preventDefault();
       replaceComponent(eventEditForm, eventItem);
     });
+    eventEditForm.on(document, `keydown`, (evt) => {
+      evt.preventDefault();
+      if (evt.keyCode === KeyCode.ESC) {
+        replaceComponent(eventEditForm, eventItem);
+      }
+    });
+
     return eventItem;
   }
-
 
   get element() {
     if (!this._element) {

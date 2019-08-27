@@ -13,8 +13,6 @@ render(tripMain, new TripControls());
 render(tripMain, new NewEventButton());
 
 const tripEventsSection = document.querySelector(`.trip-events`);
-render(tripEventsSection, new TripSort(sortMethods));
-render(tripEventsSection, new DayList(route));
 
 if (route.points.length > 0) {
   render(tripEventsSection, new TripSort(sortMethods));

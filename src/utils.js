@@ -12,8 +12,7 @@ export const KeyCode = {
 };
 
 const safeCall = (component, methodName) => {
-  debugger;
-  if (typeof component instanceof EventManager) {
+  if (component instanceof EventManager) {
     return component[methodName]();
   }
   return undefined;

@@ -8,14 +8,12 @@ export class EventManager {
   }
 
   attachEventHandlers() {
-    debugger;
     this._events.forEach(({element, eventType, handler}) => {
       element.addEventListener(eventType, handler);
     });
   }
 
   detachEventHandlers() {
-    debugger;
     this._events.forEach(({element, eventType, handler}) => {
       element.removeEventListener(eventType, handler);
     });
