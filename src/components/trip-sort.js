@@ -1,21 +1,10 @@
-import {createElement} from '../utils.js';
+import {AbstractComponent} from './abstract-component.js';
 
-export class TripSort {
+export class TripSort extends AbstractComponent {
   constructor(sortMethods, currentSort) {
+    super();
     this._sortMethods = sortMethods;
     this._currentSort = currentSort || Object.keys(sortMethods)[0];
-    this._element = null;
-  }
-
-  get element() {
-    if (!this._element) {
-      this._element = createElement(this.template);
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 
   get template() {

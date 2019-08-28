@@ -1,11 +1,14 @@
-import {formatDate, createElement, render} from '../utils.js';
+import {formatDate, render} from '../utils.js';
 import {DayItem} from './day-item.js';
+import {AbstractComponent} from './abstract-component.js';
 
-export class DayList {
+export class DayList extends AbstractComponent {
   constructor(route) {
+    super();
     this._route = route;
-    this._element = null;
-    this._dayItems = [];
+    this._dayItems = this._pointsByDay.map(([dayDate, events], index) =>
+      new DayItem({dayCounter: index + 1, dayDate, events})
+    );
   }
 
   get _pointsByDay() {
@@ -19,20 +22,12 @@ export class DayList {
     return Array.from(pointsByDay);
   }
 
-  removeElement() {
-    this._element = null;
+  _beforeElementRemoved() {
     this._dayItems.forEach((it) => it.removeElement());
   }
 
-  get element() {
-    if (!this._element) {
-      this._element = createElement(this.template);
-      this._dayItems = this._pointsByDay.map(([dayDate, events], index) =>
-        new DayItem({dayCounter: index + 1, dayDate, events})
-      );
-      this._dayItems.forEach((it) => render(this._element, it));
-    }
-    return this._element;
+  _afterElementCreated() {
+    this._dayItems.forEach((it) => render(this._element, it));
   }
 
   get template() {

@@ -1,23 +1,25 @@
-import {createElement, render} from "../utils";
+import {render} from "../utils";
 import {Menu} from "./menu";
 import {Filter} from "./filter";
 
 import {menuData, filterMethods} from "../data.js";
+import {AbstractComponent} from "./abstract-component";
 
-export class TripControls {
+export class TripControls extends AbstractComponent {
   constructor() {
-    this._element = null;
+    super();
     this._menu = new Menu(menuData);
     this._filter = new Filter(filterMethods);
   }
 
-  get element() {
-    if (!this._element) {
-      this._element = createElement(this.template);
-      render(this._element, this._menu);
-      render(this._element, this._filter);
-    }
-    return this._element;
+  _afterElementCreated() {
+    render(this._element, this._menu);
+    render(this._element, this._filter);
+  }
+
+  _beforeElementRemoved() {
+    this._menu.removeElement();
+    this._filter.removeElement();
   }
 
   get template() {

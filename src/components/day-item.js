@@ -1,25 +1,21 @@
-import {formatDate, createElement, render} from '../utils.js';
+import {formatDate, render} from '../utils.js';
 import {EventList} from './event-list.js';
+import {AbstractComponent} from './abstract-component.js';
 
-export class DayItem {
+export class DayItem extends AbstractComponent {
   constructor({dayDate, events, dayCounter}) {
+    super();
     this._dayDate = dayDate;
     this._dayCounter = dayCounter;
     this._eventList = new EventList(events);
-    this._element = null;
   }
 
-  removeElement() {
-    this._element = null;
+  _beforeElementRemoved() {
     this._eventList.removeElement();
   }
 
-  get element() {
-    if (!this._element) {
-      this._element = createElement(this.template);
-      render(this._element, this._eventList);
-    }
-    return this._element;
+  _afterElementCreated() {
+    render(this._element, this._eventList);
   }
 
   get template() {
