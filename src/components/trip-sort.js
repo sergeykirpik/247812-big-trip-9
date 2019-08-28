@@ -1,6 +1,6 @@
 import {createElement} from '../utils.js';
 
-export class Sort {
+export class TripSort {
   constructor(sortMethods, currentSort) {
     this._sortMethods = sortMethods;
     this._currentSort = currentSort || Object.keys(sortMethods)[0];
@@ -36,6 +36,6 @@ export class Sort {
 
       <span class="trip-sort__item  trip-sort__item--offers">Offers</span>
     </form>
-  `;
+  `.trim();
   }
 }

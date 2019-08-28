@@ -119,7 +119,7 @@ export const sortMethods = {
 const getOffersTotal = (te) => Array.from(te.offers).reduce((acc, it) => acc + availableOffers[it].price, 0);
 export const route = {
   points: getTripEventList(getRandom(MAX_ROUTE_POINTS)),
-  get total() {
+  get cost() {
     return this.points.reduce((acc, it) => acc + it.price + getOffersTotal(it), 0);
   },
   get title() {

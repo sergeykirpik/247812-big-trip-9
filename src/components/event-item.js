@@ -1,12 +1,14 @@
 import {availableOffers} from '../data.js';
 import {createElement} from '../utils.js';
+import {EventManager} from '../event-manager.js';
 
 const getDateTime = (date) => date.toISOString().slice(0, 16);
 const getTime = (date) => date.toISOString().slice(11, 16);
 
 
-export class TripEvent {
+export class EventItem extends EventManager {
   constructor({startTime, endTime, type, title, price, offers}) {
+    super();
     this._startTime = startTime; // TODO: convert to Date
     this._endTime = endTime; // TODO: convert to Date
     this._type = type;
@@ -14,6 +16,10 @@ export class TripEvent {
     this._price = price;
     this._offers = offers;
     this._element = null;
+  }
+
+  get rollupBtn() {
+    return this.element.querySelector(`.event__rollup-btn`);
   }
 
   get element() {
@@ -64,7 +70,7 @@ export class TripEvent {
             <span class="event__offer-title">${availableOffers[it].description}</span>
             &plus;
             &euro;&nbsp;<span class="event__offer-price">${availableOffers[it].price}</span>
-          </li>`).join(``)}          
+          </li>`).join(``)}
         </ul>
 
         <button class="event__rollup-btn" type="button">
@@ -72,6 +78,6 @@ export class TripEvent {
         </button>
       </div>
     </li>
-  `;
+  `.trim();
   }
 }
