@@ -10,8 +10,8 @@ export class EventList extends AbstractComponent {
   }
 
   _createItem(eventData) {
-    const eventItem = new EventItem(eventData);
-    const eventEditForm = new EventEditForm(eventData);
+    const eventItem = this.createOwnedComponent(new EventItem(eventData));
+    const eventEditForm = this.createOwnedComponent(new EventEditForm(eventData));
 
     eventItem.on(eventItem.rollupBtn, `click`, () => {
       replaceComponent(eventItem, eventEditForm);

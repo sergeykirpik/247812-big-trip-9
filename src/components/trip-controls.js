@@ -8,8 +8,8 @@ import {AbstractComponent} from "./abstract-component";
 export class TripControls extends AbstractComponent {
   constructor() {
     super();
-    this._menu = new Menu(menuData);
-    this._filter = new Filter(filterMethods);
+    this._menu = this.createOwnedComponent(new Menu(menuData));
+    this._filter = this.createOwnedComponent(new Filter(filterMethods));
   }
 
   _afterElementCreated() {

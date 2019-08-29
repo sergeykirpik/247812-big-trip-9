@@ -8,12 +8,15 @@ export class AbstractComponent extends EventManager {
       throw new Error(`Can't instantiate AbstractComponent, only concrete one.`);
     }
     this._element = null;
+    this._ownedComponents = [];
+  }
+
+  createOwnedComponent(component) {
+    this._ownedComponents.push(component);
+    return component;
   }
 
   _afterElementCreated() {
-  }
-
-  _beforeElementRemoved() {
   }
 
   get element() {
@@ -25,7 +28,9 @@ export class AbstractComponent extends EventManager {
   }
 
   removeElement() {
-    this._beforeElementRemoved();
+    console.log(`removeElement: ${this.constructor.name}`);
+    this.detachEventHandlers();
+    this._ownedComponents.forEach((component) => component.removeElement());
     this._element = null;
   }
 

@@ -11,11 +11,16 @@ export const KeyCode = {
   ESC: 27,
 };
 
-const safeCall = (component, methodName) => {
+const _attachEventHandlers = (component) => {
   if (component instanceof EventManager) {
-    return component[methodName]();
+    component.attachEventHandlers();
   }
-  return undefined;
+};
+
+const _detachEventHandlers = (component) => {
+  if (component instanceof EventManager) {
+    component.detachEventHandlers();
+  }
 };
 
 export const render = (container, component, place = Position.BEFORE_END) => {
@@ -25,7 +30,7 @@ export const render = (container, component, place = Position.BEFORE_END) => {
     case Position.BEFORE_END:
     case Position.AFTER_END:
       container.insertAdjacentElement(place, component.element);
-      safeCall(component, `attachEventHandlers`);
+      _attachEventHandlers(component);
       break;
     default:
       throw new Error(`Invalid insertion point: ${place}`);
@@ -34,7 +39,7 @@ export const render = (container, component, place = Position.BEFORE_END) => {
 
 export const unrender = (component) => {
   if (component) {
-    safeCall(component, `detachEventHandlers`);
+    _detachEventHandlers(component);
     component.element.remove();
     component.removeElement();
   }
@@ -48,8 +53,8 @@ export const createElement = (template) => {
 
 export const replaceComponent = (oldComponent, newComponent) => {
   oldComponent.element.parentNode.replaceChild(newComponent.element, oldComponent.element);
-  safeCall(oldComponent, `detachEventHandlers`);
-  safeCall(newComponent, `attachEventHandlers`);
+  _detachEventHandlers(oldComponent);
+  _attachEventHandlers(newComponent);
 };
 
 

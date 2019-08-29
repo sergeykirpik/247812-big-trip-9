@@ -7,11 +7,7 @@ export class DayItem extends AbstractComponent {
     super();
     this._dayDate = dayDate;
     this._dayCounter = dayCounter;
-    this._eventList = new EventList(events);
-  }
-
-  _beforeElementRemoved() {
-    this._eventList.removeElement();
+    this._eventList = this.createOwnedComponent(new EventList(events));
   }
 
   _afterElementCreated() {
