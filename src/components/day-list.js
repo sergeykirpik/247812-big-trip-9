@@ -1,4 +1,4 @@
-import {formatDate, render} from '../utils.js';
+import {formatDate, render, groupBy} from '../utils.js';
 import {DayItem} from './day-item.js';
 import {AbstractComponent} from './abstract-component.js';
 
@@ -6,21 +6,18 @@ export class DayList extends AbstractComponent {
   constructor(points) {
     super();
     this._points = points;
-    this._dayItems = this._pointsByDay.map(([dayDate, events], index) =>
+    this._dayItems = this._pointsByDay.map((events) =>
       this.createOwnedComponent(new DayItem({
-        dayCounter: index + 1, dayDate, events}))
+        dayCounter: events[0].dayNo,
+        dayDate: formatDate(events[0].startTime, `YYYY-MM-DD`),
+        events
+      }))
     );
   }
 
   get _pointsByDay() {
-    const pointsByDay = new Map();
-    this._points.forEach((it) => {
-      const key = formatDate(it.startTime, `YYYY-MM-DD`);
-      const collection = pointsByDay.get(key) || [];
-      collection.push(it);
-      pointsByDay.set(key, collection);
-    });
-    return Array.from(pointsByDay);
+    return groupBy(this._points, (a, b) =>
+      formatDate(a.startTime, `YYYY-MM-DD`) === formatDate(b.startTime, `YYYY-MM-DD`));
   }
 
   _afterElementCreated() {

@@ -28,7 +28,6 @@ export class AbstractComponent extends EventManager {
   }
 
   removeElement() {
-    console.log(`removeElement: ${this.constructor.name}`);
     this.detachEventHandlers();
     this._ownedComponents.forEach((component) => component.removeElement());
     this._element = null;

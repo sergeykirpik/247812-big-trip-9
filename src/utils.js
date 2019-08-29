@@ -72,3 +72,19 @@ export const formatDate = (date, fmt) => {
     default: throw new Error(`Invalid date format`);
   }
 };
+
+export const groupBy = (arr, test) => {
+  if (!test) {
+    test = (a, b) => a === b;
+  }
+  const result = [];
+  arr.forEach(e => {
+    const g = result[result.length - 1] || [];
+    if (g.length > 0 && test(g[g.length - 1], e)) {
+      g.push(e);
+    } else {
+      result.push([e]);
+    }
+  });
+  return result;
+};

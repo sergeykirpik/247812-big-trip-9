@@ -3,7 +3,7 @@ import {AbstractComponent} from "./abstract-component";
 import {TripSort} from "./trip-sort";
 import {DayList} from "./day-list";
 import {NoPoints} from "./no-points";
-import {render} from "../utils";
+import {render, unrender} from "../utils";
 
 export class TripEventsSection extends AbstractComponent {
   constructor(points) {
@@ -12,6 +12,12 @@ export class TripEventsSection extends AbstractComponent {
     this._sort = this.createOwnedComponent(new TripSort(sortMethods));
     this._dayList = this.createOwnedComponent(new DayList(points));
     this._noPoints = this.createOwnedComponent(new NoPoints());
+  }
+
+  update(points) {
+    unrender(this._dayList);
+    this._dayList = this.createOwnedComponent(new DayList(points));
+    render(this.element, this._dayList);
   }
 
   get sort() {

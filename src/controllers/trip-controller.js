@@ -1,5 +1,5 @@
 import {TripEventsSection} from "../components/trip-events-sec";
-import {render, unrender} from "../utils";
+import {render} from "../utils";
 import {sortMethods} from "../data";
 
 export class TripController {
@@ -13,9 +13,7 @@ export class TripController {
     render(this._container, this._trip);
     this._trip.sort.onSort((method) => {
       const sorted = sortMethods[method](this._points);
-      unrender(this._trip);
-      this._trip = new TripEventsSection(sorted);
-      this.init();
+      this._trip.update(sorted);
     });
   }
 }
