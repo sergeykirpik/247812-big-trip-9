@@ -1,16 +1,17 @@
-import {createElement, render, replaceComponent, KeyCode} from "../utils";
+import {render, replaceComponent, KeyCode} from "../utils";
 import {EventItem} from "./event-item";
 import {EventEditForm} from "./event-edit-form";
+import {AbstractComponent} from "./abstract-component";
 
-export class EventList {
+export class EventList extends AbstractComponent {
   constructor(events) {
-    this._element = null;
+    super();
     this._items = events.map((it) => this._createItem(it));
   }
 
   _createItem(eventData) {
-    const eventItem = new EventItem(eventData);
-    const eventEditForm = new EventEditForm(eventData);
+    const eventItem = this.createOwnedComponent(new EventItem(eventData));
+    const eventEditForm = this.createOwnedComponent(new EventEditForm(eventData));
 
     eventItem.on(eventItem.rollupBtn, `click`, () => {
       replaceComponent(eventItem, eventEditForm);
@@ -32,12 +33,12 @@ export class EventList {
     return eventItem;
   }
 
-  get element() {
-    if (!this._element) {
-      this._element = createElement(this.template);
-      this._items.forEach((it) => render(this._element, it));
-    }
-    return this._element;
+  _afterElementCreated() {
+    this._items.forEach((it) => render(this._element, it));
+  }
+
+  _beforeElementRemoved() {
+    this._items.forEach((it) => it.removeElement());
   }
 
   get template() {
@@ -46,10 +47,5 @@ export class EventList {
       <!-- EventItems -->
     </ul>
   `.trim();
-  }
-
-  removeElement() {
-    this._items.forEach((it) => it.removeElement());
-    this._element = null;
   }
 }

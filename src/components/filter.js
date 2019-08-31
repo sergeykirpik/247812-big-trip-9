@@ -1,21 +1,11 @@
-import {capitalize, createElement} from '../utils.js';
+import {capitalize} from '../utils.js';
+import {AbstractComponent} from './abstract-component.js';
 
-export class Filter {
+export class Filter extends AbstractComponent {
   constructor(filterMethods, currentFilter) {
+    super();
     this._filterMethods = filterMethods;
     this._currentFilter = currentFilter || Object.keys(filterMethods)[0];
-    this._element = null;
-  }
-
-  get element() {
-    if (!this._element) {
-      this._element = createElement(this.template);
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 
   _checked(filter) {

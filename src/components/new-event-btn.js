@@ -1,17 +1,6 @@
-import {createElement} from "../utils";
+import {AbstractComponent} from "./abstract-component";
 
-export class NewEventButton {
-  constructor() {
-    this._element = null;
-  }
-
-  get element() {
-    if (!this._element) {
-      this._element = createElement(this.template);
-    }
-    return this._element;
-  }
-
+export class NewEventButton extends AbstractComponent {
   get template() {
     return `
       <button class="trip-main__event-add-btn  btn  btn--big  btn--yellow" type="button">New event</button>

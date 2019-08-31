@@ -5,9 +5,9 @@ const MAX_ROUTE_POINTS = 20;
 
 const getRandom = (n) => Math.floor(Math.random() * n);
 const getRandomBool = () => [true, false][getRandom(2)];
-const toHours = (h) => h * 1000 * 3600;
-const toDays = (d) => toHours(24 * d);
-const getRandomDate = () => new Date(Date.now() + getRandom(toDays(6)) - getRandom(toDays(3)));
+const mSecFromHours = (h) => h * 1000 * 3600;
+const mSecfromDays = (d) => mSecFromHours(24 * d);
+const getRandomDate = () => new Date(Date.now() + getRandom(mSecfromDays(6)) - getRandom(mSecfromDays(3)));
 const shuffle = (array) => array.sort(() => Math.random() - 0.5);
 const getDuration = (tripEvent) => tripEvent.endTime.valueOf() - tripEvent.startTime.valueOf();
 
@@ -93,10 +93,19 @@ const getTripEvent = () => ({
 
 const getTripEventList = (pointCount) => {
   let startTime = getRandomDate();
+  let dayNo = 0;
+  let dayDate = ``;
   return new Array(pointCount).fill(``).map(() => {
     const it = getTripEvent();
+    const d = formatDate(startTime, `YYYY-MM-DD`);
+    if (d !== dayDate) {
+      dayDate = d;
+      dayNo++;
+    }
+    it.dayNo = dayNo;
+    it.dayDate = dayDate;
     it.startTime = startTime;
-    it.endTime = new Date(it.startTime.valueOf() + getRandom(toHours(MAX_DATE_INTERVAL)));
+    it.endTime = new Date(it.startTime.valueOf() + getRandom(mSecFromHours(MAX_DATE_INTERVAL)));
     startTime = it.endTime;
     return it;
   });
@@ -111,12 +120,13 @@ export const filterMethods = {
 export const menuData = [`table`, `stats`];
 
 export const sortMethods = {
-  event: () => route.points,
-  time: () => route.points.slice().sort((a, b) => getDuration(a) - getDuration(b)),
-  price: () => route.points.slice().sort((a, b) => a.price - b.price),
+  event: (points) => points,
+  time: (points) => points.slice().sort((a, b) => getDuration(a) - getDuration(b)),
+  price: (points) => points.slice().sort((a, b) => a.price - b.price),
 };
 
 const getOffersTotal = (te) => Array.from(te.offers).reduce((acc, it) => acc + availableOffers[it].price, 0);
+
 export const route = {
   points: getTripEventList(getRandom(MAX_ROUTE_POINTS)),
   get cost() {

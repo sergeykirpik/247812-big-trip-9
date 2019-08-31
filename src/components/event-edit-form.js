@@ -1,8 +1,8 @@
 import {transferType, activityType, destinationList, availableOffers} from '../data.js';
-import {capitalize, formatDate, createElement} from '../utils.js';
-import {EventManager} from '../event-manager.js';
+import {capitalize, formatDate} from '../utils.js';
+import {AbstractComponent} from './abstract-component.js';
 
-export class EventEditForm extends EventManager {
+export class EventEditForm extends AbstractComponent {
   constructor({type, label, destination, startTime, endTime, price, isFavorite, offers, destDescription, photos}) {
     super();
     this._type = type;
@@ -15,7 +15,6 @@ export class EventEditForm extends EventManager {
     this._offers = offers;
     this._destDescription = destDescription;
     this._photos = photos;
-    this._element = null;
 
     this.destination = this.element.querySelector(`#event-destination-1`);
     this.on(this.destination, `keydown`, (evt) => evt.stopPropagation());
@@ -36,17 +35,6 @@ export class EventEditForm extends EventManager {
 
   get form() {
     return this.element.querySelector(`form`);
-  }
-
-  get element() {
-    if (!this._element) {
-      this._element = createElement(this.template);
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 
   get template() {
