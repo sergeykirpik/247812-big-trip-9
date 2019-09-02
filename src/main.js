@@ -1,3 +1,5 @@
+import '../node_modules/flatpickr/dist/flatpickr.min.css';
+
 import {route} from './data.js';
 import {render} from './utils.js';
 import {TripInfo} from './components/trip-info.js';

@@ -1,6 +1,7 @@
 import {transferType, activityType, destinationList, availableOffers} from '../data.js';
 import {capitalize, formatDate} from '../utils.js';
 import {AbstractComponent} from './abstract-component.js';
+import flatpickr from 'flatpickr';
 
 export class EventEditForm extends AbstractComponent {
   constructor({type, label, destination, startTime, endTime, price, isFavorite, offers, destDescription, photos}) {
@@ -19,14 +20,19 @@ export class EventEditForm extends AbstractComponent {
     this.destination = this.element.querySelector(`#event-destination-1`);
     this.on(this.destination, `keydown`, (evt) => evt.stopPropagation());
 
+
     this.startTime = this.element.querySelector(`#event-start-time-1`);
     this.on(this.startTime, `keydown`, (evt) => evt.stopPropagation());
+    flatpickr(this.startTime, {});
 
     this.endTime = this.element.querySelector(`#event-end-time-1`);
     this.on(this.endTime, `keydown`, (evt) => evt.stopPropagation());
+    flatpickr(this.endTime, {});
 
     this.eventPrice = this.element.querySelector(`#event-price-1`);
     this.on(this.eventPrice, `keydown`, (evt) => evt.stopPropagation());
+
+
   }
 
   get rollupBtn() {
