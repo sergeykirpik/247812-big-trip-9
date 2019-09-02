@@ -5,9 +5,9 @@ const MAX_ROUTE_POINTS = 20;
 
 const getRandom = (n) => Math.floor(Math.random() * n);
 const getRandomBool = () => [true, false][getRandom(2)];
-const mSecFromHours = (h) => h * 1000 * 3600;
-const mSecfromDays = (d) => mSecFromHours(24 * d);
-const getRandomDate = () => new Date(Date.now() + getRandom(mSecfromDays(6)) - getRandom(mSecfromDays(3)));
+const hoursToMSec = (h) => h * 1000 * 3600;
+const daysToMSec = (d) => hoursToMSec(24 * d);
+const getRandomDate = () => new Date(Date.now() + getRandom(daysToMSec(6)) - getRandom(daysToMSec(3)));
 const shuffle = (array) => array.sort(() => Math.random() - 0.5);
 const getDuration = (tripEvent) => tripEvent.endTime.valueOf() - tripEvent.startTime.valueOf();
 
@@ -105,7 +105,7 @@ const getTripEventList = (pointCount) => {
     it.dayNo = dayNo;
     it.dayDate = dayDate;
     it.startTime = startTime;
-    it.endTime = new Date(it.startTime.valueOf() + getRandom(mSecFromHours(MAX_DATE_INTERVAL)));
+    it.endTime = new Date(it.startTime.valueOf() + getRandom(hoursToMSec(MAX_DATE_INTERVAL)));
     startTime = it.endTime;
     return it;
   });

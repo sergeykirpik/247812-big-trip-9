@@ -9,13 +9,20 @@ export class EventEditForm extends AbstractComponent {
     this._type = type;
     this._label = label;
     this._destination = destination;
-    this._startTime = startTime; // TODO: convert to date
-    this._endTime = endTime; // TODO: convert to date
+    this._startTime = startTime;
+    this._endTime = endTime;
     this._price = price;
     this._isFavorite = isFavorite;
     this._offers = offers;
     this._destDescription = destDescription;
     this._photos = photos;
+
+    const flatpickrOptions = {
+      altFormat: `d.m.y H:i`,
+      altInput: true,
+      allowInput: true,
+      enableTime: true,
+    }
 
     this.destination = this.element.querySelector(`#event-destination-1`);
     this.on(this.destination, `keydown`, (evt) => evt.stopPropagation());
@@ -23,11 +30,11 @@ export class EventEditForm extends AbstractComponent {
 
     this.startTime = this.element.querySelector(`#event-start-time-1`);
     this.on(this.startTime, `keydown`, (evt) => evt.stopPropagation());
-    flatpickr(this.startTime, {});
+    flatpickr(this.startTime, {...flatpickrOptions, defaultDate: this._startTime});
 
     this.endTime = this.element.querySelector(`#event-end-time-1`);
     this.on(this.endTime, `keydown`, (evt) => evt.stopPropagation());
-    flatpickr(this.endTime, {});
+    flatpickr(this.endTime, {...flatpickrOptions, defaultDate: this._endTime});
 
     this.eventPrice = this.element.querySelector(`#event-price-1`);
     this.on(this.eventPrice, `keydown`, (evt) => evt.stopPropagation());
@@ -90,12 +97,12 @@ export class EventEditForm extends AbstractComponent {
             <label class="visually-hidden" for="event-start-time-1">
               From
             </label>
-            <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${formatDate(this._startTime)}">
+            <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${this._startTime.valueOf()}">
             &mdash;
             <label class="visually-hidden" for="event-end-time-1">
               To
             </label>
-            <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${formatDate(this._endTime)}">
+            <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${this._endTime.valueOf()}">
           </div>
 
           <div class="event__field-group  event__field-group--price">
