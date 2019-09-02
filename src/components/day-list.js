@@ -1,23 +1,10 @@
-import {formatDate, render, groupBy} from '../utils.js';
-import {DayItem} from './day-item.js';
+import {render} from '../utils.js';
 import {AbstractComponent} from './abstract-component.js';
 
 export class DayList extends AbstractComponent {
-  constructor(points, isFlat) {
+  constructor(dayList) {
     super();
-    this._points = points;
-    this._isFlat = isFlat;
-    this._dayItems = this._pointsByDay.map((events) =>
-      this.createOwnedComponent(new DayItem(events, isFlat))
-    );
-  }
-
-  get _pointsByDay() {
-    if (this._isFlat) {
-      return [this._points];
-    }
-    return groupBy(this._points, (a, b) =>
-      formatDate(a.startTime, `YYYY-MM-DD`) === formatDate(b.startTime, `YYYY-MM-DD`));
+    this._dayItems = dayList.map((it) => this.createOwnedComponent(it));
   }
 
   _afterElementCreated() {

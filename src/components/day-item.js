@@ -1,14 +1,12 @@
 import {formatDate, render} from '../utils.js';
-import {EventList} from './event-list.js';
 import {AbstractComponent} from './abstract-component.js';
 
 export class DayItem extends AbstractComponent {
-  constructor(events, isFlat) {
+  constructor({dayCounter, dayDate, eventList}) {
     super();
-    this._isFlat = isFlat;
-    this._dayDate = formatDate(events[0].startTime, `YYYY-MM-DD`);
-    this._dayCounter = events[0].dayNo;
-    this._eventList = this.createOwnedComponent(new EventList(events));
+    this._dayDate = dayDate;
+    this._dayCounter = dayCounter;
+    this._eventList = this.createOwnedComponent(eventList);
   }
 
   _afterElementCreated() {
@@ -19,7 +17,7 @@ export class DayItem extends AbstractComponent {
     return `
     <li class="trip-days__item  day">
       <div class="day__info">
-        ${this._isFlat ? `` : `
+        ${!this._dayCounter ? `` : `
         <span class="day__counter">${this._dayCounter}</span>
         <time class="day__date" datetime="${this._dayDate}">${formatDate(new Date(this._dayDate), `MMM D`)}</time>`}
       </div>
