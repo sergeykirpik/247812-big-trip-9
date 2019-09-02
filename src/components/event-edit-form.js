@@ -1,5 +1,5 @@
 import {transferType, activityType, destinationList, availableOffers} from '../data.js';
-import {capitalize, formatDate} from '../utils.js';
+import {capitalize} from '../utils.js';
 import {AbstractComponent} from './abstract-component.js';
 import flatpickr from 'flatpickr';
 
@@ -22,7 +22,7 @@ export class EventEditForm extends AbstractComponent {
       altInput: true,
       allowInput: true,
       enableTime: true,
-    }
+    };
 
     this.destination = this.element.querySelector(`#event-destination-1`);
     this.on(this.destination, `keydown`, (evt) => evt.stopPropagation());
@@ -30,11 +30,11 @@ export class EventEditForm extends AbstractComponent {
 
     this.startTime = this.element.querySelector(`#event-start-time-1`);
     this.on(this.startTime, `keydown`, (evt) => evt.stopPropagation());
-    flatpickr(this.startTime, {...flatpickrOptions, defaultDate: this._startTime});
+    flatpickr(this.startTime, Object.assign({defaultDate: this._startTime}, flatpickrOptions));
 
     this.endTime = this.element.querySelector(`#event-end-time-1`);
     this.on(this.endTime, `keydown`, (evt) => evt.stopPropagation());
-    flatpickr(this.endTime, {...flatpickrOptions, defaultDate: this._endTime});
+    flatpickr(this.endTime, Object.assign({defaultDate: this._endTime}, flatpickrOptions));
 
     this.eventPrice = this.element.querySelector(`#event-price-1`);
     this.on(this.eventPrice, `keydown`, (evt) => evt.stopPropagation());

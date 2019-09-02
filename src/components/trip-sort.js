@@ -24,7 +24,7 @@ export class TripSort extends AbstractComponent {
   get template() {
     return `
     <form class="trip-events__trip-sort  trip-sort" action="#" method="get">
-      <span class="trip-sort__item  trip-sort__item--day">${this._isFlat ? ``: `Day`}</span>
+      <span class="trip-sort__item  trip-sort__item--day">${this._isFlat ? `` : `Day`}</span>
 
       ${Object.keys(this._sortMethods).map((k) => `<div class="trip-sort__item  trip-sort__item--${k}">
         <input data-${k} id="sort-${k}" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort"

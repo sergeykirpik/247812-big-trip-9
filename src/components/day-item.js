@@ -21,8 +21,7 @@ export class DayItem extends AbstractComponent {
       <div class="day__info">
         ${this._isFlat ? `` : `
         <span class="day__counter">${this._dayCounter}</span>
-        <time class="day__date" datetime="${this._dayDate}">${formatDate(new Date(this._dayDate), `MMM D`)}</time>`
-        }
+        <time class="day__date" datetime="${this._dayDate}">${formatDate(new Date(this._dayDate), `MMM D`)}</time>`}
       </div>
       <!-- EventList -->
 
