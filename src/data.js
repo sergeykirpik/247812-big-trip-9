@@ -119,10 +119,12 @@ export const filterMethods = {
 
 export const menuData = [`table`, `stats`];
 
-export const sortMethods = {
+export const SortType = {
   event: (points) => points,
-  time: (points) => points.slice().sort((a, b) => getDuration(a) - getDuration(b)),
-  price: (points) => points.slice().sort((a, b) => a.price - b.price),
+  time: (points) => points.slice()
+    .sort((a, b) => getDuration(b) - getDuration(a)),
+  price: (points) => points.slice()
+    .sort((a, b) => b.price - a.price),
 };
 
 const getOffersTotal = (te) => Array.from(te.offers).reduce((acc, it) => acc + availableOffers[it].price, 0);

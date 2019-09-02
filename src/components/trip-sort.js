@@ -1,10 +1,11 @@
 import {AbstractComponent} from './abstract-component.js';
 
 export class TripSort extends AbstractComponent {
-  constructor(sortMethods, currentSort) {
+  constructor(sortMethods, currentSort, isFlat) {
     super();
     this._sortMethods = sortMethods;
-    this._currentSort = currentSort || Object.keys(sortMethods)[0];
+    this._currentSort = currentSort || sortMethods[0];
+    this._isFlat = isFlat;
 
     this._onSort = () => {};
 
@@ -23,11 +24,11 @@ export class TripSort extends AbstractComponent {
   get template() {
     return `
     <form class="trip-events__trip-sort  trip-sort" action="#" method="get">
-      <span class="trip-sort__item  trip-sort__item--day">Day</span>
+      <span class="trip-sort__item  trip-sort__item--day">${this._isFlat ? ``: `Day`}</span>
 
       ${Object.keys(this._sortMethods).map((k) => `<div class="trip-sort__item  trip-sort__item--${k}">
         <input data-${k} id="sort-${k}" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort"
-               value="sort-${k}" ${k === this._currentSort ? `checked` : ``}>
+               value="sort-${k}" ${this._sortMethods[k] === this._currentSort ? `checked` : ``}>
         <label class="trip-sort__btn" for="sort-${k}">
           ${k}
           <svg class="trip-sort__direction-icon" width="8" height="10" viewBox="0 0 8 10">

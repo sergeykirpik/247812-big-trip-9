@@ -3,19 +3,19 @@ import {DayItem} from './day-item.js';
 import {AbstractComponent} from './abstract-component.js';
 
 export class DayList extends AbstractComponent {
-  constructor(points) {
+  constructor(points, isFlat) {
     super();
     this._points = points;
+    this._isFlat = isFlat;
     this._dayItems = this._pointsByDay.map((events) =>
-      this.createOwnedComponent(new DayItem({
-        dayCounter: events[0].dayNo,
-        dayDate: formatDate(events[0].startTime, `YYYY-MM-DD`),
-        events
-      }))
+      this.createOwnedComponent(new DayItem(events, isFlat))
     );
   }
 
   get _pointsByDay() {
+    if (this._isFlat) {
+      return [this._points];
+    }
     return groupBy(this._points, (a, b) =>
       formatDate(a.startTime, `YYYY-MM-DD`) === formatDate(b.startTime, `YYYY-MM-DD`));
   }
