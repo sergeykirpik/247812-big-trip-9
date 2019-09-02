@@ -50,7 +50,8 @@ export class TripController {
   }
 
   get _visibleColumns() {
-    return columns.map((it) => it.title === `day` ? {...it, title: ``} : it);
+    return this._currentSort === `event` ? columns
+      : columns.map((it) => it.title === `day` ? {...it, title: ``} : it);
   }
 
   get _groupedDayList() {
