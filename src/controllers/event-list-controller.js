@@ -5,14 +5,16 @@ import {EventList} from "../components/event-list";
 import {BaseComponent} from "../base-component";
 
 export class EventListController extends BaseComponent {
-  constructor(events) {
-    super({});
-    this._element = new EventList(events.map((it) => this._createItem(it))).element;
+  constructor(params) {
+    super(params);
+    this._element = new EventList({
+      children: this._data.map((it) => this._createItem(it))
+    }).element;
   }
 
   _createItem(eventData) {
-    const eventItem = new EventItem(eventData);
-    const eventEditForm = this.addOwnedComponent(new EventEditForm(eventData));
+    const eventItem = new EventItem({data: eventData});
+    const eventEditForm = this.addOwnedComponent(new EventEditForm({data: eventData}));
 
     eventItem.on(eventItem.rollupBtn, `click`, () => {
       replaceComponent(eventItem, eventEditForm);

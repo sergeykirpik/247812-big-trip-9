@@ -4,18 +4,8 @@ import flatpickr from 'flatpickr';
 import {BaseComponent} from '../base-component.js';
 
 export class EventEditForm extends BaseComponent {
-  constructor({type, label, destination, startTime, endTime, price, isFavorite, offers, destDescription, photos}) {
-    super({});
-    this._type = type;
-    this._label = label;
-    this._destination = destination;
-    this._startTime = startTime;
-    this._endTime = endTime;
-    this._price = price;
-    this._isFavorite = isFavorite;
-    this._offers = offers;
-    this._destDescription = destDescription;
-    this._photos = photos;
+  constructor(params) {
+    super(params);
 
     const flatpickrOptions = {
       altFormat: `d.m.y H:i`,
@@ -24,20 +14,20 @@ export class EventEditForm extends BaseComponent {
       enableTime: true,
     };
 
-    this.destination = this.element.querySelector(`#event-destination-1`);
-    this.on(this.destination, `keydown`, (evt) => evt.stopPropagation());
+    const destination = this.element.querySelector(`#event-destination-1`);
+    this.on(destination, `keydown`, (evt) => evt.stopPropagation());
 
 
-    this.startTime = this.element.querySelector(`#event-start-time-1`);
-    this.on(this.startTime, `keydown`, (evt) => evt.stopPropagation());
-    flatpickr(this.startTime, Object.assign({defaultDate: this._startTime}, flatpickrOptions));
+    const startTime = this.element.querySelector(`#event-start-time-1`);
+    this.on(startTime, `keydown`, (evt) => evt.stopPropagation());
+    flatpickr(startTime, Object.assign({defaultDate: this._data._startTime}, flatpickrOptions));
 
-    this.endTime = this.element.querySelector(`#event-end-time-1`);
-    this.on(this.endTime, `keydown`, (evt) => evt.stopPropagation());
-    flatpickr(this.endTime, Object.assign({defaultDate: this._endTime}, flatpickrOptions));
+    const endTime = this.element.querySelector(`#event-end-time-1`);
+    this.on(endTime, `keydown`, (evt) => evt.stopPropagation());
+    flatpickr(endTime, Object.assign({defaultDate: this._data._endTime}, flatpickrOptions));
 
-    this.eventPrice = this.element.querySelector(`#event-price-1`);
-    this.on(this.eventPrice, `keydown`, (evt) => evt.stopPropagation());
+    const eventPrice = this.element.querySelector(`#event-price-1`);
+    this.on(eventPrice, `keydown`, (evt) => evt.stopPropagation());
 
 
   }
@@ -51,6 +41,7 @@ export class EventEditForm extends BaseComponent {
   }
 
   get template() {
+    const {type, label, destination, startTime, endTime, price, isFavorite, offers, destDescription, photos} = this._data;
     return `
     <li class="trip-events__item">
       <form class="event  event--edit" action="#" method="post">
@@ -58,7 +49,7 @@ export class EventEditForm extends BaseComponent {
           <div class="event__type-wrapper">
             <label class="event__type  event__type-btn" for="event-type-toggle-1">
               <span class="visually-hidden">Choose event type</span>
-              <img class="event__type-icon" width="17" height="17" src="img/icons/${this._type}.png" alt="Event type icon">
+              <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
             </label>
             <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
@@ -85,9 +76,9 @@ export class EventEditForm extends BaseComponent {
 
           <div class="event__field-group  event__field-group--destination">
             <label class="event__label  event__type-output" for="event-destination-1">
-              ${this._label}
+              ${label}
             </label>
-            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${this._destination}" list="destination-list-1">
+            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination}" list="destination-list-1">
             <datalist id="destination-list-1">
               ${destinationList.map((d) => `<option value="${d}"></option>`).join(``)}
             </datalist>
@@ -97,12 +88,12 @@ export class EventEditForm extends BaseComponent {
             <label class="visually-hidden" for="event-start-time-1">
               From
             </label>
-            <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${this._startTime.valueOf()}">
+            <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${startTime.valueOf()}">
             &mdash;
             <label class="visually-hidden" for="event-end-time-1">
               To
             </label>
-            <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${this._endTime.valueOf()}">
+            <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${endTime.valueOf()}">
           </div>
 
           <div class="event__field-group  event__field-group--price">
@@ -110,13 +101,13 @@ export class EventEditForm extends BaseComponent {
               <span class="visually-hidden">Price</span>
               &euro;
             </label>
-            <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${this._price}">
+            <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}">
           </div>
 
           <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
           <button class="event__reset-btn" type="reset">Delete</button>
 
-          <input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" ${this._isFavorite ? `checked` : ``}>
+          <input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" ${isFavorite ? `checked` : ``}>
           <label class="event__favorite-btn" for="event-favorite-1">
             <span class="visually-hidden">Add to favorite</span>
             <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
@@ -136,7 +127,7 @@ export class EventEditForm extends BaseComponent {
 
             <div class="event__available-offers">
               ${Object.entries(availableOffers).map(([k, v]) => `<div class="event__offer-selector">
-                <input class="event__offer-checkbox  visually-hidden" id="event-offer-${k}-1" type="checkbox" name="event-offer-${k}" ${this._offers.has(k) ? `checked` : ``}>
+                <input class="event__offer-checkbox  visually-hidden" id="event-offer-${k}-1" type="checkbox" name="event-offer-${k}" ${offers.has(k) ? `checked` : ``}>
                 <label class="event__offer-label" for="event-offer-${k}-1">
                   <span class="event__offer-title">${v.description}</span>
                   &plus;
@@ -148,11 +139,11 @@ export class EventEditForm extends BaseComponent {
 
           <section class="event__section  event__section--destination">
             <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-            <p class="event__destination-description">${this._destDescription}</p>
+            <p class="event__destination-description">${destDescription}</p>
 
             <div class="event__photos-container">
               <div class="event__photos-tape">
-                ${this._photos.map((it) => `<img
+                ${photos.map((it) => `<img
                   class="event__photo" src="${it}" alt="Event photo">
                 `).join(``)}
               </div>

@@ -33,7 +33,7 @@ const columns = [
 
 export class TripController extends BaseComponent {
   constructor(points) {
-    super({});
+    super();
     this._points = points;
     this._sort = null;
     this._noPoints = new NoPoints({});
@@ -56,18 +56,20 @@ export class TripController extends BaseComponent {
 
   get _groupedDayList() {
     const dayItems = this._pointsByDay.map((it) => new DayItem({
-      eventList: new EventListController(it),
-      dayCounter: it[0].dayNo,
-      dayDate: formatDate(it[0].startTime, `YYYY-MM-DD`),
+      children: [new EventListController({data: it})],
+      data: {
+        dayCounter: it[0].dayNo,
+        dayDate: formatDate(it[0].startTime, `YYYY-MM-DD`),
+      }
     }));
-    return new DayList(dayItems);
+    return new DayList({children: dayItems});
   }
 
   get _sortedDayList() {
     const dayItem = new DayItem({
-      eventList: new EventListController(this._sortedPoints)
+      children: [new EventListController({data: this._sortedPoints})]
     });
-    return new DayList([dayItem]);
+    return new DayList({children: [dayItem]});
   }
 
   get _dayList() {
@@ -80,19 +82,24 @@ export class TripController extends BaseComponent {
     }
     if (this._sortedPoints.length > 0) {
       this._sort = new DayListHeader({
-        columns: this._visibleColumns,
-        current: this._currentSort,
-        onSort: this.onSort.bind(this),
+        data: {
+          columns: this._visibleColumns,
+          current: this._currentSort,
+        },
+        callbacks: {
+          onSort: this.onSort.bind(this),
+        }
       });
-      this._element = new TripEventsSection({children: [
-        this._sort,
-        this._dayList
-      ]}).element;
+      this._element = new TripEventsSection({
+        children: [this._sort, this._dayList]
+      }).element;
+
     } else {
-      this._element = new TripEventsSection({children: [
-        this._noPoints
-      ]}).element;
+      this._element = new TripEventsSection({
+        children: [this._noPoints]
+      }).element;
     }
+
     return this._element;
   }
 

@@ -1,11 +1,9 @@
 import {BaseComponent} from "../base-component";
 
 export class DayListHeader extends BaseComponent {
-  constructor({columns, current, onSort}) {
-    super({});
-    this._columns = columns;
-    this._current = current || `event`;
-
+  constructor(params) {
+    super(params);
+    const {onSort} = this._callbacks;
     this.on(this.element, `click`, (evt) => {
       const sortType = evt.target.dataset.sortType;
       if (sortType) {
@@ -21,9 +19,10 @@ export class DayListHeader extends BaseComponent {
   }
 
   _sortItem(title) {
+    const {current} = this._data;
     return `
     <div class="trip-sort__item  trip-sort__item--${title}">
-      <input data-sort-type="${title}" id="sort-${title}" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-${title}" ${title === this._current ? `checked` : ``}>
+      <input data-sort-type="${title}" id="sort-${title}" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-${title}" ${title === current ? `checked` : ``}>
       <label class="trip-sort__btn" for="sort-${title}">${title}
         <svg class="trip-sort__direction-icon" width="8" height="10" viewBox="0 0 8 10">
           <path d="M2.888 4.852V9.694H5.588V4.852L7.91 5.068L4.238 0.00999987L0.548 5.068L2.888 4.852Z"/>
@@ -33,9 +32,10 @@ export class DayListHeader extends BaseComponent {
   }
 
   get template() {
+    const {columns} = this._data;
     return `
     <form class="trip-events__trip-sort  trip-sort" action="#" method="get">
-      ${this._columns.map(({title, sortable}) => sortable ? this._sortItem(title) : this._nonsortable(title)).join(``)}
+      ${columns.map(({title, sortable}) => sortable ? this._sortItem(title) : this._nonsortable(title)).join(``)}
     </form>`.trim();
   }
 }

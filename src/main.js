@@ -12,11 +12,15 @@ import {Filter} from './components/filter';
 
 const tripMain = document.querySelector(`.trip-main`);
 
-render(tripMain, new TripInfo(route));
-render(tripMain, new TripControls({children: [
-  new Menu(menuData),
-  new Filter(filterMethods),
-]}));
+render(tripMain, new TripInfo({data: route}));
+render(tripMain, new TripControls({
+  children: [
+    new Menu({
+      data: {menuData, activeItem: `table`}
+    }),
+    new Filter({data: filterMethods}),
+  ]
+}));
 render(tripMain, new NewEventButton({}));
 
 const mainContainer = document.querySelector(`main .page-body__container`);

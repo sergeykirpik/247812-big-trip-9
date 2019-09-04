@@ -2,10 +2,13 @@ import {createElement, render} from "./utils";
 import {EventManager} from "./event-manager";
 
 export class BaseComponent extends EventManager {
-  constructor({children}) {
+  constructor(params) {
     super();
+    params = params || {};
     this._element = null;
-    this._children = children || [];
+    this._children = params.children || [];
+    this._data = params.data || {};
+    this._callbacks = params.callbacks || {};
     this._ownedComponents = [];
   }
 
