@@ -1,16 +1,11 @@
-import {formatDate, render} from '../utils.js';
-import {AbstractComponent} from './abstract-component.js';
+import {formatDate} from '../utils.js';
+import {BaseComponent} from '../base-component.js';
 
-export class DayItem extends AbstractComponent {
+export class DayItem extends BaseComponent {
   constructor({dayCounter, dayDate, eventList}) {
-    super();
+    super({children: [eventList]});
     this._dayDate = dayDate;
     this._dayCounter = dayCounter;
-    this._eventList = this.createOwnedComponent(eventList);
-  }
-
-  _afterElementCreated() {
-    render(this._element, this._eventList);
   }
 
   get template() {

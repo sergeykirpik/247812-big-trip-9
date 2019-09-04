@@ -1,8 +1,8 @@
-import {AbstractComponent} from './abstract-component.js';
+import {BaseComponent} from "../base-component";
 
-export class TripInfo extends AbstractComponent {
+export class TripInfo extends BaseComponent {
   constructor({title, dates, cost}) {
-    super();
+    super({});
     this._title = title;
     this._dates = dates;
     this._cost = cost;

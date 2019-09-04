@@ -1,11 +1,12 @@
 import {TripEventsSection} from "../components/trip-events-sec";
-import {render, unrender, formatDate, groupBy} from "../utils";
+import {formatDate, groupBy, rerender} from "../utils";
 import {SortType} from "../data";
 import {DayList} from "../components/day-list";
 import {NoPoints} from "../components/no-points";
 import {DayListHeader} from "../components/day-list-header";
 import {DayItem} from "../components/day-item";
-import {EventList} from "../components/event-list";
+import {EventListController} from "./event-list-controller";
+import {BaseController} from "../base-controller";
 
 const columns = [
   {
@@ -30,13 +31,12 @@ const columns = [
   }
 ];
 
-export class TripController {
-  constructor({container, points}) {
-    this._container = container;
+export class TripController extends BaseController {
+  constructor(points) {
+    super({});
     this._points = points;
-    this._tripEventsSection = new TripEventsSection();
     this._sort = null;
-    this._noPoints = new NoPoints();
+    this._noPoints = new NoPoints({});
     this._currentSort = `event`;
   }
 
@@ -56,7 +56,7 @@ export class TripController {
 
   get _groupedDayList() {
     const dayItems = this._pointsByDay.map((it) => new DayItem({
-      eventList: new EventList(it),
+      eventList: new EventListController(it),
       dayCounter: it[0].dayNo,
       dayDate: formatDate(it[0].startTime, `YYYY-MM-DD`),
     }));
@@ -65,7 +65,7 @@ export class TripController {
 
   get _sortedDayList() {
     const dayItem = new DayItem({
-      eventList: new EventList(this._sortedPoints)
+      eventList: new EventListController(this._sortedPoints)
     });
     return new DayList([dayItem]);
   }
@@ -74,28 +74,31 @@ export class TripController {
     return this._currentSort === `event` ? this._groupedDayList : this._sortedDayList;
   }
 
-  _renderTripEventsSection() {
-    unrender(this._tripEventsSection);
-    if (this._points.length > 0) {
+  get element() {
+    if (this._element) {
+      return this._element;
+    }
+    if (this._sortedPoints.length > 0) {
       this._sort = new DayListHeader({
         columns: this._visibleColumns,
         current: this._currentSort,
         onSort: this.onSort.bind(this),
       });
-      render(this._tripEventsSection.element, this._sort);
-      render(this._tripEventsSection.element, this._dayList);
+      this._element = new TripEventsSection({children: [
+        this._sort,
+        this._dayList
+      ]}).element;
     } else {
-      render(this._tripEventsSection.element, this._noPoints);
+      this._element = new TripEventsSection({children: [
+        this._noPoints
+      ]}).element;
     }
-    render(this._container, this._tripEventsSection);
+    return this._element;
   }
 
   onSort(method) {
     this._currentSort = method;
-    this.init();
+    rerender(this);
   }
 
-  init() {
-    this._renderTripEventsSection();
-  }
 }

@@ -1,9 +1,9 @@
 import {capitalize} from '../utils.js';
-import {AbstractComponent} from './abstract-component.js';
+import {BaseComponent} from '../base-component.js';
 
-export class Filter extends AbstractComponent {
+export class Filter extends BaseComponent {
   constructor(filterMethods, currentFilter) {
-    super();
+    super({});
     this._filterMethods = filterMethods;
     this._currentFilter = currentFilter || Object.keys(filterMethods)[0];
   }

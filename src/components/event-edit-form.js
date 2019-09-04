@@ -1,11 +1,11 @@
 import {transferType, activityType, destinationList, availableOffers} from '../data.js';
 import {capitalize} from '../utils.js';
-import {AbstractComponent} from './abstract-component.js';
 import flatpickr from 'flatpickr';
+import {BaseComponent} from '../base-component.js';
 
-export class EventEditForm extends AbstractComponent {
+export class EventEditForm extends BaseComponent {
   constructor({type, label, destination, startTime, endTime, price, isFavorite, offers, destDescription, photos}) {
-    super();
+    super({});
     this._type = type;
     this._label = label;
     this._destination = destination;

@@ -1,9 +1,9 @@
 import {capitalize} from '../utils.js';
-import {AbstractComponent} from './abstract-component.js';
+import {BaseComponent} from '../base-component.js';
 
-export class Menu extends AbstractComponent {
+export class Menu extends BaseComponent {
   constructor(menuData, activeItem) {
-    super();
+    super({});
     this._menuData = menuData;
     this._activeItem = activeItem || menuData[0];
   }

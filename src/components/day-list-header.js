@@ -1,8 +1,8 @@
-import {AbstractComponent} from "./abstract-component";
+import {BaseComponent} from "../base-component";
 
-export class DayListHeader extends AbstractComponent {
+export class DayListHeader extends BaseComponent {
   constructor({columns, current, onSort}) {
-    super();
+    super({});
     this._columns = columns;
     this._current = current || `event`;
 

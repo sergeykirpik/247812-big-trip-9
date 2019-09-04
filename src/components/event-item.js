@@ -1,13 +1,13 @@
 import {availableOffers} from '../data.js';
-import {AbstractComponent} from './abstract-component.js';
+import {BaseComponent} from '../base-component.js';
 
 const getDateTime = (date) => date.toISOString().slice(0, 16);
 const getTime = (date) => date.toISOString().slice(11, 16);
 
 
-export class EventItem extends AbstractComponent {
+export class EventItem extends BaseComponent {
   constructor({startTime, endTime, type, title, price, offers}) {
-    super();
+    super({});
     this._startTime = startTime; // TODO: convert to Date
     this._endTime = endTime; // TODO: convert to Date
     this._type = type;
