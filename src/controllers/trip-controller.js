@@ -6,7 +6,7 @@ import {NoPoints} from "../components/no-points";
 import {DayListHeader} from "../components/day-list-header";
 import {DayItem} from "../components/day-item";
 import {EventListController} from "./event-list-controller";
-import {BaseController} from "../base-controller";
+import {BaseComponent} from "../base-component";
 
 const columns = [
   {
@@ -31,7 +31,7 @@ const columns = [
   }
 ];
 
-export class TripController extends BaseController {
+export class TripController extends BaseComponent {
   constructor(points) {
     super({});
     this._points = points;
