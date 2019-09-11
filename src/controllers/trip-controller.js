@@ -40,6 +40,10 @@ export class TripController extends BaseComponent {
     this._currentSort = `event`;
   }
 
+  _onDataChange(oldEntry, newEntry) {
+    console.log(newEntry);
+  }
+
   get _pointsByDay() {
     return groupBy(this._points, (a, b) =>
       formatDate(a.startTime, `YYYY-MM-DD`) === formatDate(b.startTime, `YYYY-MM-DD`));
@@ -56,7 +60,9 @@ export class TripController extends BaseComponent {
 
   get _groupedDayList() {
     const dayItems = this._pointsByDay.map((it) => new DayItem({
-      children: [new EventListController({data: it})],
+      children: [new EventListController({data: it, callbacks: {
+        onDataChange: this._onDataChange.bind(this),
+      }})],
       data: {
         dayCounter: it[0].dayNo,
         dayDate: formatDate(it[0].startTime, `YYYY-MM-DD`),

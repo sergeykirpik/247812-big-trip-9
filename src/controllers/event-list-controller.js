@@ -1,4 +1,4 @@
-import {replaceComponent, KeyCode} from "../utils";
+import {replaceComponent} from "../utils";
 import {EventItem} from "../components/event-item";
 import {EventEditForm} from "../components/event-edit-form";
 import {EventList} from "../components/event-list";
@@ -19,19 +19,20 @@ export class EventListController extends BaseComponent {
     eventItem.on(eventItem.rollupBtn, `click`, () => {
       replaceComponent(eventItem, eventEditForm);
     });
-    eventEditForm.on(eventEditForm.rollupBtn, `click`, () => {
+    eventEditForm.onSubmit((formData) => {
+      console.log(eventData);
+      const entry = {
+        destination: formData.get(`event-destination`),
+        startTime: new Date(formData.get(`event-start-time`)),
+        endTime: new Date(formData.get(`event-end-time`)),
+        price: formData.get(`event-price`),
+        offers: formData.getAll(`event-offer`),
+        isFavorite: formData.get(`event-favorite`),
+      };
+      this._callbacks.onDataChange(eventData, entry);
       replaceComponent(eventEditForm, eventItem);
     });
-    eventEditForm.on(eventEditForm.form, `submit`, (evt) => {
-      evt.preventDefault();
-      replaceComponent(eventEditForm, eventItem);
-    });
-    eventEditForm.on(document, `keydown`, (evt) => {
-      evt.preventDefault();
-      if (evt.keyCode === KeyCode.ESC) {
-        replaceComponent(eventEditForm, eventItem);
-      }
-    });
+    eventEditForm.onDismiss(() => replaceComponent(eventEditForm, eventItem));
 
     return eventItem;
   }

@@ -27,7 +27,7 @@ export const labels = {
   transport: `Transport to`,
   drive: `Drive to`,
   flight: `Flight to`,
-  [`check-in`]: `Check-in`,
+  [`check-in`]: `Check-in in`,
   sightseeing: `Sightseeing in`,
   restaurant: `Restaurant in`,
 };

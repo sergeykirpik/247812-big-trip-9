@@ -1,5 +1,5 @@
-import {transferType, activityType, destinationList, availableOffers} from '../data.js';
-import {capitalize} from '../utils.js';
+import {transferType, activityType, destinationList, availableOffers, labels} from '../data.js';
+import {capitalize, KeyCode} from '../utils.js';
 import flatpickr from 'flatpickr';
 import {BaseComponent} from '../base-component.js';
 
@@ -7,37 +7,64 @@ export class EventEditForm extends BaseComponent {
   constructor(params) {
     super(params);
 
+    this._canClose = 0;
+    this._onDismiss = () => {};
+    this._onSubmit = () => {};
+
     const flatpickrOptions = {
-      altFormat: `d.m.y H:i`,
+      altFormat: `d.m.Y H:i`,
       altInput: true,
       allowInput: true,
       enableTime: true,
+      onOpen: [() => ++this._canClose],
+      onClose: [() => --this._canClose],
     };
 
-    const destination = this.element.querySelector(`#event-destination-1`);
-    this.on(destination, `keydown`, (evt) => evt.stopPropagation());
-
+    const form = this.element.querySelector(`form`);
+    this.on(form, `submit`, (evt) => {
+      evt.preventDefault();
+      this._onSubmit(new FormData(form));
+    });
 
     const startTime = this.element.querySelector(`#event-start-time-1`);
-    this.on(startTime, `keydown`, (evt) => evt.stopPropagation());
-    flatpickr(startTime, Object.assign({defaultDate: this._data._startTime}, flatpickrOptions));
+    flatpickr(startTime, Object.assign({defaultDate: this._data.startTime.valueOf()}, flatpickrOptions));
 
     const endTime = this.element.querySelector(`#event-end-time-1`);
-    this.on(endTime, `keydown`, (evt) => evt.stopPropagation());
-    flatpickr(endTime, Object.assign({defaultDate: this._data._endTime}, flatpickrOptions));
+    flatpickr(endTime, Object.assign({defaultDate: this._data.endTime.valueOf()}, flatpickrOptions));
 
-    const eventPrice = this.element.querySelector(`#event-price-1`);
-    this.on(eventPrice, `keydown`, (evt) => evt.stopPropagation());
+    const eventTypeIcon = form.querySelector(`.event__type-icon`);
+    const eventLabel = form.querySelector(`.event__label`);
 
+    const eventTypeRadios = form.querySelectorAll(`.event__type-input`);
+    eventTypeRadios.forEach((r) => this.on(r, `change`, (evt) => {
+      eventTypeIcon.src = `img/icons/${evt.target.value}.png`;
+      eventLabel.textContent = labels[evt.target.value];
+    }));
+
+    const rollupBtn = this.element.querySelector(`.event__rollup-btn`);
+    this.on(rollupBtn, `click`, () => this.dismiss());
+
+    this.on(document, `keydown`, (evt) => {
+      evt.preventDefault();
+      if (evt.keyCode === KeyCode.ESC) {
+        this.dismiss();
+      }
+    });
 
   }
 
-  get rollupBtn() {
-    return this.element.querySelector(`.event__rollup-btn`);
+  dismiss() {
+    if (this._canClose === 0) {
+      this._onDismiss();
+    }
   }
 
-  get form() {
-    return this.element.querySelector(`form`);
+  onDismiss(handler) {
+    this._onDismiss = handler;
+  }
+
+  onSubmit(handler) {
+    this._onSubmit = handler;
   }
 
   get template() {
@@ -127,7 +154,7 @@ export class EventEditForm extends BaseComponent {
 
             <div class="event__available-offers">
               ${Object.entries(availableOffers).map(([k, v]) => `<div class="event__offer-selector">
-                <input class="event__offer-checkbox  visually-hidden" id="event-offer-${k}-1" type="checkbox" name="event-offer-${k}" ${offers.has(k) ? `checked` : ``}>
+                <input class="event__offer-checkbox  visually-hidden" id="event-offer-${k}-1" type="checkbox" name="event-offer" value="${k}" ${offers.has(k) ? `checked` : ``}>
                 <label class="event__offer-label" for="event-offer-${k}-1">
                   <span class="event__offer-title">${v.description}</span>
                   &plus;
