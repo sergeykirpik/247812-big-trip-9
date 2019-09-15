@@ -9,6 +9,7 @@ export const Position = {
 
 export const KeyCode = {
   ESC: 27,
+  ENTER: 13,
 };
 
 const _attachEventHandlers = (component) => {
@@ -45,6 +46,14 @@ export const unrender = (component) => {
   }
 };
 
+export const rerender = (component, parentNode) => {
+  if (component) {
+    const container = parentNode || component.element.parentNode;
+    unrender(component);
+    render(container, component);
+  }
+};
+
 export const createElement = (template) => {
   const div = document.createElement(`div`);
   div.innerHTML = template;
@@ -78,7 +87,7 @@ export const groupBy = (arr, test) => {
     test = (a, b) => a === b;
   }
   const result = [];
-  arr.forEach(e => {
+  arr.forEach((e) => {
     const g = result[result.length - 1] || [];
     if (g.length > 0 && test(g[g.length - 1], e)) {
       g.push(e);
@@ -87,4 +96,8 @@ export const groupBy = (arr, test) => {
     }
   });
   return result;
+};
+
+export const die = (msg) => {
+  throw new Error(msg);
 };

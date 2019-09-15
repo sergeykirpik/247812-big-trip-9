@@ -15,5 +15,13 @@ module.exports = {
     compress: true,
     watchContentBase: true,
     overlay: true
+  },
+  module: {
+    rules: [
+      {
+        test: /\.css$/i,
+        use: [`style-loader`, `css-loader`],
+      }
+    ]
   }
 };

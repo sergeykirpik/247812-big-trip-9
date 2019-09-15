@@ -2,12 +2,13 @@ import {formatDate} from './utils.js';
 
 const MAX_DATE_INTERVAL = 10; // hours
 const MAX_ROUTE_POINTS = 20;
+const RANDOM_PHOTO_COUNT = 5;
 
 const getRandom = (n) => Math.floor(Math.random() * n);
 const getRandomBool = () => [true, false][getRandom(2)];
-const mSecFromHours = (h) => h * 1000 * 3600;
-const mSecfromDays = (d) => mSecFromHours(24 * d);
-const getRandomDate = () => new Date(Date.now() + getRandom(mSecfromDays(6)) - getRandom(mSecfromDays(3)));
+const hoursToMSec = (h) => h * 1000 * 3600;
+const daysToMSec = (d) => hoursToMSec(24 * d);
+const getRandomDate = () => new Date(Date.now() + getRandom(daysToMSec(6)) - getRandom(daysToMSec(3)));
 const shuffle = (array) => array.sort(() => Math.random() - 0.5);
 const getDuration = (tripEvent) => tripEvent.endTime.valueOf() - tripEvent.startTime.valueOf();
 
@@ -27,14 +28,10 @@ export const labels = {
   transport: `Transport to`,
   drive: `Drive to`,
   flight: `Flight to`,
-  [`check-in`]: `Check-in`,
+  [`check-in`]: `Check-in in`,
   sightseeing: `Sightseeing in`,
   restaurant: `Restaurant in`,
 };
-
-export const destinationList = [
-  `Amsterdam`, `Geneva`, `Chamonix`, `Saint Petersburg`
-];
 
 export const availableOffers = {
   luggage: {
@@ -71,41 +68,56 @@ const lorem = [
   `Nunc fermentum tortor ac porta dapibus. In rutrum ac purus sit amet tempus.`,
 ];
 const getRandomDescription = () => shuffle(lorem.slice()).slice(0, getRandom(2) + 1).join(``);
+
 const getRandomPhoto = () => `http://picsum.photos/300/150?r=${Math.random()}`;
 
-const getTripEvent = () => ({
+const getRandomPhotos = () => new Array(RANDOM_PHOTO_COUNT).fill(``).map(getRandomPhoto);
+
+export const destinationList = [`Amsterdam`, `Geneva`, `Chamonix`, `Saint Petersburg`];
+const destinationData = new Map(destinationList.map((d) => [d, {description: getRandomDescription(), photos: getRandomPhotos()}]));
+
+export class PointData {
+  constructor({startTime, endTime, price, isFavorite, offers, type, destination}) {
+    this.startTime = startTime;
+    this.endTime = endTime;
+    this.price = price;
+    this.isFavorite = isFavorite || false;
+    this.offers = offers;
+    this.type = type;
+    this.destination = destination;
+  }
+
+  get description() {
+    return destinationData.get(this.destination).description;
+  }
+  get photos() {
+    return destinationData.get(this.destination).photos;
+  }
+  get title() {
+    return this.label + ` ` + this.destination;
+  }
+  get label() {
+    return labels[this.type];
+  }
+}
+
+const getTripEvent = () => new PointData({
   startTime: null,
   endTime: null,
   price: getRandom(999) + 20,
   isFavorite: getRandomBool(),
   offers: new Set(shuffle(Object.keys(availableOffers)).slice(0, getRandom(2 + 1))),
-  destDescription: getRandomDescription(),
-  photos: new Array(5).fill(``).map(getRandomPhoto),
   type: transferType[getRandom(transferType.length)],
   destination: destinationList[getRandom(destinationList.length)],
-  get title() {
-    return labels[this.type] + ` ` + this.destination;
-  },
-  get label() {
-    return labels[this.type];
-  },
 });
 
 const getTripEventList = (pointCount) => {
   let startTime = getRandomDate();
-  let dayNo = 0;
-  let dayDate = ``;
   return new Array(pointCount).fill(``).map(() => {
     const it = getTripEvent();
-    const d = formatDate(startTime, `YYYY-MM-DD`);
-    if (d !== dayDate) {
-      dayDate = d;
-      dayNo++;
-    }
-    it.dayNo = dayNo;
-    it.dayDate = dayDate;
+    it.dayDate = () => formatDate(it.startTime, `YYYY-MM-DD`);
     it.startTime = startTime;
-    it.endTime = new Date(it.startTime.valueOf() + getRandom(mSecFromHours(MAX_DATE_INTERVAL)));
+    it.endTime = new Date(it.startTime.valueOf() + getRandom(hoursToMSec(MAX_DATE_INTERVAL)));
     startTime = it.endTime;
     return it;
   });
@@ -119,10 +131,12 @@ export const filterMethods = {
 
 export const menuData = [`table`, `stats`];
 
-export const sortMethods = {
+export const SortType = {
   event: (points) => points,
-  time: (points) => points.slice().sort((a, b) => getDuration(a) - getDuration(b)),
-  price: (points) => points.slice().sort((a, b) => a.price - b.price),
+  time: (points) => points.slice()
+    .sort((a, b) => getDuration(b) - getDuration(a)),
+  price: (points) => points.slice()
+    .sort((a, b) => b.price - a.price),
 };
 
 const getOffersTotal = (te) => Array.from(te.offers).reduce((acc, it) => acc + availableOffers[it].price, 0);
