@@ -32,25 +32,29 @@ const columns = [
 ];
 
 export class TripController extends BaseComponent {
-  constructor(points) {
-    super();
-    this._points = points;
+  constructor({points, onDataChange}) {
+    super({data: points});
     this._sort = null;
-    this._noPoints = new NoPoints({});
+    this._noPoints = new NoPoints();
     this._currentSort = `event`;
+    this._onDataChangeParentCallback = onDataChange;
   }
 
-  _onDataChange(oldEntry, newEntry) {
-    console.log(newEntry);
+  _onDataChange(oldPoint, newPoint) {
+    // console.log(oldPoint, newPoint);
+    const index = this._data.findIndex((it) => it === oldPoint);
+    this._data[index] = newPoint;
+    rerender(this);
+    this._onDataChangeParentCallback();
   }
 
   get _pointsByDay() {
-    return groupBy(this._points, (a, b) =>
+    return groupBy(this._data, (a, b) =>
       formatDate(a.startTime, `YYYY-MM-DD`) === formatDate(b.startTime, `YYYY-MM-DD`));
   }
 
   get _sortedPoints() {
-    return SortType[this._currentSort](this._points);
+    return SortType[this._currentSort](this._data);
   }
 
   get _visibleColumns() {
@@ -59,12 +63,13 @@ export class TripController extends BaseComponent {
   }
 
   get _groupedDayList() {
+    let dayCounter = 1;
     const dayItems = this._pointsByDay.map((it) => new DayItem({
       children: [new EventListController({data: it, callbacks: {
         onDataChange: this._onDataChange.bind(this),
       }})],
       data: {
-        dayCounter: it[0].dayNo,
+        dayCounter: dayCounter++,
         dayDate: formatDate(it[0].startTime, `YYYY-MM-DD`),
       }
     }));

@@ -2,6 +2,7 @@ import {formatDate} from './utils.js';
 
 const MAX_DATE_INTERVAL = 10; // hours
 const MAX_ROUTE_POINTS = 20;
+const RANDOM_PHOTO_COUNT = 5;
 
 const getRandom = (n) => Math.floor(Math.random() * n);
 const getRandomBool = () => [true, false][getRandom(2)];
@@ -31,10 +32,6 @@ export const labels = {
   sightseeing: `Sightseeing in`,
   restaurant: `Restaurant in`,
 };
-
-export const destinationList = [
-  `Amsterdam`, `Geneva`, `Chamonix`, `Saint Petersburg`
-];
 
 export const availableOffers = {
   luggage: {
@@ -71,39 +68,54 @@ const lorem = [
   `Nunc fermentum tortor ac porta dapibus. In rutrum ac purus sit amet tempus.`,
 ];
 const getRandomDescription = () => shuffle(lorem.slice()).slice(0, getRandom(2) + 1).join(``);
+
 const getRandomPhoto = () => `http://picsum.photos/300/150?r=${Math.random()}`;
 
-const getTripEvent = () => ({
+const getRandomPhotos = () => new Array(RANDOM_PHOTO_COUNT).fill(``).map(getRandomPhoto);
+
+export const destinationList = [`Amsterdam`, `Geneva`, `Chamonix`, `Saint Petersburg`];
+const destinationData = new Map(destinationList.map((d) => [d, {description: getRandomDescription(), photos: getRandomPhotos()}]));
+
+export class PointData {
+  constructor({startTime, endTime, price, isFavorite, offers, type, destination}) {
+    this.startTime = startTime;
+    this.endTime = endTime;
+    this.price = price;
+    this.isFavorite = isFavorite || false;
+    this.offers = offers;
+    this.type = type;
+    this.destination = destination;
+  }
+
+  get description() {
+    return destinationData.get(this.destination).description;
+  }
+  get photos() {
+    return destinationData.get(this.destination).photos;
+  }
+  get title() {
+    return this.label + ` ` + this.destination;
+  }
+  get label() {
+    return labels[this.type];
+  }
+}
+
+const getTripEvent = () => new PointData({
   startTime: null,
   endTime: null,
   price: getRandom(999) + 20,
   isFavorite: getRandomBool(),
   offers: new Set(shuffle(Object.keys(availableOffers)).slice(0, getRandom(2 + 1))),
-  destDescription: getRandomDescription(),
-  photos: new Array(5).fill(``).map(getRandomPhoto),
   type: transferType[getRandom(transferType.length)],
   destination: destinationList[getRandom(destinationList.length)],
-  get title() {
-    return labels[this.type] + ` ` + this.destination;
-  },
-  get label() {
-    return labels[this.type];
-  },
 });
 
 const getTripEventList = (pointCount) => {
   let startTime = getRandomDate();
-  let dayNo = 0;
-  let dayDate = ``;
   return new Array(pointCount).fill(``).map(() => {
     const it = getTripEvent();
-    const d = formatDate(startTime, `YYYY-MM-DD`);
-    if (d !== dayDate) {
-      dayDate = d;
-      dayNo++;
-    }
-    it.dayNo = dayNo;
-    it.dayDate = dayDate;
+    it.dayDate = () => formatDate(it.startTime, `YYYY-MM-DD`);
     it.startTime = startTime;
     it.endTime = new Date(it.startTime.valueOf() + getRandom(hoursToMSec(MAX_DATE_INTERVAL)));
     startTime = it.endTime;

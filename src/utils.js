@@ -9,6 +9,7 @@ export const Position = {
 
 export const KeyCode = {
   ESC: 27,
+  ENTER: 13,
 };
 
 const _attachEventHandlers = (component) => {
@@ -45,9 +46,9 @@ export const unrender = (component) => {
   }
 };
 
-export const rerender = (component) => {
+export const rerender = (component, parentNode) => {
   if (component) {
-    const container = component.element.parentNode;
+    const container = parentNode || component.element.parentNode;
     unrender(component);
     render(container, component);
   }

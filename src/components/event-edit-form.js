@@ -7,56 +7,86 @@ export class EventEditForm extends BaseComponent {
   constructor(params) {
     super(params);
 
-    this._canClose = 0;
     this._onDismiss = () => {};
     this._onSubmit = () => {};
 
     const flatpickrOptions = {
-      altFormat: `d.m.Y H:i`,
       altInput: true,
-      allowInput: true,
+      altFormat: `d.m.Y H:i`,
       enableTime: true,
-      onOpen: [() => ++this._canClose],
-      onClose: [() => --this._canClose],
     };
 
     const form = this.element.querySelector(`form`);
+    this.on(form, `keydown`, (evt) => {
+      if (evt.keyCode === KeyCode.ENTER) {
+        evt.preventDefault();
+      }
+    });
     this.on(form, `submit`, (evt) => {
       evt.preventDefault();
       this._onSubmit(new FormData(form));
     });
 
+    const flatpickrOnOpen = (element) => {
+      return () => {
+        const handler = this.on(document, `keydown`, (evt) => {
+          if (evt.keyCode === KeyCode.ESC) {
+            evt.stopPropagation();
+            element._flatpickr.close();
+            this.off(handler);
+          }
+        }, true);
+        this.attachEventHandlers();
+      };
+    };
+
     const startTime = this.element.querySelector(`#event-start-time-1`);
-    flatpickr(startTime, Object.assign({defaultDate: this._data.startTime.valueOf()}, flatpickrOptions));
+    flatpickr(startTime, Object.assign({
+      defaultDate: this._data.startTime,
+      onOpen: flatpickrOnOpen(startTime),
+    }, flatpickrOptions));
 
     const endTime = this.element.querySelector(`#event-end-time-1`);
-    flatpickr(endTime, Object.assign({defaultDate: this._data.endTime.valueOf()}, flatpickrOptions));
+    flatpickr(endTime, Object.assign({
+      defaultDate: this._data.endTime,
+      onOpen: flatpickrOnOpen(endTime),
+    }, flatpickrOptions));
 
     const eventTypeIcon = form.querySelector(`.event__type-icon`);
+    const eventTypeToggle = form.querySelector(`.event__type-toggle`);
+    this.on(eventTypeToggle, `click`, () => {
+      const handler = this.on(document, `keydown`, (evt) => {
+        if (evt.keyCode === KeyCode.ESC) {
+          evt.stopPropagation();
+          eventTypeToggle.checked = false;
+          this.off(handler);
+        }
+      }, true);
+      this.attachEventHandlers();
+    });
     const eventLabel = form.querySelector(`.event__label`);
+    const eventInput = form.querySelector(`.event__input`);
 
     const eventTypeRadios = form.querySelectorAll(`.event__type-input`);
     eventTypeRadios.forEach((r) => this.on(r, `change`, (evt) => {
       eventTypeIcon.src = `img/icons/${evt.target.value}.png`;
       eventLabel.textContent = labels[evt.target.value];
+      eventTypeToggle.checked = false;
+      eventInput.value = ``;
     }));
 
     const rollupBtn = this.element.querySelector(`.event__rollup-btn`);
     this.on(rollupBtn, `click`, () => this.dismiss());
 
     this.on(document, `keydown`, (evt) => {
-      evt.preventDefault();
       if (evt.keyCode === KeyCode.ESC) {
         this.dismiss();
       }
-    });
-
+    }, false);
   }
 
   dismiss() {
-    if (this._canClose === 0) {
-      this._onDismiss();
-    }
+    this._onDismiss();
   }
 
   onDismiss(handler) {
@@ -68,7 +98,7 @@ export class EventEditForm extends BaseComponent {
   }
 
   get template() {
-    const {type, label, destination, startTime, endTime, price, isFavorite, offers, destDescription, photos} = this._data;
+    const {type, label, destination, startTime, endTime, price, isFavorite, offers, description, photos} = this._data;
     return `
     <li class="trip-events__item">
       <form class="event  event--edit" action="#" method="post">
@@ -85,7 +115,7 @@ export class EventEditForm extends BaseComponent {
                 <legend class="visually-hidden">Transfer</legend>
 
                 ${transferType.map((t) => `<div class="event__type-item">
-                  <input id="event-type-${t}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${t}">
+                  <input ${t === type ? `checked` : ``} id="event-type-${t}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${t}">
                   <label class="event__type-label  event__type-label--${t}" for="event-type-${t}-1">${capitalize(t)}</label>
                 </div>`).join(``)}
               </fieldset>
@@ -94,7 +124,7 @@ export class EventEditForm extends BaseComponent {
                 <legend class="visually-hidden">Activity</legend>
 
                 ${activityType.map((t) => `<div class="event__type-item">
-                  <input id="event-type-${t}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${t}">
+                  <input ${t === type ? `checked` : ``} id="event-type-${t}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${t}">
                   <label class="event__type-label  event__type-label--${t}" for="event-type-${t}-1">${capitalize(t)}</label>
                 </div>`).join(``)}
               </fieldset>
@@ -166,7 +196,7 @@ export class EventEditForm extends BaseComponent {
 
           <section class="event__section  event__section--destination">
             <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-            <p class="event__destination-description">${destDescription}</p>
+            <p class="event__destination-description">${description}</p>
 
             <div class="event__photos-container">
               <div class="event__photos-tape">

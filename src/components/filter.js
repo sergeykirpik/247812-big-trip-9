@@ -4,11 +4,11 @@ import {BaseComponent} from '../base-component.js';
 export class Filter extends BaseComponent {
 
   _checked(filter) {
-    return (filter === this._data._currentFilter) ? `checked` : ``;
+    return (filter === this._data.currentFilter) ? `checked` : ``;
   }
 
   get template() {
-    const filterMethods = this._data;
+    const {filterMethods} = this._data;
     return `
     <div>
       <h2 class="visually-hidden">Filter events</h2>
