@@ -1,6 +1,6 @@
-import '../node_modules/flatpickr/dist/flatpickr.min.css';
-import {PageController} from './controllers/page-controller';
-import {route} from './data';
+import "../node_modules/flatpickr/dist/flatpickr.min.css";
+import {PageController} from "./controllers/page-controller";
+import {route} from "./data";
 
 const pageController = new PageController({
   tripHeaderContainer: document.querySelector(`.trip-main`),

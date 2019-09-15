@@ -1,4 +1,4 @@
-import {formatDate} from './utils.js';
+import moment from "moment";
 
 const MAX_DATE_INTERVAL = 10; // hours
 const MAX_ROUTE_POINTS = 20;
@@ -115,7 +115,7 @@ const getTripEventList = (pointCount) => {
   let startTime = getRandomDate();
   return new Array(pointCount).fill(``).map(() => {
     const it = getTripEvent();
-    it.dayDate = () => formatDate(it.startTime, `YYYY-MM-DD`);
+    it.dayDate = () => moment(it.startTime).format(`YYYY-MM-DD`);
     it.startTime = startTime;
     it.endTime = new Date(it.startTime.valueOf() + getRandom(hoursToMSec(MAX_DATE_INTERVAL)));
     startTime = it.endTime;
@@ -163,8 +163,8 @@ export const route = {
       return ``;
     }
     return [
-      formatDate(this.points[0].startTime, `MMM D`),
-      formatDate(this.points[this.points.length - 1].endTime, `MMM D`),
+      moment(this.points[0].startTime).format(`MMM D`),
+      moment(this.points[this.points.length - 1].endTime).format(`MMM D`),
     ].join(` &mdash; `);
   },
 };
