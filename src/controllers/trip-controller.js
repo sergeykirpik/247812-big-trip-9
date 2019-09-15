@@ -1,5 +1,5 @@
 import {TripEventsSection} from "../components/trip-events-sec";
-import {formatDate, groupBy, rerender} from "../utils";
+import {groupBy, rerender} from "../utils";
 import {SortType} from "../data";
 import {DayList} from "../components/day-list";
 import {NoPoints} from "../components/no-points";
@@ -7,6 +7,7 @@ import {DayListHeader} from "../components/day-list-header";
 import {DayItem} from "../components/day-item";
 import {EventListController} from "./event-list-controller";
 import {BaseComponent} from "../base-component";
+import moment from "moment";
 
 const columns = [
   {
@@ -50,7 +51,7 @@ export class TripController extends BaseComponent {
 
   get _pointsByDay() {
     return groupBy(this._data, (a, b) =>
-      formatDate(a.startTime, `YYYY-MM-DD`) === formatDate(b.startTime, `YYYY-MM-DD`));
+      moment(a.startTime).format(`YYYY-MM-DD`) === moment(b.startTime).format(`YYYY-MM-DD`));
   }
 
   get _sortedPoints() {
@@ -70,7 +71,7 @@ export class TripController extends BaseComponent {
       }})],
       data: {
         dayCounter: dayCounter++,
-        dayDate: formatDate(it[0].startTime, `YYYY-MM-DD`),
+        dayDate: moment(it[0].startTime).format(`YYYY-MM-DD`),
       }
     }));
     return new DayList({children: dayItems});

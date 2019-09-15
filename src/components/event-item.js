@@ -1,8 +1,9 @@
-import {availableOffers} from '../data.js';
-import {BaseComponent} from '../base-component.js';
+import {availableOffers} from "../data.js";
+import {BaseComponent} from "../base-component.js";
+import moment from "moment";
 
-const getDateTime = (date) => date.toISOString().slice(0, 16);
-const getTime = (date) => date.toISOString().slice(11, 16);
+const getDateTime = (date) => moment(date).format();
+const getTime = (date) => moment(date).format(`HH:MM`);
 
 
 export class EventItem extends BaseComponent {
@@ -13,10 +14,8 @@ export class EventItem extends BaseComponent {
 
   get _duration() {
     const {startTime, endTime} = this._data;
-    const dur = (endTime.valueOf() - startTime.valueOf()) / 1000 / 60;
-    const hours = Math.floor(dur / 60);
-    const minutes = Math.floor(dur % 60);
-    return `${hours}H ${minutes}M`;
+    const d = moment.duration(moment(endTime).diff(moment(startTime)));
+    return `${d.days()}D ${d.hours()}H ${d.minutes()}M`;
   }
 
   get template() {

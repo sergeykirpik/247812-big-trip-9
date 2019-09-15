@@ -1,5 +1,5 @@
-import {formatDate} from '../utils.js';
-import {BaseComponent} from '../base-component.js';
+import {BaseComponent} from "../base-component.js";
+import moment from "moment";
 
 export class DayItem extends BaseComponent {
   get template() {
@@ -9,7 +9,7 @@ export class DayItem extends BaseComponent {
       <div class="day__info">
         ${!dayCounter ? `` : `
         <span class="day__counter">${dayCounter}</span>
-        <time class="day__date" datetime="${dayDate}">${formatDate(new Date(dayDate), `MMM D`)}</time>`}
+        <time class="day__date" datetime="${dayDate}">${moment(dayDate).format(`MMM D`)}</time>`}
       </div>
       <!-- EventList -->
 
