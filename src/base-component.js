@@ -25,6 +25,14 @@ export class BaseComponent extends EventManager {
     return this._element;
   }
 
+  show() {
+    this.element.classList.remove(`visually-hidden`);
+  }
+
+  hide() {
+    this.element.classList.add(`visually-hidden`);
+  }
+
   get template() {
     return `<div></div>`;
   }

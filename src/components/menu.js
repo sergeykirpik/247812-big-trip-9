@@ -2,6 +2,12 @@ import {capitalize} from '../utils.js';
 import {BaseComponent} from '../base-component.js';
 
 export class Menu extends BaseComponent {
+  constructor(params) {
+    super(params);
+    this.on(this.element, `click`, (evt) => {
+      console.log(evt.target.tagName);
+    });
+  }
   get template() {
     const {menuData, activeItem} = this._data;
     return `
