@@ -29,7 +29,7 @@ export class PageController {
       table: this._tripController,
       stats: new StatisticsSection()
     };
-    this._activePage = `table`;
+    this._activePage = `stats`;
   }
 
   _addNewPoint() {
