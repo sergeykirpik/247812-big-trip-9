@@ -6,7 +6,7 @@ export class BaseComponent extends EventManager {
     super();
     params = params || {};
     this._element = null;
-    this._children = params.children || [];
+    this._children = (params.children || []).filter((it) => it !== null);
     this._data = params.data || {};
     this._callbacks = params.callbacks || {};
     this._ownedComponents = [];
@@ -23,6 +23,14 @@ export class BaseComponent extends EventManager {
       this._children.forEach((component) => render(this._element, component));
     }
     return this._element;
+  }
+
+  show() {
+    this.element.classList.remove(`visually-hidden`);
+  }
+
+  hide() {
+    this.element.classList.add(`visually-hidden`);
   }
 
   get template() {
