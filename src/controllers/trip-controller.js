@@ -1,6 +1,6 @@
 import {TripEventsSection} from "../components/trip-events-sec";
 import {groupBy, rerender} from "../utils";
-import {SortType} from "../data";
+import {SortType, PointData} from "../data";
 import {DayList} from "../components/day-list";
 import {NoPoints} from "../components/no-points";
 import {DayListHeader} from "../components/day-list-header";
@@ -41,11 +41,12 @@ export class TripController extends BaseComponent {
     this._currentSort = `event`;
     this._onDataChangeParentCallback = onDataChange;
     this._isInAddingMode = false;
+
+    this._editForm = null;
   }
 
   _onDataChange(oldPoint, newPoint) {
-    // console.log(oldPoint, newPoint);
-    const index = this._data.findIndex((it) => it === oldPoint);
+    let index = this._data.findIndex((it) => it === oldPoint);
     if (newPoint === null) {
       this._data.splice(index, 1);
     }
@@ -105,11 +106,7 @@ export class TripController extends BaseComponent {
     if (this._element) {
       return this._element;
     }
-    let editForm = null;
-    if (this._isInAddingMode) {
-      editForm = new PointController({isInEditMode: true});
-    }
-    let children = [editForm, this._noPoints];
+    let children = [this._editForm, this._noPoints];
     if (this._sortedPoints.length > 0) {
       this._sort = new DayListHeader({
         data: {
@@ -120,7 +117,7 @@ export class TripController extends BaseComponent {
           onSort: this.onSort.bind(this),
         }
       });
-      children = [this._sort, editForm, this._dayList];
+      children = [this._sort, this._editForm, this._dayList];
     }
     this._element = new TripEventsSection({children}).element;
     return this._element;
@@ -132,7 +129,23 @@ export class TripController extends BaseComponent {
   }
 
   addNewPoint() {
-    this._isInAddingMode = true;
+    if (this._editForm) {
+      return;
+    }
+    this._editForm = new PointController({
+      data: new PointData({
+        startTime: new Date(),
+        endTime: new Date(),
+        isNew: true,
+      }),
+      callbacks: {
+        onDataChange: (oldPoint, newPoint) => {
+          this._editForm = null;
+          this._onDataChange(oldPoint, newPoint);
+        },
+      },
+      isInEditMode: true
+    });
     rerender(this);
   }
 

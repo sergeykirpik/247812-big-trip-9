@@ -45,7 +45,7 @@ export class PointController extends BaseComponent {
         type: formData.get(`event-type`),
       });
       this._setNormalMode();
-      this._callbacks.onDataChange(this._data, entry);
+      this._callbacks.onDataChange(this._data.isNew ? null : this._data, entry);
     });
     eventEditForm.onDelete(() => {
       this._callbacks.onDataChange(this._data, null);

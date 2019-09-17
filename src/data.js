@@ -77,21 +77,22 @@ export const destinationList = [`Amsterdam`, `Geneva`, `Chamonix`, `Saint Peters
 const destinationData = new Map(destinationList.map((d) => [d, {description: getRandomDescription(), photos: getRandomPhotos()}]));
 
 export class PointData {
-  constructor({startTime, endTime, price, isFavorite, offers, type, destination}) {
+  constructor({startTime, endTime, price, isFavorite, offers, type, destination, isNew}) {
     this.startTime = startTime;
     this.endTime = endTime;
     this.price = price;
     this.isFavorite = isFavorite || false;
-    this.offers = offers;
-    this.type = type;
+    this.offers = offers || new Set();
+    this.type = type || `taxi`;
     this.destination = destination;
+    this.isNew = isNew || false;
   }
 
   get description() {
-    return destinationData.get(this.destination).description;
+    return (destinationData.get(this.destination) || {}).description;
   }
   get photos() {
-    return destinationData.get(this.destination).photos;
+    return (destinationData.get(this.destination) || {}).photos || [];
   }
   get title() {
     return this.label + ` ` + this.destination;

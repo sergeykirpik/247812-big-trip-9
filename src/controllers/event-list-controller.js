@@ -1,6 +1,7 @@
 import {EventList} from "../components/event-list";
 import {BaseComponent} from "../base-component";
 import {PointController} from "./point-controller";
+import {EventSlot} from "../components/event-slot";
 
 export class EventListController extends BaseComponent {
   constructor(params) {
@@ -9,7 +10,7 @@ export class EventListController extends BaseComponent {
       data: it, callbacks: {...this._callbacks, onEdit: (item) => this._onEdit(item)}
     }));
     this._element = new EventList({
-      children: this._items
+      children: this._items.map((it) => new EventSlot({children: [it]}))
     }).element;
   }
 
