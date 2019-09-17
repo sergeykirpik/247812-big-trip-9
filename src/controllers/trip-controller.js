@@ -8,6 +8,7 @@ import {DayItem} from "../components/day-item";
 import {EventListController} from "./event-list-controller";
 import {BaseComponent} from "../base-component";
 import moment from "moment";
+import {PointController} from "./point-controller";
 
 const columns = [
   {
@@ -39,12 +40,22 @@ export class TripController extends BaseComponent {
     this._noPoints = new NoPoints();
     this._currentSort = `event`;
     this._onDataChangeParentCallback = onDataChange;
+    this._isInAddingMode = false;
   }
 
   _onDataChange(oldPoint, newPoint) {
     // console.log(oldPoint, newPoint);
     const index = this._data.findIndex((it) => it === oldPoint);
-    this._data[index] = newPoint;
+    if (newPoint === null) {
+      this._data.splice(index, 1);
+    }
+    if (oldPoint === null) {
+      this._data.unshift(null);
+      index = 0;
+    }
+    if (newPoint !== null) {
+      this._data[index] = newPoint;
+    }
     rerender(this);
     this._onDataChangeParentCallback();
   }
@@ -79,7 +90,9 @@ export class TripController extends BaseComponent {
 
   get _sortedDayList() {
     const dayItem = new DayItem({
-      children: [new EventListController({data: this._sortedPoints})]
+      children: [new EventListController({data: this._sortedPoints, callbacks: {
+        onDataChange: this._onDataChange.bind(this),
+      }})],
     });
     return new DayList({children: [dayItem]});
   }
@@ -92,6 +105,11 @@ export class TripController extends BaseComponent {
     if (this._element) {
       return this._element;
     }
+    let editForm = null;
+    if (this._isInAddingMode) {
+      editForm = new PointController({isInEditMode: true});
+    }
+    let children = [editForm, this._noPoints];
     if (this._sortedPoints.length > 0) {
       this._sort = new DayListHeader({
         data: {
@@ -102,21 +120,19 @@ export class TripController extends BaseComponent {
           onSort: this.onSort.bind(this),
         }
       });
-      this._element = new TripEventsSection({
-        children: [this._sort, this._dayList]
-      }).element;
-
-    } else {
-      this._element = new TripEventsSection({
-        children: [this._noPoints]
-      }).element;
+      children = [this._sort, editForm, this._dayList];
     }
-
+    this._element = new TripEventsSection({children}).element;
     return this._element;
   }
 
   onSort(method) {
     this._currentSort = method;
+    rerender(this);
+  }
+
+  addNewPoint() {
+    this._isInAddingMode = true;
     rerender(this);
   }
 

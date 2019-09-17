@@ -9,6 +9,7 @@ export class EventEditForm extends BaseComponent {
 
     this._onDismiss = () => {};
     this._onSubmit = () => {};
+    this._onDelete = () => {};
 
     const flatpickrOptions = {
       altInput: true,
@@ -25,6 +26,10 @@ export class EventEditForm extends BaseComponent {
     this.on(form, `submit`, (evt) => {
       evt.preventDefault();
       this._onSubmit(new FormData(form));
+    });
+    this.on(form, `reset`, (evt) => {
+      evt.preventDefault();
+      this._onDelete();
     });
 
     const flatpickrOnOpen = (element) => {
@@ -75,7 +80,7 @@ export class EventEditForm extends BaseComponent {
       eventInput.value = ``;
     }));
 
-    const rollupBtn = this.element.querySelector(`.event__rollup-btn`);
+    const rollupBtn = form.querySelector(`.event__rollup-btn`);
     this.on(rollupBtn, `click`, () => this.dismiss());
 
     this.on(document, `keydown`, (evt) => {
@@ -86,6 +91,7 @@ export class EventEditForm extends BaseComponent {
   }
 
   dismiss() {
+    console.log(`dismiss`);
     this._onDismiss();
   }
 
@@ -97,8 +103,16 @@ export class EventEditForm extends BaseComponent {
     this._onSubmit = handler;
   }
 
+  onDelete(handler) {
+    this._onDelete = handler;
+  }
+
   get template() {
-    const {type, label, destination, startTime, endTime, price, isFavorite, offers, description, photos} = this._data;
+    let {type, label, destination, startTime, endTime, price, isFavorite, offers, description, photos} = this._data;
+    startTime = startTime || new Date();
+    endTime = endTime || new Date();
+    offers = offers || new Set();
+    photos = photos || [];
     return `
     <li class="trip-events__item">
       <form class="event  event--edit" action="#" method="post">

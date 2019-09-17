@@ -38,11 +38,13 @@ export const render = (container, component, place = Position.BEFORE_END) => {
   }
 };
 
-export const unrender = (component) => {
+export const unrender = (component, needRemoveElement = true) => {
   if (component) {
     _detachEventHandlers(component);
     component.element.remove();
-    component.removeElement();
+    if (needRemoveElement) {
+      component.removeElement();
+    }
   }
 };
 

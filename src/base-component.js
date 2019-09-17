@@ -6,7 +6,7 @@ export class BaseComponent extends EventManager {
     super();
     params = params || {};
     this._element = null;
-    this._children = params.children || [];
+    this._children = (params.children || []).filter((it) => it !== null);
     this._data = params.data || {};
     this._callbacks = params.callbacks || {};
     this._ownedComponents = [];

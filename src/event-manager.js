@@ -22,14 +22,14 @@ export class EventManager {
   }
 
   attachEventHandlers() {
-    console.log(`attach: ${this.constructor.name}`);
+    // console.log(`attach: ${this.constructor.name}`);
     this._events.forEach(({element, eventType, handler, capture}) => {
       element.addEventListener(eventType, handler, capture);
     });
   }
 
   detachEventHandlers() {
-    console.log(`detach: ${this.constructor.name}`);
+    // console.log(`detach: ${this.constructor.name}`);
     this._events.forEach(({element, eventType, handler, capture}) => {
       element.removeEventListener(eventType, handler, capture);
     });

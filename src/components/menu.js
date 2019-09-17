@@ -5,7 +5,9 @@ export class Menu extends BaseComponent {
   constructor(params) {
     super(params);
     this.on(this.element, `click`, (evt) => {
-      console.log(evt.target.tagName);
+      if (evt.target.tagName === `A`) {
+        this._callbacks.onAction(evt.target.hash.slice(1));
+      }
     });
   }
   get template() {
