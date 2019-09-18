@@ -12,6 +12,10 @@ export class BaseComponent extends EventManager {
     this._ownedComponents = [];
   }
 
+  _afterShow() {
+
+  }
+
   addOwnedComponent(component) {
     this._ownedComponents.push(component);
     return component;
@@ -25,8 +29,17 @@ export class BaseComponent extends EventManager {
     return this._element;
   }
 
+  setVisibility(isVisible) {
+    if (isVisible) {
+      this.show();
+    } else {
+      this.hide();
+    }
+  }
+
   show() {
     this.element.classList.remove(`visually-hidden`);
+    this._afterShow();
   }
 
   hide() {

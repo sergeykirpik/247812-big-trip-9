@@ -2,6 +2,14 @@ import {capitalize} from '../utils.js';
 import {BaseComponent} from '../base-component.js';
 
 export class Filter extends BaseComponent {
+  constructor(params) {
+    super(params);
+    this.on(this.element, `click`, (evt) => {
+      if (evt.target.tagName === `INPUT`) {
+        this._callbacks.onFilter(evt.target.value);
+      }
+    });
+  }
 
   _checked(filter) {
     return (filter === this._data.currentFilter) ? `checked` : ``;

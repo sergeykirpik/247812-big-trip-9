@@ -87,7 +87,9 @@ export class PointData {
     this.destination = destination;
     this.isNew = isNew || false;
   }
-
+  get total() {
+    return getOffersTotal(this) + this.price;
+  }
   get description() {
     return (destinationData.get(this.destination) || {}).description;
   }
@@ -124,10 +126,10 @@ const getTripEventList = (pointCount) => {
   });
 };
 
-export const filterMethods = {
-  everything: () => route.points,
-  future: () => route.points.filter((it) => it.startTime > new Date()),
-  past: () => route.points.filter((it) => it.endTime < new Date()),
+export const FilterType = {
+  everything: (data) => data,
+  future: (data) => data.filter((it) => it.startTime > new Date()),
+  past: (data) => data.filter((it) => it.endTime < new Date()),
 };
 
 export const menuData = [`table`, `stats`];

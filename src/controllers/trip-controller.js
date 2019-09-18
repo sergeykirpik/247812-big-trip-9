@@ -1,6 +1,6 @@
 import {TripEventsSection} from "../components/trip-events-sec";
 import {groupBy, rerender} from "../utils";
-import {SortType, PointData} from "../data";
+import {SortType, PointData, FilterType} from "../data";
 import {DayList} from "../components/day-list";
 import {NoPoints} from "../components/no-points";
 import {DayListHeader} from "../components/day-list-header";
@@ -39,6 +39,7 @@ export class TripController extends BaseComponent {
     this._sort = null;
     this._noPoints = new NoPoints();
     this._currentSort = `event`;
+    this._currentFilter = `everything`;
     this._onDataChangeParentCallback = onDataChange;
     this._isInAddingMode = false;
 
@@ -61,13 +62,17 @@ export class TripController extends BaseComponent {
     this._onDataChangeParentCallback();
   }
 
+  get _filteredPoints() {
+    return FilterType[this._currentFilter](this._data);
+  }
+
   get _pointsByDay() {
-    return groupBy(this._data, (a, b) =>
+    return groupBy(this._filteredPoints, (a, b) =>
       moment(a.startTime).format(`YYYY-MM-DD`) === moment(b.startTime).format(`YYYY-MM-DD`));
   }
 
   get _sortedPoints() {
-    return SortType[this._currentSort](this._data);
+    return SortType[this._currentSort](this._filteredPoints);
   }
 
   get _visibleColumns() {
@@ -149,4 +154,8 @@ export class TripController extends BaseComponent {
     rerender(this);
   }
 
+  applyFilter(filter) {
+    this._currentFilter = filter;
+    rerender(this);
+  }
 }
