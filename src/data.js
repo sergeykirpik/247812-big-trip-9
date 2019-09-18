@@ -87,7 +87,9 @@ export class PointData {
     this.destination = destination;
     this.isNew = isNew || false;
   }
-
+  get total() {
+    return getOffersTotal(this) + this.price;
+  }
   get description() {
     return (destinationData.get(this.destination) || {}).description;
   }

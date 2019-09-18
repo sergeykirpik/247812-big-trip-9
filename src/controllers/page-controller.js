@@ -27,7 +27,7 @@ export class PageController {
 
     this._pages = {
       table: this._tripController,
-      stats: new StatisticsSection()
+      stats: new StatisticsSection({data: this._route.points}),
     };
     this._activePage = `stats`;
   }

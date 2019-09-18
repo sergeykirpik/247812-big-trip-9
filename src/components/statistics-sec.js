@@ -2,16 +2,102 @@ import {BaseComponent} from "../base-component";
 import Chart from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 
+const CHART_WIDTH = 900;
+const CHART_BAR_HEIGHT = 30;
+
+const rnd = (max) => Math.floor(Math.random() * max);
+
+const getRandomColor = () => `rgba(${rnd(128) + 128}, ${rnd(128) + 128}, ${rnd(128) + 128}, 0.5)`;
+
 export class StatisticsSection extends BaseComponent {
   get element() {
     if (this._element) {
       return this._element;
     }
+    debugger;
     this._element = super.element;
-    this._drawMoneyChart(this._element.querySelector(`.statistics__chart--money`).getContext(`2d`));
+    this._drawChart({
+      ctx: this._element.querySelector(`.statistics__chart--money`).getContext(`2d`),
+      title: `MONEY`,
+      labels: [`✈️ FLY`, `🏨 STAY`, `🚗 DRIVE`, `🏛 LOOK`, `🍕 EAT`, `🚕 RIDE`],
+      data: [400, 300, 200, 160, 150, 100],
+      formatter: (value) => `€ ${value}`,
+    });
+    this._drawChart({
+      ctx: this._element.querySelector(`.statistics__chart--transport`).getContext(`2d`),
+      title: `TRANSPORT`,
+      labels: [`🚗 DRIVE`, `🚕 RIDE`, `✈️ FLY`, `🛳 SAIL`],
+      data: [4, 3, 2, 1],
+      formatter: (value) => `${value}x`,
+    });
+    this._drawChart({
+      ctx: this._element.querySelector(`.statistics__chart--time`).getContext(`2d`),
+      title: `TIME SPENT`,
+      labels: [`🛳 HOTEL`, `🚕 TO AIRPORT`, `🚗 TO GENEVA`, `🚕 TO CHAMONIX`],
+      data: [72, 1, 3, 2],
+      formatter: (value) => `${value}H`,
+    });
 
     return this._element;
   }
+
+  _drawChart({ctx, title, labels, data, formatter}) {
+    const chart = new Chart(ctx, {
+      type: `horizontalBar`,
+      data: {
+        labels,
+        datasets: [{
+          data,
+          borderColor: `rgba(0, 0, 0, 0.25)`,
+          backgroundColor: new Array(5).fill(``).map(() => getRandomColor()),
+          borderWidth: 1,
+        }],
+      },
+      options: {
+        maintainAspectRatio: false,
+        plugins: {
+          datalabels: {
+            align: `start`,
+            anchor: `end`,
+            font: {
+              style: `bold`,
+            },
+            formatter,
+          }
+        },
+        legend: {
+          display: false,
+        },
+        scales: {
+          xAxes: [{
+            minBarLength: 40,
+            ticks: {
+              beginAtZero: true,
+            },
+            display: false,
+          }],
+          yAxes: [{
+            barPercentage: 1.0,
+            scaleLabel: {
+              display: true,
+              fontSize: 18,
+              fontStyle: `bold`,
+              labelString: title,
+            },
+            ticks: {
+              fontStyle: `bold`,
+            },
+            gridLines: {
+              display: false,
+            }
+          }],
+        }
+      }
+    });
+    chart.canvas.parentNode.style.width = `${CHART_WIDTH}px`;
+    chart.canvas.parentNode.style.height = `${CHART_BAR_HEIGHT * labels.length}px`;
+  }
+
   get template() {
     return `
     <section class="statistics">
@@ -30,50 +116,5 @@ export class StatisticsSection extends BaseComponent {
       </div>
     </section>`.trim();
   }
-
-  _drawMoneyChart(ctx) {
-    let chart = new Chart(ctx, {
-      type: 'horizontalBar',
-      data: {
-        datasets: [{
-          data: [10, 20, 30, 40, 50, 60]
-        }],
-        labels: ['January', 'February', 'March', 'April', 'May', 'June']
-      },
-      options: {
-        plugins: {
-          datalabels: {
-            //color: `#36A2EB`
-            align: `start`,
-            anchor: `end`,
-            font: {
-              style: `bold`,
-            },
-            formatter: (value, context) => `€ ${value}`
-          }
-        },
-        legend: {
-          display: false,
-        },
-        scales: {
-          xAxes: [{
-            ticks: {
-              min: 0,
-            }
-          }],
-          yAxes: [{
-            minBarLength: 100,
-            type: `category`,
-            labels: [`FLY`, `STAY`, `DRIVE`, `LOOK`, `EAT`, `RIDE`],
-            scaleLabel: {
-              display: true,
-              labelString: `MONEY`,
-              fontSize: 18,
-              fontStyle: `bold`,
-            },
-          }]
-        }
-      }
-    });
-  }
 }
+
