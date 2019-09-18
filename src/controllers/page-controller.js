@@ -4,10 +4,10 @@ import {TripControls} from "../components/trip-controls";
 import {Menu} from "../components/menu";
 import {Filter} from "../components/filter";
 
-import {menuData, filterMethods} from "../data";
+import {menuData, FilterType} from "../data";
 import {render, unrender} from "../utils";
 import {TripController} from "./trip-controller";
-import {StatisticsSection} from "../components/statistics-sec";
+import {StatsController} from "./stats-controller";
 
 export class PageController {
   constructor({tripHeaderContainer, tripBodyContainer, route}) {
@@ -27,9 +27,10 @@ export class PageController {
 
     this._pages = {
       table: this._tripController,
-      stats: new StatisticsSection({data: this._route.points}),
+      stats: new StatsController({data: this._route.points}),
     };
-    this._activePage = `stats`;
+    this._activePage = `table`;
+    this._currentFilter = `everything`;
   }
 
   _addNewPoint() {
@@ -41,6 +42,13 @@ export class PageController {
     Object.values(this._pages).forEach((page) => page.hide());
     this._pages[name].show();
     this._renderHeader();
+
+    this._filter.setVisibility(this._activePage === `table`);
+  }
+
+  _applyFilter(filter) {
+    this._currentFilter = filter;
+    this._tripController.applyFilter(filter);
   }
 
   _renderHeader() {
@@ -48,15 +56,18 @@ export class PageController {
     unrender(this._tripControls, false);
     unrender(this._newEventBtn, false);
 
+    this._filter = new Filter({
+      data: {filterMethods: FilterType, currentFilter: this._currentFilter},
+      callbacks: {onFilter: (filter) => this._applyFilter(filter)}
+    });
+
     this._tripControls = new TripControls({
       children: [
         new Menu({
           data: {menuData, activeItem: this._activePage},
           callbacks: {onAction: (action) => this._showPage(action)}
         }),
-        new Filter({
-          data: {filterMethods, currentFilter: `everything`}
-        }),
+        this._filter,
       ]
     });
 
