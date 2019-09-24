@@ -1,7 +1,7 @@
 import {labels} from "./data";
 
 export class PointModel {
-  constructor({id, startTime, endTime, price, isFavorite, offers, type, destination, isNew}) {
+  constructor({id, startTime, endTime, price, isFavorite, offers, type, destination}) {
     this.id = id || null;
     this.startTime = startTime;
     this.endTime = endTime;
@@ -10,7 +10,6 @@ export class PointModel {
     this.offers = offers || [];
     this.type = type || `taxi`;
     this.destination = destination || {name: ``, description: ``, pictures: []};
-    this.isNew = isNew || false;
   }
 
   static parsePoint(data) {

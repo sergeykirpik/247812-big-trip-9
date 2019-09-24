@@ -1,4 +1,4 @@
-import {TransferType, ActivityType, destinationList, labels} from '../data.js';
+import {TransferType, ActivityType, labels} from '../data.js';
 import {capitalize, KeyCode} from '../utils.js';
 import flatpickr from 'flatpickr';
 import {BaseComponent} from '../base-component.js';
@@ -6,6 +6,9 @@ import {BaseComponent} from '../base-component.js';
 export class EventEditForm extends BaseComponent {
   constructor(params) {
     super(params);
+
+    this._destinations = params.destinations;
+    this._offers = params.offers;
 
     this._onDismiss = () => {};
     this._onSubmit = () => {};
@@ -31,7 +34,10 @@ export class EventEditForm extends BaseComponent {
       evt.preventDefault();
       this._onDelete();
     });
-
+    const destination = form.querySelector(`.event__input--destination`);
+    this.on(destination, `change`, (evt) => {
+      console.log(destination.value);
+    });
     const flatpickrOnOpen = (element) => {
       return () => {
         const handler = this.on(document, `keydown`, (evt) => {
@@ -78,6 +84,8 @@ export class EventEditForm extends BaseComponent {
       eventLabel.textContent = labels[evt.target.value];
       eventTypeToggle.checked = false;
       eventInput.value = ``;
+      this._updateOffersSection(evt.target.value);
+      this._updateDestinationSection();
     }));
 
     const rollupBtn = form.querySelector(`.event__rollup-btn`);
@@ -88,6 +96,22 @@ export class EventEditForm extends BaseComponent {
         this.dismiss();
       }
     }, false);
+  }
+
+  _updateOffersSection() {
+    const section = this.element.querySelector(`.event__section--offers`);
+    const container = section.querySelector(`.event__available-offers`);
+    //const offers =
+
+    const template = `${offers.map((v, index) =>
+      `<div class="event__offer-selector">
+        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${index}" type="checkbox" name="event-offer" value="${v.title}" ${v.accepted ? `checked` : ``}>
+        <label class="event__offer-label" for="event-offer-${index}">
+          <span class="event__offer-title">${v.title}</span>
+          &plus;
+          &euro;&nbsp;<span class="event__offer-price">${v.price}</span>
+        </label>
+      </div>`).join(``)}`;
   }
 
   dismiss() {
@@ -111,6 +135,7 @@ export class EventEditForm extends BaseComponent {
     const offersSectionVisibility = offers.length === 0 ? `visually-hidden` : ``;
     const destinationSectionVisibility = destination.name === `` ? `visually-hidden` : ``;
     const eventDetailsSectionVisibility = offers.length === 0 && destination.name === `` ? `visually-hidden` : ``;
+    const destinations = this._destinations;
     return `
     <form class="trip-events__item event event--edit" action="#" method="post">
       <header class="event__header">
@@ -148,7 +173,7 @@ export class EventEditForm extends BaseComponent {
           </label>
           <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.name}" list="destination-list-1">
           <datalist id="destination-list-1">
-            ${destinationList.list.map((d) => `<option value="${d.name}"></option>`).join(``)}
+            ${destinations.map((d) => `<option value="${d.name}"></option>`).join(``)}
           </datalist>
         </div>
 

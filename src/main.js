@@ -3,30 +3,17 @@ import {PageController} from "./controllers/page-controller";
 import {api} from "./api";
 import {Route} from "./route";
 import {PointModel} from "./point-model";
-import {destinationList} from "./data";
+import {dataProvider} from "./data-provider";
 
-const init = (data) => {
-  console.dir(data);
+const init = () => {
+  console.dir(dataProvider.points);
   const pageController = new PageController({
     tripHeaderContainer: document.querySelector(`.trip-main`),
     tripBodyContainer: document.querySelector(`main .page-body__container`),
-    route: new Route(PointModel.parsePoints(data)),
+    route: new Route(PointModel.parsePoints(dataProvider.points)),
   });
   pageController.init();
 };
 
-const onSuccess = (title, result) => {
-  console.log(title);
-  console.dir(result);
-};
-
-api.getOffers()
-  .then(onSuccess.bind(null, `offers`))
-  .then(() => api.getDestinations())
-  .then((list) => {
-    console.dir(list);
-    destinationList.list = list;
-  })
-  .then(() => api.getPoints())
-  .then(init);
+dataProvider.load().then(init);
 

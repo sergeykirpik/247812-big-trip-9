@@ -1,6 +1,7 @@
 import moment from "moment";
 import {PointModel} from "./point-model";
 import {Route} from "./route";
+import {dataProvider} from "./data-provider";
 
 const MAX_DATE_INTERVAL = 10; // hours
 export const MAX_ROUTE_POINTS = 20;
@@ -79,9 +80,6 @@ const getRandomPhoto = () => `http://picsum.photos/300/150?r=${Math.random()}`;
 
 const getRandomPhotos = () => new Array(RANDOM_PHOTO_COUNT).fill(``).map(getRandomPhoto);
 
-// export const destinationData = new Map(destinationList.map((d) => [d, {description: getRandomDescription(), photos: getRandomPhotos()}]));
-export const destinationList = {list: []};
-
 const getTripEvent = () => new PointModel({
   startTime: null,
   endTime: null,
@@ -89,7 +87,7 @@ const getTripEvent = () => new PointModel({
   isFavorite: getRandomBool(),
   offers: new Set(shuffle(Object.keys(availableOffers)).slice(0, getRandom(2 + 1))),
   type: PointType[getRandom(PointType.length)],
-  destination: destinationList.list[getRandom(destinationList.list.length)],
+  destination: dataProvider.destinations[getRandom(dataProvider.destinations.length)],
 });
 
 export const getTripEventList = (pointCount) => {
@@ -120,4 +118,4 @@ export const SortType = {
     .sort((a, b) => b.price - a.price),
 };
 
-export const route = new Route(getTripEventList(getRandom(MAX_ROUTE_POINTS)));
+// export const route = new Route(getTripEventList(getRandom(MAX_ROUTE_POINTS)));

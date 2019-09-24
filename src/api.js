@@ -27,4 +27,3 @@ class API {
 }
 
 export const api = new API();
-window.api = api;

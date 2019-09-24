@@ -52,7 +52,7 @@ export class TripController extends BaseComponent {
     if (newPoint === null) {
       this._data.splice(index, 1);
     }
-    if (oldPoint === null) {
+    if (oldPoint.id === null) {
       this._data.unshift(null);
       index = 0;
     }
@@ -142,13 +142,15 @@ export class TripController extends BaseComponent {
       data: new PointModel({
         startTime: new Date(),
         endTime: new Date(),
-        isNew: true,
       }),
       callbacks: {
         onDataChange: (oldPoint, newPoint) => {
           this._editForm = null;
           this._onDataChange(oldPoint, newPoint);
         },
+        onDismiss: () => {
+          this._editForm = null;
+        }
       },
       isInEditMode: true
     });

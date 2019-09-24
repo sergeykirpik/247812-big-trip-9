@@ -3,7 +3,7 @@ import {EventItem} from "../components/event-item";
 import {EventEditForm} from "../components/event-edit-form";
 import {render, unrender, Position} from "../utils";
 import {PointModel} from "../point-model";
-import { destinationList } from "../data";
+import {dataProvider} from "../data-provider";
 
 export class PointController extends BaseComponent {
   constructor(params) {
@@ -11,6 +11,8 @@ export class PointController extends BaseComponent {
 
     this._isInEditMode = params.isInEditMode || false;
     this._element = null;
+
+    this._callbacks.onDismiss = this._callbacks.onDismiss || (() => {});
   }
 
   get element() {
@@ -34,7 +36,7 @@ export class PointController extends BaseComponent {
   }
 
   _createForm() {
-    const eventEditForm = new EventEditForm({data: this._data});
+    const eventEditForm = new EventEditForm({data: this._data, destinations: dataProvider.destinations});
     eventEditForm.onSubmit((formData) => {
       const name = formData.get(`event-destination`);
       const idx = destinationList.list.findIndex((it) => it.name === name);
@@ -49,13 +51,14 @@ export class PointController extends BaseComponent {
         type: formData.get(`event-type`),
       });
       this._setNormalMode();
-      this._callbacks.onDataChange(this._data.isNew ? null : this._data, entry);
+      this._callbacks.onDataChange(this._data, entry);
     });
     eventEditForm.onDelete(() => {
       this._callbacks.onDataChange(this._data, null);
     });
     eventEditForm.onDismiss(() => {
       this._setNormalMode();
+      this._callbacks.onDismiss();
     });
     this._eventEditForm = eventEditForm;
     eventEditForm.attachEventHandlers();
@@ -68,7 +71,9 @@ export class PointController extends BaseComponent {
     }
     this._isInEditMode = false;
     this.removeElement();
-    render(this._eventEditForm.element, this, Position.AFTER_END);
+    if (this._data.id) {
+      render(this._eventEditForm.element, this, Position.AFTER_END);
+    }
     unrender(this._eventEditForm);
   }
 
