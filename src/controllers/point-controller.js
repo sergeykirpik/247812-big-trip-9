@@ -2,7 +2,8 @@ import {BaseComponent} from "../base-component";
 import {EventItem} from "../components/event-item";
 import {EventEditForm} from "../components/event-edit-form";
 import {render, unrender, Position} from "../utils";
-import {PointData} from "../data";
+import {PointModel} from "../point-model";
+import { destinationList } from "../data";
 
 export class PointController extends BaseComponent {
   constructor(params) {
@@ -35,12 +36,15 @@ export class PointController extends BaseComponent {
   _createForm() {
     const eventEditForm = new EventEditForm({data: this._data});
     eventEditForm.onSubmit((formData) => {
-      const entry = new PointData({
-        destination: formData.get(`event-destination`),
+      const name = formData.get(`event-destination`);
+      const idx = destinationList.list.findIndex((it) => it.name === name);
+      const destination = destinationList.list[idx];
+      const entry = new PointModel({
+        destination,
         startTime: new Date(formData.get(`event-start-time`)),
         endTime: new Date(formData.get(`event-end-time`)),
         price: parseInt(formData.get(`event-price`), 10),
-        offers: new Set(formData.getAll(`event-offer`)),
+        offers: formData.getAll(`event-offer`),
         isFavorite: !!formData.get(`event-favorite`),
         type: formData.get(`event-type`),
       });

@@ -1,10 +1,12 @@
 import moment from "moment";
+import {PointModel} from "./point-model";
+import {Route} from "./route";
 
 const MAX_DATE_INTERVAL = 10; // hours
-const MAX_ROUTE_POINTS = 20;
+export const MAX_ROUTE_POINTS = 20;
 const RANDOM_PHOTO_COUNT = 5;
 
-const getRandom = (n) => Math.floor(Math.random() * n);
+export const getRandom = (n) => Math.floor(Math.random() * n);
 const getRandomBool = () => [true, false][getRandom(2)];
 const hoursToMSec = (h) => h * 1000 * 3600;
 const daysToMSec = (d) => hoursToMSec(24 * d);
@@ -12,12 +14,16 @@ const getRandomDate = () => new Date(Date.now() + getRandom(daysToMSec(6)) - get
 const shuffle = (array) => array.sort(() => Math.random() - 0.5);
 const getDuration = (tripEvent) => tripEvent.endTime.valueOf() - tripEvent.startTime.valueOf();
 
-export const transferType = [
-  `taxi`, `bus`, `train`, `ship`, `transport`, `drive`, `flight`,
+export const TransferType = [
+  `taxi`, `bus`, `train`, `flight`, `ship`, `transport`, `drive`
 ];
 
-export const activityType = [
+export const ActivityType = [
   `check-in`, `sightseeing`, `restaurant`,
+];
+
+export const PointType = [
+  ...TransferType, ...ActivityType
 ];
 
 export const labels = {
@@ -73,48 +79,20 @@ const getRandomPhoto = () => `http://picsum.photos/300/150?r=${Math.random()}`;
 
 const getRandomPhotos = () => new Array(RANDOM_PHOTO_COUNT).fill(``).map(getRandomPhoto);
 
-export const destinationList = [`Amsterdam`, `Geneva`, `Chamonix`, `Saint Petersburg`];
-const destinationData = new Map(destinationList.map((d) => [d, {description: getRandomDescription(), photos: getRandomPhotos()}]));
+// export const destinationData = new Map(destinationList.map((d) => [d, {description: getRandomDescription(), photos: getRandomPhotos()}]));
+export const destinationList = {list: []};
 
-export class PointData {
-  constructor({startTime, endTime, price, isFavorite, offers, type, destination, isNew}) {
-    this.startTime = startTime;
-    this.endTime = endTime;
-    this.price = price;
-    this.isFavorite = isFavorite || false;
-    this.offers = offers || new Set();
-    this.type = type || `taxi`;
-    this.destination = destination;
-    this.isNew = isNew || false;
-  }
-  get total() {
-    return getOffersTotal(this) + this.price;
-  }
-  get description() {
-    return (destinationData.get(this.destination) || {}).description;
-  }
-  get photos() {
-    return (destinationData.get(this.destination) || {}).photos || [];
-  }
-  get title() {
-    return this.label + ` ` + this.destination;
-  }
-  get label() {
-    return labels[this.type];
-  }
-}
-
-const getTripEvent = () => new PointData({
+const getTripEvent = () => new PointModel({
   startTime: null,
   endTime: null,
   price: getRandom(999) + 20,
   isFavorite: getRandomBool(),
   offers: new Set(shuffle(Object.keys(availableOffers)).slice(0, getRandom(2 + 1))),
-  type: transferType[getRandom(transferType.length)],
-  destination: destinationList[getRandom(destinationList.length)],
+  type: PointType[getRandom(PointType.length)],
+  destination: destinationList.list[getRandom(destinationList.list.length)],
 });
 
-const getTripEventList = (pointCount) => {
+export const getTripEventList = (pointCount) => {
   let startTime = getRandomDate();
   return new Array(pointCount).fill(``).map(() => {
     const it = getTripEvent();
@@ -142,32 +120,4 @@ export const SortType = {
     .sort((a, b) => b.price - a.price),
 };
 
-const getOffersTotal = (te) => Array.from(te.offers).reduce((acc, it) => acc + availableOffers[it].price, 0);
-
-export const route = {
-  points: getTripEventList(getRandom(MAX_ROUTE_POINTS)),
-  get cost() {
-    return this.points.reduce((acc, it) => acc + it.price + getOffersTotal(it), 0);
-  },
-  get title() {
-    if (this.points.length === 0) {
-      return ``;
-    }
-    if (this.points.length > 3) {
-      return [
-        this.points[0].destination,
-        this.points[this.points.length - 1].destination
-      ].join(` &mdash; ... &mdash; `);
-    }
-    return this.points.map((it) => it.destination).join(` &mdash; `);
-  },
-  get dates() {
-    if (this.points.length === 0) {
-      return ``;
-    }
-    return [
-      moment(this.points[0].startTime).format(`MMM D`),
-      moment(this.points[this.points.length - 1].endTime).format(`MMM D`),
-    ].join(` &mdash; `);
-  },
-};
+export const route = new Route(getTripEventList(getRandom(MAX_ROUTE_POINTS)));

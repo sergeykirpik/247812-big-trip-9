@@ -1,4 +1,3 @@
-import {availableOffers} from "../data.js";
 import {BaseComponent} from "../base-component.js";
 import moment from "moment";
 
@@ -19,7 +18,8 @@ export class EventItem extends BaseComponent {
   }
 
   get template() {
-    const {startTime, endTime, type, title, price, offers} = this._data;
+    const {startTime, endTime, type, title, price} = this._data;
+    const offers = this._data.offers.filter((it) => it.accepted).slice(0, 3);
     return `
     <div class="event">
       <div class="event__type">
@@ -44,10 +44,10 @@ export class EventItem extends BaseComponent {
 
       <h4 class="visually-hidden">Offers:</h4>
       <ul class="event__selected-offers">
-        ${Array.from(offers).map((it) => `<li class="event__offer">
-          <span class="event__offer-title">${availableOffers[it].description}</span>
+        ${offers.map((it) => `<li class="event__offer">
+          <span class="event__offer-title">${it.title}</span>
           &plus;
-          &euro;&nbsp;<span class="event__offer-price">${availableOffers[it].price}</span>
+          &euro;&nbsp;<span class="event__offer-price">${it.price}</span>
         </li>`).join(``)}
       </ul>
 

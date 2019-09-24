@@ -1,6 +1,7 @@
 import {TripEventsSection} from "../components/trip-events-sec";
 import {groupBy, rerender} from "../utils";
-import {SortType, PointData, FilterType} from "../data";
+import {SortType, FilterType} from "../data";
+import {PointModel} from "../point-model";
 import {DayList} from "../components/day-list";
 import {NoPoints} from "../components/no-points";
 import {DayListHeader} from "../components/day-list-header";
@@ -138,7 +139,7 @@ export class TripController extends BaseComponent {
       return;
     }
     this._editForm = new PointController({
-      data: new PointData({
+      data: new PointModel({
         startTime: new Date(),
         endTime: new Date(),
         isNew: true,
