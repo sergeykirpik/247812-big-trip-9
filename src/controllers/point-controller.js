@@ -36,19 +36,28 @@ export class PointController extends BaseComponent {
   }
 
   _createForm() {
-    const eventEditForm = new EventEditForm({data: this._data, destinations: dataProvider.destinations});
+    const eventEditForm = new EventEditForm({
+      data: this._data,
+      destinations: dataProvider.destinations,
+      offers: dataProvider.offers,
+    });
     eventEditForm.onSubmit((formData) => {
       const name = formData.get(`event-destination`);
-      const idx = destinationList.list.findIndex((it) => it.name === name);
-      const destination = destinationList.list[idx];
+      const destination = dataProvider.destinations.find((it) => it.name === name);
+      const eventType = formData.get(`event-type`);
+      const offersForType = dataProvider.offers.find((it) => it.type === formData.get(`event-type`)).offers;
+
+      const acceptedOffers = formData.getAll(`event-offer`);
+      const offers = offersForType.map(({title, price}) => ({title, price, accepted: acceptedOffers.includes(title)}));
       const entry = new PointModel({
+        id: this._data.id,
         destination,
+        offers,
         startTime: new Date(formData.get(`event-start-time`)),
         endTime: new Date(formData.get(`event-end-time`)),
         price: parseInt(formData.get(`event-price`), 10),
-        offers: formData.getAll(`event-offer`),
         isFavorite: !!formData.get(`event-favorite`),
-        type: formData.get(`event-type`),
+        type: eventType,
       });
       this._setNormalMode();
       this._callbacks.onDataChange(this._data, entry);

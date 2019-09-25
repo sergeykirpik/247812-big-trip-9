@@ -35,8 +35,8 @@ export class EventEditForm extends BaseComponent {
       this._onDelete();
     });
     const destination = form.querySelector(`.event__input--destination`);
-    this.on(destination, `change`, (evt) => {
-      console.log(destination.value);
+    this.on(destination, `change`, () => {
+      this._updateDestinationSection(destination.value);
     });
     const flatpickrOnOpen = (element) => {
       return () => {
@@ -98,20 +98,48 @@ export class EventEditForm extends BaseComponent {
     }, false);
   }
 
-  _updateOffersSection() {
+  _updateOffersSection(type) {
     const section = this.element.querySelector(`.event__section--offers`);
     const container = section.querySelector(`.event__available-offers`);
-    //const offers =
 
-    const template = `${offers.map((v, index) =>
+    const offersIndex = this._offers.findIndex((it) => it.type === type);
+    this._data.offers = this._offers[offersIndex].offers;
+
+    section.classList.toggle(`visually-hidden`, this._data.offers.length === 0);
+
+    const template = `${this._data.offers.map((v, index) =>
       `<div class="event__offer-selector">
-        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${index}" type="checkbox" name="event-offer" value="${v.title}" ${v.accepted ? `checked` : ``}>
+        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${index}" type="checkbox" name="event-offer" value="${v.title}">
         <label class="event__offer-label" for="event-offer-${index}">
           <span class="event__offer-title">${v.title}</span>
           &plus;
           &euro;&nbsp;<span class="event__offer-price">${v.price}</span>
         </label>
       </div>`).join(``)}`;
+
+    container.innerHTML = template;
+  }
+
+  _updateDestinationSection(destinationName) {
+    const section = this.element.querySelector(`.event__section--destination`);
+    section.classList.toggle(`visually-hidden`, !destinationName);
+    if (!destinationName) {
+      return;
+    }
+    const idx = this._destinations.findIndex((it) => it.name === destinationName);
+    const destination = this._destinations[idx];
+    section.querySelector(`.event__destination-description`)
+      .textContent = destination.description;
+
+    this._data.destination = destination;
+
+    const photosTape = section.querySelector(`.event__photos-tape`);
+
+    const template = `${destination.pictures.map((it) =>
+      `<img class="event__photo" src="${it.src}" alt="${it.description}">`).join(``)}
+    `.trim();
+
+    photosTape.innerHTML = template;
   }
 
   dismiss() {

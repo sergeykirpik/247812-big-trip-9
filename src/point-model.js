@@ -25,6 +25,19 @@ export class PointModel {
     });
   }
 
+  static raw(point) {
+    return ({
+      id: point.id,
+      type: point.type,
+      [`base_price`]: point.price,
+      [`date_from`]: point.startTime.valueOf(),
+      [`date_to`]: point.endTime.valueOf(),
+      isFavorite: point.isFavorite,
+      destination: point.destination,
+      offers: point.offers,
+    });
+  }
+
   static parsePoints(data) {
     return data.map((it) => PointModel.parsePoint(it));
   }

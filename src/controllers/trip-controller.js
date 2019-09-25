@@ -10,6 +10,7 @@ import {EventListController} from "./event-list-controller";
 import {BaseComponent} from "../base-component";
 import moment from "moment";
 import {PointController} from "./point-controller";
+import { api } from "../api";
 
 const columns = [
   {
@@ -48,6 +49,14 @@ export class TripController extends BaseComponent {
   }
 
   _onDataChange(oldPoint, newPoint) {
+
+    if (oldPoint.id !== null) {
+      api.editPoint(oldPoint.id, newPoint)
+        .then((point) => {
+          console.log(point);
+        });
+    }
+
     let index = this._data.findIndex((it) => it === oldPoint);
     if (newPoint === null) {
       this._data.splice(index, 1);
