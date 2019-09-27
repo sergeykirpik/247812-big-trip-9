@@ -19,8 +19,7 @@ const get = (resourse) => {
 };
 
 const put = (resource, body) => {
-  debugger;
-  const headers = new Headers({Authorization: `Basic ${API_KEY}`});
+  const headers = new Headers({Authorization: `Basic ${API_KEY}`, 'Content-Type': `application/json`});
   return fetch(`${END_POINT}/${resource}`, {headers, body: JSON.stringify(body), method: `PUT`})
     .then(checkStatus)
     .then(toJSON);

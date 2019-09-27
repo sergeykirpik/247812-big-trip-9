@@ -32,7 +32,7 @@ export class PointModel {
       [`base_price`]: point.price,
       [`date_from`]: point.startTime.valueOf(),
       [`date_to`]: point.endTime.valueOf(),
-      isFavorite: point.isFavorite,
+      [`is_favorite`]: point.isFavorite,
       destination: point.destination,
       offers: point.offers,
     });
