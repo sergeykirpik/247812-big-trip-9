@@ -2,14 +2,16 @@ import {BaseComponent} from "../base-component";
 import {EventItem} from "../components/event-item";
 import {EventEditForm} from "../components/event-edit-form";
 import {render, unrender, Position} from "../utils";
-import {PointData} from "../data";
+import {PointModel} from "../point-model";
+import {dataProvider} from "../data-provider";
 
 export class PointController extends BaseComponent {
   constructor(params) {
     super(params);
-
     this._isInEditMode = params.isInEditMode || false;
     this._element = null;
+
+    this._callbacks.onDismiss = this._callbacks.onDismiss || (() => {});
   }
 
   get element() {
@@ -33,25 +35,42 @@ export class PointController extends BaseComponent {
   }
 
   _createForm() {
-    const eventEditForm = new EventEditForm({data: this._data});
+    const eventEditForm = new EventEditForm({
+      data: this._data,
+      destinations: dataProvider.destinations,
+      offers: dataProvider.offers,
+    });
     eventEditForm.onSubmit((formData) => {
-      const entry = new PointData({
-        destination: formData.get(`event-destination`),
+      const name = formData.get(`event-destination`);
+      const destination = dataProvider.destinations.find((it) => it.name === name);
+      const eventType = formData.get(`event-type`);
+      const offersForType = dataProvider.offers.find((it) => it.type === formData.get(`event-type`)).offers;
+
+      const acceptedOffers = formData.getAll(`event-offer`);
+      const offers = offersForType.map(({title, price}) => ({title, price, accepted: acceptedOffers.includes(title)}));
+      const entry = new PointModel({
+        id: this._data.id,
+        destination,
+        offers,
         startTime: new Date(formData.get(`event-start-time`)),
         endTime: new Date(formData.get(`event-end-time`)),
         price: parseInt(formData.get(`event-price`), 10),
-        offers: new Set(formData.getAll(`event-offer`)),
         isFavorite: !!formData.get(`event-favorite`),
-        type: formData.get(`event-type`),
+        type: eventType,
       });
       this._setNormalMode();
-      this._callbacks.onDataChange(this._data.isNew ? null : this._data, entry);
+      if (entry.id === null) {
+        this._callbacks.onDataAdd(entry);
+      } else {
+        this._callbacks.onDataChange(entry);
+      }
     });
     eventEditForm.onDelete(() => {
-      this._callbacks.onDataChange(this._data, null);
+      this._callbacks.onDataRemove(this._data.id);
     });
     eventEditForm.onDismiss(() => {
       this._setNormalMode();
+      this._callbacks.onDismiss();
     });
     this._eventEditForm = eventEditForm;
     eventEditForm.attachEventHandlers();
@@ -64,7 +83,9 @@ export class PointController extends BaseComponent {
     }
     this._isInEditMode = false;
     this.removeElement();
-    render(this._eventEditForm.element, this, Position.AFTER_END);
+    if (this._data.id) {
+      render(this._eventEditForm.element, this, Position.AFTER_END);
+    }
     unrender(this._eventEditForm);
   }
 

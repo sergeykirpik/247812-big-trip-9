@@ -1,6 +1,7 @@
 import {TripEventsSection} from "../components/trip-events-sec";
 import {groupBy, rerender} from "../utils";
-import {SortType, PointData, FilterType} from "../data";
+import {SortType, FilterType} from "../data";
+import {PointModel} from "../point-model";
 import {DayList} from "../components/day-list";
 import {NoPoints} from "../components/no-points";
 import {DayListHeader} from "../components/day-list-header";
@@ -9,6 +10,8 @@ import {EventListController} from "./event-list-controller";
 import {BaseComponent} from "../base-component";
 import moment from "moment";
 import {PointController} from "./point-controller";
+import {api} from "../api";
+import {dataProvider} from "../data-provider";
 
 const columns = [
   {
@@ -46,20 +49,35 @@ export class TripController extends BaseComponent {
     this._editForm = null;
   }
 
-  _onDataChange(oldPoint, newPoint) {
-    let index = this._data.findIndex((it) => it === oldPoint);
-    if (newPoint === null) {
-      this._data.splice(index, 1);
-    }
-    if (oldPoint === null) {
-      this._data.unshift(null);
-      index = 0;
-    }
-    if (newPoint !== null) {
-      this._data[index] = newPoint;
-    }
-    rerender(this);
-    this._onDataChangeParentCallback();
+  _onDataChange(point) {
+    api.editPoint(point)
+      .then((data) => {
+        const loadedPoint = PointModel.parsePoint(data);
+        let index = this._data.findIndex((it) => it.id === loadedPoint.id);
+        this._data[index] = loadedPoint;
+        rerender(this);
+        this._onDataChangeParentCallback();
+      });
+  }
+
+  _onDataAdd(newPoint) {
+    api.addPoint(newPoint)
+      .then((data) => {
+        const loadedPoint = PointModel.parsePoint(data);
+        this._data.unshift(loadedPoint);
+        rerender(this);
+        this._onDataChangeParentCallback();
+      });
+  }
+
+  _onDataRemove(id) {
+    api.removePoint(id)
+      .then(() => {
+        const index = this._data.findIndex((it) => it.id === id);
+        this._data.splice(index, 1);
+        rerender(this);
+        this._onDataChangeParentCallback();
+      });
   }
 
   get _filteredPoints() {
@@ -67,7 +85,8 @@ export class TripController extends BaseComponent {
   }
 
   get _pointsByDay() {
-    return groupBy(this._filteredPoints, (a, b) =>
+    const sorted = this._filteredPoints.sort((p1, p2) => p1.startTime.valueOf() - p2.startTime.valueOf());
+    return groupBy(sorted, (a, b) =>
       moment(a.startTime).format(`YYYY-MM-DD`) === moment(b.startTime).format(`YYYY-MM-DD`));
   }
 
@@ -85,6 +104,8 @@ export class TripController extends BaseComponent {
     const dayItems = this._pointsByDay.map((it) => new DayItem({
       children: [new EventListController({data: it, callbacks: {
         onDataChange: this._onDataChange.bind(this),
+        onDataAdd: this._onDataAdd.bind(this),
+        onDataRemove: this._onDataRemove.bind(this),
       }})],
       data: {
         dayCounter: dayCounter++,
@@ -98,6 +119,8 @@ export class TripController extends BaseComponent {
     const dayItem = new DayItem({
       children: [new EventListController({data: this._sortedPoints, callbacks: {
         onDataChange: this._onDataChange.bind(this),
+        onDataAdd: this._onDataAdd.bind(this),
+        onDataRemove: this._onDataRemove.bind(this),
       }})],
     });
     return new DayList({children: [dayItem]});
@@ -138,16 +161,20 @@ export class TripController extends BaseComponent {
       return;
     }
     this._editForm = new PointController({
-      data: new PointData({
+      data: new PointModel({
+        type: dataProvider.offers[0].type,
+        offers: dataProvider.offers[0].offers.slice(),
         startTime: new Date(),
         endTime: new Date(),
-        isNew: true,
       }),
       callbacks: {
-        onDataChange: (oldPoint, newPoint) => {
+        onDataAdd: (newPoint) => {
           this._editForm = null;
-          this._onDataChange(oldPoint, newPoint);
+          this._onDataAdd(newPoint);
         },
+        onDismiss: () => {
+          this._editForm = null;
+        }
       },
       isInEditMode: true
     });

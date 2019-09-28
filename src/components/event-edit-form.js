@@ -1,4 +1,4 @@
-import {transferType, activityType, destinationList, availableOffers, labels} from '../data.js';
+import {TransferType, ActivityType, labels} from '../data.js';
 import {capitalize, KeyCode} from '../utils.js';
 import flatpickr from 'flatpickr';
 import {BaseComponent} from '../base-component.js';
@@ -6,6 +6,9 @@ import {BaseComponent} from '../base-component.js';
 export class EventEditForm extends BaseComponent {
   constructor(params) {
     super(params);
+
+    this._destinations = params.destinations;
+    this._offers = params.offers;
 
     this._onDismiss = () => {};
     this._onSubmit = () => {};
@@ -31,7 +34,10 @@ export class EventEditForm extends BaseComponent {
       evt.preventDefault();
       this._onDelete();
     });
-
+    const destination = form.querySelector(`.event__input--destination`);
+    this.on(destination, `change`, () => {
+      this._updateDestinationSection(destination.value);
+    });
     const flatpickrOnOpen = (element) => {
       return () => {
         const handler = this.on(document, `keydown`, (evt) => {
@@ -78,6 +84,8 @@ export class EventEditForm extends BaseComponent {
       eventLabel.textContent = labels[evt.target.value];
       eventTypeToggle.checked = false;
       eventInput.value = ``;
+      this._updateOffersSection(evt.target.value);
+      this._updateDestinationSection();
     }));
 
     const rollupBtn = form.querySelector(`.event__rollup-btn`);
@@ -88,6 +96,52 @@ export class EventEditForm extends BaseComponent {
         this.dismiss();
       }
     }, false);
+  }
+
+  _updateOffersSection(type) {
+    const section = this.element.querySelector(`.event__section--offers`);
+    const container = section.querySelector(`.event__available-offers`);
+
+    const offersIndex = this._offers.findIndex((it) => it.type === type);
+    this._data.offers = this._offers[offersIndex].offers;
+
+    section.classList.toggle(`visually-hidden`, this._data.offers.length === 0);
+
+    const template = `${this._data.offers.map((v, index) =>
+      `<div class="event__offer-selector">
+        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${index}" type="checkbox" name="event-offer" value="${v.title}">
+        <label class="event__offer-label" for="event-offer-${index}">
+          <span class="event__offer-title">${v.title}</span>
+          &plus;
+          &euro;&nbsp;<span class="event__offer-price">${v.price}</span>
+        </label>
+      </div>`).join(``)}`;
+
+    container.innerHTML = template;
+  }
+
+  _updateDestinationSection(destinationName) {
+    const eventDetailsSec = this.element.querySelector(`.event__details`);
+    const destinationSec = eventDetailsSec.querySelector(`.event__section--destination`);
+    eventDetailsSec.classList.toggle(`visually-hidden`, !destinationName);
+    destinationSec.classList.toggle(`visually-hidden`, !destinationName);
+    if (!destinationName) {
+      return;
+    }
+    const idx = this._destinations.findIndex((it) => it.name === destinationName);
+    const destination = this._destinations[idx];
+    destinationSec.querySelector(`.event__destination-description`)
+      .textContent = destination.description;
+
+    this._data.destination = destination;
+
+    const photosTape = destinationSec.querySelector(`.event__photos-tape`);
+
+    const template = `${destination.pictures.map((it) =>
+      `<img class="event__photo" src="${it.src}" alt="${it.description}">`).join(``)}
+    `.trim();
+
+    photosTape.innerHTML = template;
   }
 
   dismiss() {
@@ -107,7 +161,11 @@ export class EventEditForm extends BaseComponent {
   }
 
   get template() {
-    let {type, label, destination, startTime, endTime, price, isFavorite, offers, description, photos} = this._data;
+    const {type, label, startTime, endTime, price, isFavorite, offers, destination} = this._data;
+    const offersSectionVisibility = offers.length === 0 ? `visually-hidden` : ``;
+    const destinationSectionVisibility = destination.name === `` ? `visually-hidden` : ``;
+    const eventDetailsSectionVisibility = destination.name === `` ? `visually-hidden` : ``;
+    const destinations = this._destinations;
     return `
     <form class="trip-events__item event event--edit" action="#" method="post">
       <header class="event__header">
@@ -122,7 +180,7 @@ export class EventEditForm extends BaseComponent {
             <fieldset class="event__type-group">
               <legend class="visually-hidden">Transfer</legend>
 
-              ${transferType.map((t) => `<div class="event__type-item">
+              ${TransferType.map((t) => `<div class="event__type-item">
                 <input ${t === type ? `checked` : ``} id="event-type-${t}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${t}">
                 <label class="event__type-label  event__type-label--${t}" for="event-type-${t}-1">${capitalize(t)}</label>
               </div>`).join(``)}
@@ -131,7 +189,7 @@ export class EventEditForm extends BaseComponent {
             <fieldset class="event__type-group">
               <legend class="visually-hidden">Activity</legend>
 
-              ${activityType.map((t) => `<div class="event__type-item">
+              ${ActivityType.map((t) => `<div class="event__type-item">
                 <input ${t === type ? `checked` : ``} id="event-type-${t}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${t}">
                 <label class="event__type-label  event__type-label--${t}" for="event-type-${t}-1">${capitalize(t)}</label>
               </div>`).join(``)}
@@ -143,9 +201,9 @@ export class EventEditForm extends BaseComponent {
           <label class="event__label  event__type-output" for="event-destination-1">
             ${label}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination ? destination : ``}" list="destination-list-1">
+          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.name}" list="destination-list-1">
           <datalist id="destination-list-1">
-            ${destinationList.map((d) => `<option value="${d}"></option>`).join(``)}
+            ${destinations.map((d) => `<option value="${d.name}"></option>`).join(``)}
           </datalist>
         </div>
 
@@ -185,16 +243,16 @@ export class EventEditForm extends BaseComponent {
         </button>
       </header>
 
-      <section class="event__details ${destination ? `` : `visually-hidden`}">
+      <section class="event__details ${eventDetailsSectionVisibility}">
 
-        <section class="event__section  event__section--offers">
+        <section class="event__section  event__section--offers  ${offersSectionVisibility}">
           <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
           <div class="event__available-offers">
-            ${Object.entries(availableOffers).map(([k, v]) => `<div class="event__offer-selector">
-              <input class="event__offer-checkbox  visually-hidden" id="event-offer-${k}-1" type="checkbox" name="event-offer" value="${k}" ${offers.has(k) ? `checked` : ``}>
-              <label class="event__offer-label" for="event-offer-${k}-1">
-                <span class="event__offer-title">${v.description}</span>
+            ${offers.map((v, index) => `<div class="event__offer-selector">
+              <input class="event__offer-checkbox  visually-hidden" id="event-offer-${index}" type="checkbox" name="event-offer" value="${v.title}" ${v.accepted ? `checked` : ``}>
+              <label class="event__offer-label" for="event-offer-${index}">
+                <span class="event__offer-title">${v.title}</span>
                 &plus;
                 &euro;&nbsp;<span class="event__offer-price">${v.price}</span>
               </label>
@@ -202,14 +260,14 @@ export class EventEditForm extends BaseComponent {
           </div>
         </section>
 
-        <section class="event__section  event__section--destination">
+        <section class="event__section  event__section--destination  ${destinationSectionVisibility}">
           <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-          <p class="event__destination-description">${description}</p>
+          <p class="event__destination-description">${destination.description}</p>
 
           <div class="event__photos-container">
             <div class="event__photos-tape">
-              ${photos.map((it) => `<img
-                class="event__photo" src="${it}" alt="Event photo">
+              ${destination.pictures.map((it) => `<img
+                class="event__photo" src="${it.src}" alt="${it.description}">
               `).join(``)}
             </div>
           </div>
