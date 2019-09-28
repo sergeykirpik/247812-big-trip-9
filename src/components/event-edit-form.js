@@ -121,19 +121,21 @@ export class EventEditForm extends BaseComponent {
   }
 
   _updateDestinationSection(destinationName) {
-    const section = this.element.querySelector(`.event__section--destination`);
-    section.classList.toggle(`visually-hidden`, !destinationName);
+    const eventDetailsSec = this.element.querySelector(`.event__details`);
+    const destinationSec = eventDetailsSec.querySelector(`.event__section--destination`);
+    eventDetailsSec.classList.toggle(`visually-hidden`, !destinationName);
+    destinationSec.classList.toggle(`visually-hidden`, !destinationName);
     if (!destinationName) {
       return;
     }
     const idx = this._destinations.findIndex((it) => it.name === destinationName);
     const destination = this._destinations[idx];
-    section.querySelector(`.event__destination-description`)
+    destinationSec.querySelector(`.event__destination-description`)
       .textContent = destination.description;
 
     this._data.destination = destination;
 
-    const photosTape = section.querySelector(`.event__photos-tape`);
+    const photosTape = destinationSec.querySelector(`.event__photos-tape`);
 
     const template = `${destination.pictures.map((it) =>
       `<img class="event__photo" src="${it.src}" alt="${it.description}">`).join(``)}
@@ -162,7 +164,7 @@ export class EventEditForm extends BaseComponent {
     const {type, label, startTime, endTime, price, isFavorite, offers, destination} = this._data;
     const offersSectionVisibility = offers.length === 0 ? `visually-hidden` : ``;
     const destinationSectionVisibility = destination.name === `` ? `visually-hidden` : ``;
-    const eventDetailsSectionVisibility = offers.length === 0 && destination.name === `` ? `visually-hidden` : ``;
+    const eventDetailsSectionVisibility = destination.name === `` ? `visually-hidden` : ``;
     const destinations = this._destinations;
     return `
     <form class="trip-events__item event event--edit" action="#" method="post">

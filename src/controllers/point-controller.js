@@ -8,7 +8,6 @@ import {dataProvider} from "../data-provider";
 export class PointController extends BaseComponent {
   constructor(params) {
     super(params);
-
     this._isInEditMode = params.isInEditMode || false;
     this._element = null;
 
@@ -60,10 +59,14 @@ export class PointController extends BaseComponent {
         type: eventType,
       });
       this._setNormalMode();
-      this._callbacks.onDataChange(this._data, entry);
+      if (entry.id === null) {
+        this._callbacks.onDataAdd(entry);
+      } else {
+        this._callbacks.onDataChange(entry);
+      }
     });
     eventEditForm.onDelete(() => {
-      this._callbacks.onDataChange(this._data, null);
+      this._callbacks.onDataRemove(this._data.id);
     });
     eventEditForm.onDismiss(() => {
       this._setNormalMode();

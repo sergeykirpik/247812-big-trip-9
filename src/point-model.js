@@ -8,7 +8,7 @@ export class PointModel {
     this.price = price;
     this.isFavorite = isFavorite || false;
     this.offers = offers || [];
-    this.type = type || `taxi`;
+    this.type = type;
     this.destination = destination || {name: ``, description: ``, pictures: []};
   }
 
