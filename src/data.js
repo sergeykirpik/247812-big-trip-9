@@ -1,6 +1,5 @@
 import moment from "moment";
 import {PointModel} from "./point-model";
-import {Route} from "./route";
 import {dataProvider} from "./data-provider";
 
 const MAX_DATE_INTERVAL = 10; // hours
@@ -118,4 +117,3 @@ export const SortType = {
     .sort((a, b) => b.price - a.price),
 };
 
-// export const route = new Route(getTripEventList(getRandom(MAX_ROUTE_POINTS)));

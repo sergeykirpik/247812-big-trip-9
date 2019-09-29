@@ -22,13 +22,13 @@ class DataProvider {
     return Promise.all([
       api.getOffers(),
       api.getDestinations(),
-      api.getPoints()
-    ]).then(([offers, destinations, points]) => {
+    ]).then(([offers, destinations]) => {
       this._offers = offers;
       this._destinations = destinations;
-      this._points = points;
     });
   }
 }
 
 export const dataProvider = new DataProvider();
+
+window.dataProvider = dataProvider;

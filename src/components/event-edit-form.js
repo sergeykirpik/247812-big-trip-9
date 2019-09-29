@@ -160,6 +160,62 @@ export class EventEditForm extends BaseComponent {
     this._onDelete = handler;
   }
 
+  get saveBtn() {
+    return this.element.querySelector(`.event__save-btn`);
+  }
+
+  get deleteBtn() {
+    return this.element.querySelector(`.event__reset-btn`);
+  }
+
+  setEnabled(v) {
+    for (const it of this.element.querySelectorAll(`button`)) {
+      it.disabled = !v;
+    }
+    for (const it of this.element.querySelectorAll(`input`)) {
+      it.disabled = !v;
+    }
+  }
+
+  resetState() {
+    this.setEnabled(true);
+    this.element.classList.remove(`error-outline`);
+    for (const el of this.element.elements) {
+      el.classList.remove(`error-field`);
+    }
+    this.saveBtn.textContent = `Save`;
+    this.deleteBtn.textContent = `Delete`;
+  }
+
+  setSavingState() {
+    this.resetState();
+    this.saveBtn.textContent = `Saving...`;
+    this.setEnabled(false);
+  }
+
+  setDeletingState() {
+    this.resetState();
+    this.deleteBtn.textContent = `Deleting...`;
+    this.setEnabled(false);
+  }
+
+  setErrorState(errorFields) {
+    this.resetState();
+    this.element.classList.add(`error-outline`);
+    this.element.classList.add(`shake`);
+    setTimeout(() => this.element.classList.remove(`shake`), 1000);
+    this.saveBtn.textContent = `Save`;
+
+    for (const el of this.element.elements) {
+      el.classList.remove(`error-field`);
+    }
+
+    for (const fieldName of errorFields) {
+      const el = this.element.elements[fieldName];
+      el.classList.add(`error-field`);
+    }
+  }
+
   get template() {
     const {type, label, startTime, endTime, price, isFavorite, offers, destination} = this._data;
     const offersSectionVisibility = offers.length === 0 ? `visually-hidden` : ``;
