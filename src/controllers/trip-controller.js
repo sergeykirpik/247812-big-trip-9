@@ -37,47 +37,35 @@ const columns = [
 ];
 
 export class TripController extends BaseComponent {
-  constructor({points, onDataChange}) {
-    super({data: points});
+  constructor(route) {
+    super({data: route.points});
+    this._route = route;
     this._sort = null;
     this._noPoints = new NoPoints();
     this._currentSort = `event`;
     this._currentFilter = `everything`;
-    this._onDataChangeParentCallback = onDataChange;
     this._isInAddingMode = false;
-
     this._editForm = null;
+
+    route.addOnDataChangedCallback(() => {
+      this._data = route.points;
+      rerender(this);
+    });
   }
 
   _onDataChange(point) {
     api.editPoint(point)
-      .then((data) => {
-        const loadedPoint = PointModel.parsePoint(data);
-        let index = this._data.findIndex((it) => it.id === loadedPoint.id);
-        this._data[index] = loadedPoint;
-        rerender(this);
-        this._onDataChangeParentCallback();
-      });
+      .then(() => this._route.getPoints());
   }
 
   _onDataAdd(newPoint) {
     api.addPoint(newPoint)
-      .then((data) => {
-        const loadedPoint = PointModel.parsePoint(data);
-        this._data.unshift(loadedPoint);
-        rerender(this);
-        this._onDataChangeParentCallback();
-      });
+      .then(() => this._route.getPoints());
   }
 
   _onDataRemove(id) {
     api.removePoint(id)
-      .then(() => {
-        const index = this._data.findIndex((it) => it.id === id);
-        this._data.splice(index, 1);
-        rerender(this);
-        this._onDataChangeParentCallback();
-      });
+      .then(() =>this._route.getPoints());
   }
 
   get _filteredPoints() {
@@ -102,11 +90,7 @@ export class TripController extends BaseComponent {
   get _groupedDayList() {
     let dayCounter = 1;
     const dayItems = this._pointsByDay.map((it) => new DayItem({
-      children: [new EventListController({data: it, callbacks: {
-        onDataChange: this._onDataChange.bind(this),
-        onDataAdd: this._onDataAdd.bind(this),
-        onDataRemove: this._onDataRemove.bind(this),
-      }})],
+      children: [new EventListController({data: it, route: this._route})],
       data: {
         dayCounter: dayCounter++,
         dayDate: moment(it[0].startTime).format(`YYYY-MM-DD`),
@@ -161,6 +145,7 @@ export class TripController extends BaseComponent {
       return;
     }
     this._editForm = new PointController({
+      route: this._route,
       data: new PointModel({
         type: dataProvider.offers[0].type,
         offers: dataProvider.offers[0].offers.slice(),

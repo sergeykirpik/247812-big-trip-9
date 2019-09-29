@@ -18,12 +18,7 @@ export class PageController {
 
     this._newEventBtn = new NewEventButton({callbacks: {onClick: this._addNewPoint.bind(this)}});
 
-    this._tripController = new TripController({
-      points: this._route.points,
-      onDataChange: () => {
-        this._renderHeader();
-      }
-    });
+    this._tripController = new TripController(this._route);
 
     this._pages = {
       table: this._tripController,
@@ -79,11 +74,15 @@ export class PageController {
   }
 
   init() {
-    this._renderHeader();
+    this._route.addOnDataChangedCallback(() => {
+      this._showPage(this._activePage);
+    });
+    // this._renderHeader();
     Object.values(this._pages).forEach((page) => {
       render(this._body, page);
       page.hide();
     });
-    this._showPage(this._activePage);
+    // this._showPage(this._activePage);
+    this._route.getPoints();
   }
 }

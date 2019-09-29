@@ -6,8 +6,11 @@ import {EventSlot} from "../components/event-slot";
 export class EventListController extends BaseComponent {
   constructor(params) {
     super(params);
+    this._route = params.route;
     this._items = this._data.map((it) => new PointController({
-      data: it, callbacks: {...this._callbacks, onEdit: (item) => this._onEdit(item)}
+      route: params.route,
+      data: it,
+      callbacks: {onEdit: (item) => this._onEdit(item)}
     }));
     this._element = new EventList({
       children: this._items.map((it) => new EventSlot({children: [it]}))
