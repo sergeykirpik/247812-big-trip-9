@@ -75,24 +75,23 @@ export class StatsController extends BaseComponent {
 
     (this._charts || []).forEach((c) => c.destroy());
 
-    const moneyChart = this._drawChart({
+    const moneyChart = this._drawChart(Object.assign({
       ctx: this._element.querySelector(`.statistics__chart--money`).getContext(`2d`),
       title: `MONEY`,
-      ...this._moneyStats,
       formatter: (value) => `€ ${value}`,
-    });
-    const transportChart = this._drawChart({
+    }, this._moneyStats));
+
+    const transportChart = this._drawChart(Object.assign({
       ctx: this._element.querySelector(`.statistics__chart--transport`).getContext(`2d`),
       title: `TRANSPORT`,
-      ...this._transportStats,
       formatter: (value) => `${value}x`,
-    });
-    const timeSpentChart = this._drawChart({
+    }, this._transportStats));
+
+    const timeSpentChart = this._drawChart(Object.assign({
       ctx: this._element.querySelector(`.statistics__chart--time`).getContext(`2d`),
       title: `TIME SPENT`,
-      ...this._timeSpentStats,
       formatter: (value) => `${value}H`,
-    });
+    }, this._timeSpentStats));
 
     this._charts = [moneyChart, transportChart, timeSpentChart];
   }
