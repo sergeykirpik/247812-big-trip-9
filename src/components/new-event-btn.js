@@ -3,7 +3,7 @@ import {BaseComponent} from "../base-component";
 export class NewEventButton extends BaseComponent {
   constructor(params) {
     super(params);
-    this.on(this.element, `click`, () => this._callbacks.onClick());
+    this.element.addEventListener(`click`, () => this._callbacks.onClick());
   }
   get template() {
     return `

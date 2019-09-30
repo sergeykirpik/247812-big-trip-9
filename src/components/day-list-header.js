@@ -4,7 +4,7 @@ export class DayListHeader extends BaseComponent {
   constructor(params) {
     super(params);
     const {onSort} = this._callbacks;
-    this.on(this.element, `click`, (evt) => {
+    this.element.addEventListener(`click`, (evt) => {
       const sortType = evt.target.dataset.sortType;
       if (sortType) {
         onSort(sortType);
