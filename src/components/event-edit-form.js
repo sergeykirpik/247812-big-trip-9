@@ -19,6 +19,7 @@ export class EventEditForm extends BaseComponent {
       altInput: true,
       altFormat: `d.m.Y H:i`,
       enableTime: true,
+      [`time_24hr`]: true,
     };
 
     const form = this.element;
@@ -45,14 +46,20 @@ export class EventEditForm extends BaseComponent {
     });
 
     const startTime = this.element.querySelector(`#event-start-time-1`);
-    flatpickr(startTime, Object.assign({
+    const startTimePickr = flatpickr(startTime, Object.assign({
       defaultDate: this._data.startTime,
+      maxDate: this._data.endTime,
     }, flatpickrOptions));
 
     const endTime = this.element.querySelector(`#event-end-time-1`);
-    flatpickr(endTime, Object.assign({
+    const endTimePickr = flatpickr(endTime, Object.assign({
       defaultDate: this._data.endTime,
+      minDate: this._data.startTime,
     }, flatpickrOptions));
+
+    startTimePickr.config.onChange.push((minDate) => {
+      endTimePickr.config.minDate = minDate;
+    });
 
     const eventTypeIcon = form.querySelector(`.event__type-icon`);
     const eventTypeToggle = form.querySelector(`.event__type-toggle`);
@@ -113,6 +120,9 @@ export class EventEditForm extends BaseComponent {
       return;
     }
     const idx = this._destinations.findIndex((it) => it.name === destinationName);
+    if (idx < 0) {
+      return;
+    }
     const destination = this._destinations[idx];
     destinationSec.querySelector(`.event__destination-description`)
       .textContent = destination.description;

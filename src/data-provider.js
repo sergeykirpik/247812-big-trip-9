@@ -3,9 +3,10 @@ import {Route} from "./route";
 
 class DataProvider {
   constructor() {
-    this._destinations = null;
-    this._offers = null;
+    this._destinations = [];
+    this._offers = [];
     this._route = new Route();
+    this._isLoading = true;
   }
 
   addOnDataChangedCallback(callback) {
@@ -28,7 +29,12 @@ class DataProvider {
     return this._route.points;
   }
 
+  get isLoading() {
+    return this._isLoading;
+  }
+
   load() {
+    this._isLoading = true;
     return Promise.all([
       api.getOffers(),
       api.getDestinations(),
@@ -36,6 +42,7 @@ class DataProvider {
       this._offers = offers;
       this._destinations = destinations;
       this.route.getPoints();
+      this._isLoading = false;
     });
   }
 }

@@ -99,6 +99,7 @@ export class TripController extends BaseComponent {
     if (this._element) {
       return this._element;
     }
+    this._noPoints.element.textContent = dataProvider.isLoading ? `Loading...` : `Click New Event to create your first point`;
     let children = [this._editForm ? this._editForm : this._noPoints];
     if (this._sortedPoints.length > 0) {
       this._sort = new DayListHeader({

@@ -86,5 +86,6 @@ export class PageController {
       render(this._body, page);
       page.hide();
     });
+    this._showPage(this._activePage);
   }
 }
