@@ -69,7 +69,7 @@ export class TripController extends BaseComponent {
 
   get _visibleColumns() {
     return this._currentSort === `event` ? columns
-      : columns.map((it) => it.title === `day` ? {...it, title: ``} : it);
+      : columns.map((it) => it.title === `day` ? Object.assign({}, it, {title: ``}) : it);
   }
 
   get _groupedDayList() {
