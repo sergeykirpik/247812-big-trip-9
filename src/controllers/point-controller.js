@@ -8,7 +8,6 @@ import {dataProvider} from "../data-provider";
 export class PointController extends BaseComponent {
   constructor(params) {
     super(params);
-    this._route = params.route;
     this._isInEditMode = params.isInEditMode || false;
     this._element = null;
 
@@ -63,8 +62,8 @@ export class PointController extends BaseComponent {
       const methodName = entry.id === null ? `addPoint` : `editPoint`;
 
       eventEditForm.setSavingState();
-      this._route[methodName](entry).then(() => this.dismiss()).catch((e) => {
-        const errors = JSON.parse(e.message).error;
+      dataProvider.route[methodName](entry).then(() => this.dismiss()).catch((e) => {
+        const errors = JSON.parse(e.message).errors;
         const field2Element = {
           [`base_price`]: `event-price`,
           [`destination`]: `event-destination`,
@@ -74,7 +73,7 @@ export class PointController extends BaseComponent {
     });
     eventEditForm.onDelete(() => {
       eventEditForm.setDeletingState();
-      this._route.removePoint(this._data.id).catch(() => {
+      dataProvider.route.removePoint(this._data.id).catch(() => {
         eventEditForm.setErrorState([]);
       });
     });

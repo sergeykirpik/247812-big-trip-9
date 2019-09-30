@@ -8,21 +8,21 @@ import {menuData, FilterType} from "../data";
 import {render, unrender} from "../utils";
 import {TripController} from "./trip-controller";
 import {StatsController} from "./stats-controller";
+import {dataProvider} from "../data-provider";
 
 export class PageController {
-  constructor({tripHeaderContainer, tripBodyContainer, route}) {
-    this._route = route;
+  constructor({tripHeaderContainer, tripBodyContainer}) {
 
     this._header = tripHeaderContainer;
     this._body = tripBodyContainer;
 
     this._newEventBtn = new NewEventButton({callbacks: {onClick: this._addNewPoint.bind(this)}});
 
-    this._tripController = new TripController(this._route);
+    this._tripController = new TripController();
 
     this._pages = {
       table: this._tripController,
-      stats: new StatsController({data: this._route.points}),
+      stats: new StatsController(),
     };
     this._activePage = `table`;
     this._currentFilter = `everything`;
@@ -66,7 +66,7 @@ export class PageController {
       ]
     });
 
-    this._tripInfo = new TripInfo({data: this._route});
+    this._tripInfo = new TripInfo({data: dataProvider.route});
 
     render(this._header, this._tripInfo);
     render(this._header, this._tripControls);
@@ -74,15 +74,13 @@ export class PageController {
   }
 
   init() {
-    this._route.addOnDataChangedCallback(() => {
+    dataProvider.addOnDataChangedCallback(() => {
       this._showPage(this._activePage);
     });
-    // this._renderHeader();
     Object.values(this._pages).forEach((page) => {
       render(this._body, page);
       page.hide();
     });
-    // this._showPage(this._activePage);
-    this._route.getPoints();
+    dataProvider.route.getPoints();
   }
 }

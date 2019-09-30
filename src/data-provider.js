@@ -1,11 +1,21 @@
 import {api} from "./api";
+import {Route} from "./route";
 
 class DataProvider {
   constructor() {
     this._destinations = null;
     this._offers = null;
-    this._points = null;
+    this._route = new Route();
   }
+
+  addOnDataChangedCallback(callback) {
+    this._route.addOnDataChangedCallback(callback);
+  }
+
+  get route() {
+    return this._route;
+  }
+
   get destinations() {
     return this._destinations;
   }
@@ -15,7 +25,7 @@ class DataProvider {
   }
 
   get points() {
-    return this._points;
+    return this._route.points;
   }
 
   load() {
@@ -25,10 +35,10 @@ class DataProvider {
     ]).then(([offers, destinations]) => {
       this._offers = offers;
       this._destinations = destinations;
+      this.route.getPoints();
     });
   }
 }
 
 export const dataProvider = new DataProvider();
 
-window.dataProvider = dataProvider;

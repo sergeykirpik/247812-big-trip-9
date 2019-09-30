@@ -3,6 +3,7 @@ import Chart from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 import {StatisticsSection} from "../components/statistics-sec";
 import {BaseComponent} from "../base-component";
+import {dataProvider} from "../data-provider";
 
 const CHART_WIDTH = 900;
 const CHART_BAR_HEIGHT = 30;
@@ -14,9 +15,14 @@ const getRandomColor = () => `rgba(${rnd(128) + 128}, ${rnd(128) + 128}, ${rnd(1
 
 export class StatsController extends BaseComponent {
 
-  constructor(params) {
-    super(params);
+  constructor() {
+    super();
+    this._data = [];
     Chart.pluginService.register(ChartDataLabels);
+    dataProvider.addOnDataChangedCallback(() => {
+      this._data = dataProvider.points;
+      this.updateStatistics();
+    });
   }
 
   _afterShow() {
@@ -72,24 +78,18 @@ export class StatsController extends BaseComponent {
     const moneyChart = this._drawChart({
       ctx: this._element.querySelector(`.statistics__chart--money`).getContext(`2d`),
       title: `MONEY`,
-      // labels: [`✈️ FLY`, `🏨 STAY`, `🚗 DRIVE`, `🏛 LOOK`, `🍕 EAT`, `🚕 RIDE`],
-      // data: [400, 300, 200, 160, 150, 100],
       ...this._moneyStats,
       formatter: (value) => `€ ${value}`,
     });
     const transportChart = this._drawChart({
       ctx: this._element.querySelector(`.statistics__chart--transport`).getContext(`2d`),
       title: `TRANSPORT`,
-      // labels: [`🚗 DRIVE`, `🚕 RIDE`, `✈️ FLY`, `🛳 SAIL`],
-      // data: [4, 3, 2, 1],
       ...this._transportStats,
       formatter: (value) => `${value}x`,
     });
     const timeSpentChart = this._drawChart({
       ctx: this._element.querySelector(`.statistics__chart--time`).getContext(`2d`),
       title: `TIME SPENT`,
-      // labels: [`🛳 HOTEL`, `🚕 TO AIRPORT`, `🚗 TO GENEVA`, `🚕 TO CHAMONIX`],
-      // data: [72, 1, 3, 2],
       ...this._timeSpentStats,
       formatter: (value) => `${value}H`,
     });
