@@ -1,6 +1,5 @@
 import {capitalize} from '../utils.js';
 import {BaseComponent} from '../base-component.js';
-import {eventEmmiter} from '../event-emmiter.js';
 
 export class Menu extends BaseComponent {
   constructor(params) {

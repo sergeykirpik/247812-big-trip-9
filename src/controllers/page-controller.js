@@ -9,6 +9,7 @@ import {render, unrender} from "../utils";
 import {TripController} from "./trip-controller";
 import {StatsController} from "./stats-controller";
 import {dataProvider} from "../data-provider";
+import {eventEmmiter} from "../event-emmiter";
 
 export class PageController {
   constructor({tripHeaderContainer, tripBodyContainer}) {
@@ -29,7 +30,11 @@ export class PageController {
   }
 
   _addNewPoint() {
+    this._newEventBtn.element.disabled = true;
     this._tripController.addNewPoint();
+    eventEmmiter.on(`newItemFormClosed`, () => {
+      this._newEventBtn.element.disabled = false;
+    });
   }
 
   _showPage(name) {
@@ -81,6 +86,5 @@ export class PageController {
       render(this._body, page);
       page.hide();
     });
-    dataProvider.route.getPoints();
   }
 }

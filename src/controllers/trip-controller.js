@@ -11,6 +11,7 @@ import {BaseComponent} from "../base-component";
 import moment from "moment";
 import {PointController} from "./point-controller";
 import {dataProvider} from "../data-provider";
+import {eventEmmiter} from "../event-emmiter";
 
 const columns = [
   {
@@ -98,7 +99,7 @@ export class TripController extends BaseComponent {
     if (this._element) {
       return this._element;
     }
-    let children = [this._editForm, this._noPoints];
+    let children = [this._editForm ? this._editForm : this._noPoints];
     if (this._sortedPoints.length > 0) {
       this._sort = new DayListHeader({
         data: {
@@ -134,6 +135,7 @@ export class TripController extends BaseComponent {
       callbacks: {
         onDismiss: () => {
           this._editForm = null;
+          eventEmmiter.emit(`newItemFormClosed`);
         }
       },
       isInEditMode: true

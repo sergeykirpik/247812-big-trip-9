@@ -4,6 +4,7 @@ import {EventEditForm} from "../components/event-edit-form";
 import {render, unrender, Position} from "../utils";
 import {PointModel} from "../point-model";
 import {dataProvider} from "../data-provider";
+import {eventEmmiter} from "../event-emmiter";
 
 export class PointController extends BaseComponent {
   constructor(params) {
@@ -12,6 +13,15 @@ export class PointController extends BaseComponent {
     this._element = null;
 
     this._callbacks.onDismiss = this._callbacks.onDismiss || (() => {});
+
+    if (this._isInEditMode) {
+      eventEmmiter.on(`eventEditFormOpened`, (id) => {
+        if (this._data.id !== id) {
+          this.dismiss();
+        }
+      });
+    }
+
   }
 
   get element() {
@@ -28,7 +38,6 @@ export class PointController extends BaseComponent {
     const eventItem = new EventItem({data: this._data});
     eventItem.rollupBtn.addEventListener(`click`, () => {
       this._setEditMode();
-      // this._callbacks.onEdit(this);
     });
     this._eventItem = eventItem;
     return eventItem;
@@ -40,6 +49,7 @@ export class PointController extends BaseComponent {
       destinations: dataProvider.destinations,
       offers: dataProvider.offers,
     });
+
     eventEditForm.onSubmit((formData) => {
       const name = formData.get(`event-destination`);
       const destination = dataProvider.destinations.find((it) => it.name === name);
@@ -105,6 +115,13 @@ export class PointController extends BaseComponent {
     this.removeElement();
     render(this._eventItem.element, this, Position.AFTER_END);
     unrender(this._eventItem);
+
+    eventEmmiter.emit(`eventEditFormOpened`, this._data.id);
+    eventEmmiter.on(`eventEditFormOpened`, (id) => {
+      if (this._data.id !== id) {
+        this.dismiss();
+      }
+    });
   }
 
   dismiss() {

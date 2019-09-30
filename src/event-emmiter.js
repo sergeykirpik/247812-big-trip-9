@@ -1,32 +1,28 @@
 class EventEmmiter {
   constructor() {
-    this._subsribers = [];
+    this._subscribers = {};
   }
 
-  subscribe(callback) {
-    this._subsribers.push(callback);
+  on(evtType, callback) {
+    const subscribers = this._subscribers[evtType] || [];
+    subscribers.push(callback);
+    this._subscribers[evtType] = subscribers;
+    return callback;
   }
 
-  unsubscribe(callback) {
-    const idx = this._subsribers.findIndex((it) => it === callback);
-    this._subsribers.splice(idx, 1);
+  off(evtType, callback) {
+    const idx = this._subscribers[evtType].findIndex((it) => it === callback);
+    this._subscribers[evtType].splice(idx, 1);
   }
 
-  emit(evt) {
-    this._notifyAll(evt);
-  }
+  emit(evtType, evt) {
+    this._subscribers[evtType] = (this._subscribers[evtType] || []).filter((it) => it !== undefined);
 
-  on(evtTarget, evtType, callback) {
-    this._subsribers.push({evtTarget, evtType, callback});
-  }
-
-  _notifyAll(evt) {
-    this._subsribers = this._subsribers.filter((it) => it.callback);
-    this._subsribers.forEach((it) => {
-      if ((it.evtTarget === evt.target || it.evtTarget === null) && (it.evtType === evt.type)) {
-        it.callback(evt);
+    for (let i = 0, len = this._subscribers[evtType].length; i < len; i++) {
+      if (this._subscribers[evtType][len - i - 1](evt) !== true) {
+        break;
       }
-    });
+    }
   }
 
 }

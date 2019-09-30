@@ -2,6 +2,7 @@ import {TransferType, ActivityType, labels} from '../data.js';
 import {capitalize, KeyCode} from '../utils.js';
 import flatpickr from 'flatpickr';
 import {BaseComponent} from '../base-component.js';
+import {eventEmmiter} from '../event-emmiter.js';
 
 export class EventEditForm extends BaseComponent {
   constructor(params) {
@@ -32,46 +33,34 @@ export class EventEditForm extends BaseComponent {
     });
     form.addEventListener(`reset`, (evt) => {
       evt.preventDefault();
-      this._onDelete();
+      if (this._data.id !== null) {
+        this._onDelete();
+      } else {
+        this.dismiss();
+      }
     });
     const destination = form.querySelector(`.event__input--destination`);
     destination.addEventListener(`change`, () => {
       this._updateDestinationSection(destination.value);
     });
-    const flatpickrOnOpen = (element) => {
-      return () => {
-        const handler = this.on(document, `keydown`, (evt) => {
-          if (evt.keyCode === KeyCode.ESC) {
-            evt.stopPropagation();
-            element._flatpickr.close();
-            this.off(handler);
-          }
-        }, true);
-      };
-    };
 
     const startTime = this.element.querySelector(`#event-start-time-1`);
     flatpickr(startTime, Object.assign({
       defaultDate: this._data.startTime,
-      onOpen: flatpickrOnOpen(startTime),
     }, flatpickrOptions));
 
     const endTime = this.element.querySelector(`#event-end-time-1`);
     flatpickr(endTime, Object.assign({
       defaultDate: this._data.endTime,
-      onOpen: flatpickrOnOpen(endTime),
     }, flatpickrOptions));
 
     const eventTypeIcon = form.querySelector(`.event__type-icon`);
     const eventTypeToggle = form.querySelector(`.event__type-toggle`);
     eventTypeToggle.addEventListener(`click`, () => {
-      const handler = this.on(document, `keydown`, (evt) => {
-        if (evt.keyCode === KeyCode.ESC) {
-          evt.stopPropagation();
-          eventTypeToggle.checked = false;
-          this.off(handler);
-        }
-      }, true);
+      const handler = eventEmmiter.on(`keydown_ESC`, () => {
+        eventTypeToggle.checked = false;
+        eventEmmiter.off(`keydown_ESC`, handler);
+      });
     });
     const eventLabel = form.querySelector(`.event__label`);
     const eventInput = form.querySelector(`.event__input`);
@@ -86,15 +75,11 @@ export class EventEditForm extends BaseComponent {
       this._updateDestinationSection();
     }));
 
-    const rollupBtn = form.querySelector(`.event__rollup-btn`);
-    rollupBtn.addEventListener(`click`, () => this.dismiss());
+    this.rollupBtn.addEventListener(`click`, () => this.dismiss());
 
-    this.on(document, `keydown`, (evt) => {
-      if (evt.keyCode === KeyCode.ESC) {
-        this.dismiss();
-      }
-    }, false);
+    eventEmmiter.on(`keydown_ESC`, () => this.dismiss());
 
+    this.resetState();
   }
 
   _updateOffersSection(type) {
@@ -163,8 +148,16 @@ export class EventEditForm extends BaseComponent {
     return this.element.querySelector(`.event__save-btn`);
   }
 
-  get deleteBtn() {
+  get resetBtn() {
     return this.element.querySelector(`.event__reset-btn`);
+  }
+
+  get favoriteBtn() {
+    return this.element.querySelector(`.event__favorite-btn`);
+  }
+
+  get rollupBtn() {
+    return this.element.querySelector(`.event__rollup-btn`);
   }
 
   setEnabled(v) {
@@ -183,7 +176,13 @@ export class EventEditForm extends BaseComponent {
       el.classList.remove(`error-field`);
     }
     this.saveBtn.textContent = `Save`;
-    this.deleteBtn.textContent = `Delete`;
+    this.resetBtn.textContent = `Delete`;
+
+    if (this._data.id === null) {
+      this.resetBtn.textContent = `Cancel`;
+      this.favoriteBtn.classList.add(`visually-hidden`);
+      this.rollupBtn.style.display = `none`;
+    }
   }
 
   setSavingState() {
@@ -194,7 +193,7 @@ export class EventEditForm extends BaseComponent {
 
   setDeletingState() {
     this.resetState();
-    this.deleteBtn.textContent = `Deleting...`;
+    this.resetBtn.textContent = `Deleting...`;
     this.setEnabled(false);
   }
 
