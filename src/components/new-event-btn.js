@@ -1,9 +1,10 @@
 import {BaseComponent} from "../base-component";
+import {eventEmmiter} from "../event-emmiter";
 
 export class NewEventButton extends BaseComponent {
   constructor(params) {
     super(params);
-    this.on(this.element, `click`, () => this._callbacks.onClick());
+    this.element.addEventListener(`click`, (evt) => this._callbacks.onClick());
   }
   get template() {
     return `

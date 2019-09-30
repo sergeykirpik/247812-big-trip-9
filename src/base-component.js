@@ -1,9 +1,7 @@
 import {createElement, render} from "./utils";
-import {EventManager} from "./event-manager";
 
-export class BaseComponent extends EventManager {
+export class BaseComponent {
   constructor(params) {
-    super();
     params = params || {};
     this._element = null;
     this._children = (params.children || []).filter((it) => it !== null);
@@ -12,8 +10,12 @@ export class BaseComponent extends EventManager {
     this._ownedComponents = [];
   }
 
-  _afterShow() {
+  on() {
+    console.log(`FIX me!!!`);
+  }
 
+  _afterShow() {
+    // overriden in accestors
   }
 
   addOwnedComponent(component) {
@@ -48,17 +50,6 @@ export class BaseComponent extends EventManager {
 
   get template() {
     return `<div></div>`;
-  }
-
-  attachEventHandlers() {
-    super.attachEventHandlers();
-    this._children.forEach((component) => component.attachEventHandlers());
-  }
-
-  detachEventHandlers() {
-    super.detachEventHandlers();
-    this._children.forEach((component) => component.detachEventHandlers());
-    this._ownedComponents.forEach((component) => component.detachEventHandlers());
   }
 
   removeElement() {

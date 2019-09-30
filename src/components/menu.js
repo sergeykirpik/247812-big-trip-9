@@ -1,10 +1,11 @@
 import {capitalize} from '../utils.js';
 import {BaseComponent} from '../base-component.js';
+import {eventEmmiter} from '../event-emmiter.js';
 
 export class Menu extends BaseComponent {
   constructor(params) {
     super(params);
-    this.on(this.element, `click`, (evt) => {
+    this.element.addEventListener(`click`, (evt) => {
       if (evt.target.tagName === `A`) {
         this._callbacks.onAction(evt.target.hash.slice(1));
       }

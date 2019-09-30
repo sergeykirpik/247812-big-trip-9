@@ -26,7 +26,7 @@ export class PointController extends BaseComponent {
 
   _createItem() {
     const eventItem = new EventItem({data: this._data});
-    eventItem.on2(eventItem.rollupBtn, `click`, () => {
+    eventItem.rollupBtn.addEventListener(`click`, () => {
       this._setEditMode();
       // this._callbacks.onEdit(this);
     });
@@ -82,7 +82,6 @@ export class PointController extends BaseComponent {
       this._callbacks.onDismiss();
     });
     this._eventEditForm = eventEditForm;
-    eventEditForm.attachEventHandlers();
     return eventEditForm;
   }
 

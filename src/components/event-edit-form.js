@@ -21,21 +21,21 @@ export class EventEditForm extends BaseComponent {
     };
 
     const form = this.element;
-    this.on(form, `keydown`, (evt) => {
+    form.addEventListener(`keydown`, (evt) => {
       if (evt.keyCode === KeyCode.ENTER) {
         evt.preventDefault();
       }
     });
-    this.on(form, `submit`, (evt) => {
+    form.addEventListener(`submit`, (evt) => {
       evt.preventDefault();
       this._onSubmit(new FormData(form));
     });
-    this.on(form, `reset`, (evt) => {
+    form.addEventListener(`reset`, (evt) => {
       evt.preventDefault();
       this._onDelete();
     });
     const destination = form.querySelector(`.event__input--destination`);
-    this.on(destination, `change`, () => {
+    destination.addEventListener(`change`, () => {
       this._updateDestinationSection(destination.value);
     });
     const flatpickrOnOpen = (element) => {
@@ -47,7 +47,6 @@ export class EventEditForm extends BaseComponent {
             this.off(handler);
           }
         }, true);
-        this.attachEventHandlers();
       };
     };
 
@@ -65,7 +64,7 @@ export class EventEditForm extends BaseComponent {
 
     const eventTypeIcon = form.querySelector(`.event__type-icon`);
     const eventTypeToggle = form.querySelector(`.event__type-toggle`);
-    this.on(eventTypeToggle, `click`, () => {
+    eventTypeToggle.addEventListener(`click`, () => {
       const handler = this.on(document, `keydown`, (evt) => {
         if (evt.keyCode === KeyCode.ESC) {
           evt.stopPropagation();
@@ -73,13 +72,12 @@ export class EventEditForm extends BaseComponent {
           this.off(handler);
         }
       }, true);
-      this.attachEventHandlers();
     });
     const eventLabel = form.querySelector(`.event__label`);
     const eventInput = form.querySelector(`.event__input`);
 
     const eventTypeRadios = form.querySelectorAll(`.event__type-input`);
-    eventTypeRadios.forEach((r) => this.on(r, `change`, (evt) => {
+    eventTypeRadios.forEach((r) => r.addEventListener(`change`, (evt) => {
       eventTypeIcon.src = `img/icons/${evt.target.value}.png`;
       eventLabel.textContent = labels[evt.target.value];
       eventTypeToggle.checked = false;
@@ -89,13 +87,14 @@ export class EventEditForm extends BaseComponent {
     }));
 
     const rollupBtn = form.querySelector(`.event__rollup-btn`);
-    this.on(rollupBtn, `click`, () => this.dismiss());
+    rollupBtn.addEventListener(`click`, () => this.dismiss());
 
     this.on(document, `keydown`, (evt) => {
       if (evt.keyCode === KeyCode.ESC) {
         this.dismiss();
       }
     }, false);
+
   }
 
   _updateOffersSection(type) {

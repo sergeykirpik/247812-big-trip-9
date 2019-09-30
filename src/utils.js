@@ -1,5 +1,3 @@
-import {EventManager} from "./event-manager";
-
 export const Position = {
   BEFORE_BEGIN: `beforeBegin`,
   AFTER_BEGIN: `afterBegin`,
@@ -12,18 +10,6 @@ export const KeyCode = {
   ENTER: 13,
 };
 
-const _attachEventHandlers = (component) => {
-  if (component instanceof EventManager) {
-    component.attachEventHandlers();
-  }
-};
-
-const _detachEventHandlers = (component) => {
-  if (component instanceof EventManager) {
-    component.detachEventHandlers();
-  }
-};
-
 export const render = (container, component, place = Position.BEFORE_END) => {
   switch (place) {
     case Position.BEFORE_BEGIN:
@@ -31,7 +17,6 @@ export const render = (container, component, place = Position.BEFORE_END) => {
     case Position.BEFORE_END:
     case Position.AFTER_END:
       container.insertAdjacentElement(place, component.element);
-      _attachEventHandlers(component);
       break;
     default:
       throw new Error(`Invalid insertion point: ${place}`);
@@ -40,7 +25,6 @@ export const render = (container, component, place = Position.BEFORE_END) => {
 
 export const unrender = (component, needRemoveElement = true) => {
   if (component) {
-    _detachEventHandlers(component);
     component.element.remove();
     if (needRemoveElement) {
       component.removeElement();
@@ -64,8 +48,6 @@ export const createElement = (template) => {
 
 export const replaceComponent = (oldComponent, newComponent) => {
   oldComponent.element.parentNode.replaceChild(newComponent.element, oldComponent.element);
-  _detachEventHandlers(oldComponent);
-  _attachEventHandlers(newComponent);
 };
 
 
