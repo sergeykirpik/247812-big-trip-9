@@ -1,8 +1,16 @@
-import {TransferType, ActivityType, labels} from '../data.js';
-import {capitalize, KeyCode} from '../utils.js';
+import {capitalize, KeyCode} from "../utils.js";
 import flatpickr from 'flatpickr';
-import {BaseComponent} from '../base-component.js';
-import {eventEmmiter} from '../event-emmiter.js';
+import {BaseComponent} from "../base-component.js";
+import {eventEmmiter} from "../services/event-emmiter.js";
+import {PointModel} from "../models/point";
+
+const TransferType = [
+  `taxi`, `bus`, `train`, `flight`, `ship`, `transport`, `drive`
+];
+
+const ActivityType = [
+  `check-in`, `sightseeing`, `restaurant`,
+];
 
 export class EventEditForm extends BaseComponent {
   constructor(params) {
@@ -77,7 +85,7 @@ export class EventEditForm extends BaseComponent {
     const eventTypeRadios = form.querySelectorAll(`.event__type-input`);
     eventTypeRadios.forEach((r) => r.addEventListener(`change`, (evt) => {
       eventTypeIcon.src = `img/icons/${evt.target.value}.png`;
-      eventLabel.textContent = labels[evt.target.value];
+      eventLabel.textContent = PointModel.getLabel(evt.target.value);
       eventTypeToggle.checked = false;
       this._updateOffersSection(evt.target.value);
       this._updateDestinationSection(destination.value);

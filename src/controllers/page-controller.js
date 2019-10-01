@@ -4,12 +4,11 @@ import {TripControls} from "../components/trip-controls";
 import {Menu} from "../components/menu";
 import {Filter} from "../components/filter";
 
-import {menuData, FilterType} from "../data";
 import {render, unrender} from "../utils";
 import {TripController} from "./trip-controller";
 import {StatsController} from "./stats-controller";
-import {dataProvider} from "../data-provider";
-import {eventEmmiter} from "../event-emmiter";
+import {dataProvider, FilterType} from "../services/data-provider";
+import {eventEmmiter} from "../services/event-emmiter";
 
 export class PageController {
   constructor({tripHeaderContainer, tripBodyContainer}) {
@@ -57,14 +56,14 @@ export class PageController {
     unrender(this._newEventBtn, false);
 
     this._filter = new Filter({
-      data: {filterMethods: FilterType, currentFilter: this._currentFilter},
+      data: {filterItems: Object.keys(FilterType), currentFilter: this._currentFilter},
       callbacks: {onFilter: (filter) => this._applyFilter(filter)}
     });
 
     this._tripControls = new TripControls({
       children: [
         new Menu({
-          data: {menuData, activeItem: this._activePage},
+          data: {menuItems: Object.keys(this._pages), activeItem: this._activePage},
           callbacks: {onAction: (action) => this._showPage(action)}
         }),
         this._filter,

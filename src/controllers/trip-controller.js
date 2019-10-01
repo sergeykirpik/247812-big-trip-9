@@ -1,7 +1,6 @@
 import {TripEventsSection} from "../components/trip-events-sec";
 import {groupBy, rerender} from "../utils";
-import {SortType, FilterType} from "../data";
-import {PointModel} from "../point-model";
+import {PointModel} from "../models/point";
 import {DayList} from "../components/day-list";
 import {NoPoints} from "../components/no-points";
 import {DayListHeader} from "../components/day-list-header";
@@ -10,31 +9,19 @@ import {EventListController} from "./event-list-controller";
 import {BaseComponent} from "../base-component";
 import moment from "moment";
 import {PointController} from "./point-controller";
-import {dataProvider} from "../data-provider";
-import {eventEmmiter} from "../event-emmiter";
+import {dataProvider, FilterType, SortType} from "../services/data-provider";
+import {eventEmmiter} from "../services/event-emmiter";
 
-const columns = [
-  {
-    title: `day`,
-    sortable: false,
-  },
-  {
-    title: `event`,
-    sortable: true,
-  },
-  {
-    title: `time`,
-    sortable: true,
-  },
-  {
-    title: `price`,
-    sortable: true,
-  },
-  {
-    title: `offers`,
-    sortable: false,
-  }
-];
+
+const columns = [];
+
+columns.push({title: `day`, sortable: false});
+
+Object.keys(SortType).forEach((key) => {
+  columns.push({title: key, sortable: true});
+});
+
+columns.push({title: `offers`, sortable: false});
 
 export class TripController extends BaseComponent {
   constructor() {

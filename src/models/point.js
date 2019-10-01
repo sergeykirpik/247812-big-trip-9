@@ -1,5 +1,17 @@
-import {labels} from "./data";
 import moment from "moment";
+
+const labels = {
+  taxi: `Taxi to`,
+  bus: `Bus to`,
+  train: `Train to`,
+  ship: `Ship to`,
+  transport: `Transport to`,
+  drive: `Drive to`,
+  flight: `Flight to`,
+  [`check-in`]: `Check-in in`,
+  sightseeing: `Sightseeing in`,
+  restaurant: `Restaurant in`,
+};
 
 export class PointModel {
   constructor({id, startTime, endTime, price, isFavorite, offers, type, destination}) {
@@ -11,6 +23,10 @@ export class PointModel {
     this.offers = offers || [];
     this.type = type;
     this.destination = destination || {name: ``, description: ``, pictures: []};
+  }
+
+  static getLabel(pointType) {
+    return labels[pointType];
   }
 
   static parsePoint(data) {
@@ -56,13 +72,27 @@ export class PointModel {
     return labels[this.type];
   }
   get duration() {
+    return this.endTime.valueOf() - this.startTime.valueOf();
+  }
+  get durationAsString() {
     const d = moment.duration(moment(this.endTime).diff(moment(this.startTime)));
 
-    const days = d.days() <= 0 ? `` : `${d.days() < 10 ? `0` : ``}${d.days()}D`;
-    const hours = d.hours() <= 0 ? `` : `${d.hours() < 10 ? `0` : ``}${d.hours()}H`;
-    const minutes = d.minutes() <= 0 ? `` : `${d.minutes() < 10 ? `0` : ``}${d.minutes()}M`;
+    const pad = (n) => n < 9 ? `0${n}` : `${n}`;
 
-    return `${days} ${hours} ${minutes}`.trim();
+    const pDays = pad(d.days()) + `D`;
+    const pHours = pad(d.hours()) + `H`;
+    const pMinutes = pad(d.minutes()) + `M`;
+
+    if (d.days() > 0) {
+      return `${pDays} ${pHours} ${pMinutes}`;
+    }
+
+    if (d.hours() > 0) {
+      return `${pHours} ${pMinutes}`;
+    }
+
+    return `${pMinutes}`;
+
   }
 
 

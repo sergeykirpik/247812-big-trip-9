@@ -72,3 +72,11 @@ export const groupBy = (arr, test) => {
 export const die = (msg) => {
   throw new Error(msg);
 };
+
+export const getRandom = (n) => Math.floor(Math.random() * n);
+export const getRandomBool = () => [true, false][getRandom(2)];
+export const hoursToMSec = (h) => h * 1000 * 3600;
+export const daysToMSec = (d) => hoursToMSec(24 * d);
+export const getRandomDate = () => new Date(Date.now() + getRandom(daysToMSec(6)) - getRandom(daysToMSec(3)));
+export const shuffle = (array) => array.sort(() => Math.random() - 0.5);
+
