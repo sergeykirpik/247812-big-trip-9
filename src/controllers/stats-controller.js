@@ -3,7 +3,7 @@ import Chart from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 import {StatisticsSection} from "../components/statistics-sec";
 import {BaseComponent} from "../base-component";
-import {dataProvider} from "../data-provider";
+import {dataProvider} from "../services/data-provider";
 
 const CHART_WIDTH = 900;
 const CHART_BAR_HEIGHT = 30;

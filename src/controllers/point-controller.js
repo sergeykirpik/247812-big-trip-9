@@ -2,9 +2,9 @@ import {BaseComponent} from "../base-component";
 import {EventItem} from "../components/event-item";
 import {EventEditForm} from "../components/event-edit-form";
 import {render, unrender, Position} from "../utils";
-import {PointModel} from "../point-model";
-import {dataProvider} from "../data-provider";
-import {eventEmmiter} from "../event-emmiter";
+import {PointModel} from "../models/point";
+import {dataProvider} from "../services/data-provider";
+import {eventEmmiter} from "../services/event-emmiter";
 
 export class PointController extends BaseComponent {
   constructor(params) {
@@ -72,7 +72,7 @@ export class PointController extends BaseComponent {
       const methodName = entry.id === null ? `addPoint` : `editPoint`;
 
       eventEditForm.setSavingState();
-      dataProvider.route[methodName](entry).then(() => this.dismiss()).catch((e) => {
+      dataProvider[methodName](entry).then(() => this.dismiss()).catch((e) => {
         const errors = JSON.parse(e.message).errors;
         const field2Element = {
           [`base_price`]: `event-price`,
@@ -83,7 +83,7 @@ export class PointController extends BaseComponent {
     });
     eventEditForm.onDelete(() => {
       eventEditForm.setDeletingState();
-      dataProvider.route.removePoint(this._data.id).catch(() => {
+      dataProvider.removePoint(this._data.id).catch(() => {
         eventEditForm.setErrorState([]);
       });
     });

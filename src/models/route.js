@@ -1,42 +1,16 @@
 import moment from "moment";
-import {api} from "./api";
-import {PointModel} from "./point-model";
 
-export class Route {
+export class RouteModel {
   constructor(points) {
     this._points = points || [];
-    this._onDataChangedCallbacks = [];
   }
 
-  addOnDataChangedCallback(callback) {
-    this._onDataChangedCallbacks.push(callback);
+  setPoints(points) {
+    this._points = points;
   }
 
   get points() {
     return this._points;
-  }
-
-  getPoints() {
-    return api.getPoints().then((data) => {
-      this._points = PointModel.parsePoints(data);
-      this._notifyAll();
-    });
-  }
-
-  editPoint(point) {
-    return api.editPoint(point).then(() => this.getPoints());
-  }
-
-  addPoint(point) {
-    return api.addPoint(point).then(() => this.getPoints());
-  }
-
-  removePoint(id) {
-    return api.removePoint(id).then(() => this.getPoints());
-  }
-
-  _notifyAll() {
-    this._onDataChangedCallbacks.forEach((it) => it());
   }
 
   get cost() {

@@ -1,4 +1,4 @@
-import {PointModel} from "./point-model";
+import {PointModel} from "../models/point";
 
 const END_POINT = `https://htmlacademy-es-9.appspot.com/big-trip`;
 const API_KEY = `e1448a27-e086-4c77-89d2-f591f665f4a7` + 1; // Math.random(1000);
@@ -42,7 +42,7 @@ const del = (resourse) => {
 
 const toJSON = (response) => response.json();
 
-class API {
+export class Api {
   constructor() {
     this.getPoints = () => get(`points`);
     this.getDestinations = () => get(`destinations`);
@@ -53,5 +53,3 @@ class API {
     this.removePoint = (id) => del(`points/${id}`);
   }
 }
-
-export const api = new API();

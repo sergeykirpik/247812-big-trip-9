@@ -11,12 +11,12 @@ export class Menu extends BaseComponent {
     });
   }
   get template() {
-    const {menuData, activeItem} = this._data;
+    const {menuItems, activeItem} = this._data;
     return `
     <div>
       <h2 class="visually-hidden">Switch trip view</h2>
       <nav class="trip-controls__trip-tabs  trip-tabs">
-        ${menuData.map((it) => `<a class="trip-tabs__btn
+        ${menuItems.map((it) => `<a class="trip-tabs__btn
           ${it === activeItem ? `trip-tabs__btn--active` : ``}" href="#${it}">${capitalize(it)}</a>
         `).join(``)}
       </nav>

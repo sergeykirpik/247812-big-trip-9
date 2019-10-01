@@ -1,5 +1,17 @@
-import {labels} from "./data";
 import moment from "moment";
+
+const labels = {
+  taxi: `Taxi to`,
+  bus: `Bus to`,
+  train: `Train to`,
+  ship: `Ship to`,
+  transport: `Transport to`,
+  drive: `Drive to`,
+  flight: `Flight to`,
+  [`check-in`]: `Check-in in`,
+  sightseeing: `Sightseeing in`,
+  restaurant: `Restaurant in`,
+};
 
 export class PointModel {
   constructor({id, startTime, endTime, price, isFavorite, offers, type, destination}) {
@@ -11,6 +23,10 @@ export class PointModel {
     this.offers = offers || [];
     this.type = type;
     this.destination = destination || {name: ``, description: ``, pictures: []};
+  }
+
+  static getLabel(pointType) {
+    return labels[pointType];
   }
 
   static parsePoint(data) {
