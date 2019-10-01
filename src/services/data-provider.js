@@ -5,7 +5,7 @@ import {PointModel} from "../models/point";
 export const SortType = {
   event: (points) => points,
   time: (points) => points.slice()
-    .sort((a, b) => getDuration(b) - getDuration(a)),
+    .sort((a, b) => b.duration - a.duration),
   price: (points) => points.slice()
     .sort((a, b) => b.price - a.price),
 };
