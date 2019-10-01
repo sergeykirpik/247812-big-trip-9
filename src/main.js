@@ -4,15 +4,13 @@ import {dataProvider} from "./data-provider";
 import {eventEmmiter} from "./event-emmiter";
 import {KeyCode} from "./utils";
 
-const init = () => {
-  const pageController = new PageController({
-    tripHeaderContainer: document.querySelector(`.trip-main`),
-    tripBodyContainer: document.querySelector(`main .page-body__container`),
-  });
-  pageController.init();
-};
+const pageController = new PageController({
+  tripHeaderContainer: document.querySelector(`.trip-main`),
+  tripBodyContainer: document.querySelector(`main .page-body__container`),
+});
+pageController.init();
 
-dataProvider.load().then(init);
+dataProvider.load();
 
 document.addEventListener(`keydown`, (evt) => {
   switch (evt.keyCode) {
@@ -23,5 +21,5 @@ document.addEventListener(`keydown`, (evt) => {
       eventEmmiter.emit(`keydown_ESC`);
       break;
   }
-}, false);
+}, true);
 

@@ -1,4 +1,5 @@
 import {labels} from "./data";
+import moment from "moment";
 
 export class PointModel {
   constructor({id, startTime, endTime, price, isFavorite, offers, type, destination}) {
@@ -42,6 +43,9 @@ export class PointModel {
     return data.map((it) => PointModel.parsePoint(it));
   }
 
+  _getOffersTotal() {
+    return this.offers.filter((it) => it.accepted).reduce((acc, it) => acc + it.price, 0);
+  }
   get total() {
     return this._getOffersTotal() + this.price;
   }
@@ -51,8 +55,15 @@ export class PointModel {
   get label() {
     return labels[this.type];
   }
-  _getOffersTotal() {
-    return this.offers.filter((it) => it.accepted).reduce((acc, it) => acc + it.price, 0);
+  get duration() {
+    const d = moment.duration(moment(this.endTime).diff(moment(this.startTime)));
+
+    const days = d.days() <= 0 ? `` : `${d.days() < 10 ? `0` : ``}${d.days()}D`;
+    const hours = d.hours() <= 0 ? `` : `${d.hours() < 10 ? `0` : ``}${d.hours()}H`;
+    const minutes = d.minutes() <= 0 ? `` : `${d.minutes() < 10 ? `0` : ``}${d.minutes()}M`;
+
+    return `${days} ${hours} ${minutes}`.trim();
   }
+
 
 }
