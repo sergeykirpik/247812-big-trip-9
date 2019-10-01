@@ -63,7 +63,6 @@ export class EventEditForm extends BaseComponent {
       endTimePickr.config.minDate = selectedDates[0];
 
     });
-    window.startTimePickr = startTimePickr;
 
     const eventTypeIcon = form.querySelector(`.event__type-icon`);
     const eventTypeToggle = form.querySelector(`.event__type-toggle`);
@@ -73,17 +72,15 @@ export class EventEditForm extends BaseComponent {
         eventEmmiter.off(`keydown_ESC`, handler);
       });
     });
-    const eventLabel = form.querySelector(`.event__label`);
-    const eventInput = form.querySelector(`.event__input`);
+    const eventLabel = form.querySelector(`.event__type-output`);
 
     const eventTypeRadios = form.querySelectorAll(`.event__type-input`);
     eventTypeRadios.forEach((r) => r.addEventListener(`change`, (evt) => {
       eventTypeIcon.src = `img/icons/${evt.target.value}.png`;
       eventLabel.textContent = labels[evt.target.value];
       eventTypeToggle.checked = false;
-      eventInput.value = ``;
       this._updateOffersSection(evt.target.value);
-      this._updateDestinationSection();
+      this._updateDestinationSection(destination.value);
     }));
 
     this.rollupBtn.addEventListener(`click`, () => this.dismiss());
