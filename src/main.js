@@ -10,7 +10,7 @@ const pageController = new PageController({
 });
 pageController.init();
 
-dataProvider.load();
+dataProvider.sync().then(() => dataProvider.load());
 
 document.addEventListener(`keydown`, (evt) => {
   switch (evt.keyCode) {
@@ -23,3 +23,15 @@ document.addEventListener(`keydown`, (evt) => {
   }
 }, true);
 
+const oldTitle = document.title;
+
+window.addEventListener(`offline`, () => {
+  document.title = oldTitle + ` [OFFLINE]`;
+});
+
+window.addEventListener(`online`, () => {
+  document.title = oldTitle;
+  dataProvider.sync();
+});
+
+document.title = oldTitle + (navigator.onLine ? `` : ` [OFFLINE]`);

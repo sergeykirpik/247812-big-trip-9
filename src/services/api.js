@@ -44,12 +44,14 @@ const toJSON = (response) => response.json();
 
 export class Api {
   constructor() {
-    this.getPoints = () => get(`points`);
+    this.getPoints = () => get(`points`).then((points) => Promise.resolve(PointModel.parsePoints(points)));
     this.getDestinations = () => get(`destinations`);
     this.getOffers = () => get(`offers`);
 
     this.editPoint = (point) => put(`points/${point.id}`, PointModel.raw(point));
     this.addPoint = (point) => post(`points`, PointModel.raw(point));
     this.removePoint = (id) => del(`points/${id}`);
+
+    this.sync = (points) => post(`points/sync`, points.map((point) => PointModel.raw(point)));
   }
 }
