@@ -12,7 +12,7 @@ export class EventItem extends BaseComponent {
   }
 
   get template() {
-    const {startTime, endTime, type, title, price, duration} = this._data;
+    const {startTime, endTime, type, title, price, durationAsString} = this._data;
     const offers = this._data.offers.filter((it) => it.accepted).slice(0, 3);
     return `
     <div class="event">
@@ -29,7 +29,7 @@ export class EventItem extends BaseComponent {
           <time class="event__end-time" datetime="${getDateTime(endTime)}">
             ${getTime(endTime)}</time>
         </p>
-        <p class="event__duration">${duration}</p>
+        <p class="event__duration">${durationAsString}</p>
       </div>
 
       <p class="event__price">

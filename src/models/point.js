@@ -71,9 +71,10 @@ export class PointModel {
   get label() {
     return labels[this.type];
   }
-  get duration() {
+  get durationAsString() {
     const d = moment.duration(moment(this.endTime).diff(moment(this.startTime)));
 
+    console.log(`FIXME!!`);
     const days = d.days() <= 0 ? `` : `${d.days() < 10 ? `0` : ``}${d.days()}D`;
     const hours = d.hours() <= 0 ? `` : `${d.hours() < 10 ? `0` : ``}${d.hours()}H`;
     const minutes = d.minutes() <= 0 ? `` : `${d.minutes() < 10 ? `0` : ``}${d.minutes()}M`;

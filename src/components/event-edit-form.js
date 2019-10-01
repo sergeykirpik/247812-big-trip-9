@@ -1,7 +1,8 @@
-import {capitalize, KeyCode} from '../utils.js';
+import {capitalize, KeyCode} from "../utils.js";
 import flatpickr from 'flatpickr';
-import {BaseComponent} from '../base-component.js';
-import {eventEmmiter} from '../services/event-emmiter.js';
+import {BaseComponent} from "../base-component.js";
+import {eventEmmiter} from "../services/event-emmiter.js";
+import {PointModel} from "../models/point";
 
 const TransferType = [
   `taxi`, `bus`, `train`, `flight`, `ship`, `transport`, `drive`
