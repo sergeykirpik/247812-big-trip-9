@@ -21,5 +21,5 @@ document.addEventListener(`keydown`, (evt) => {
       eventEmmiter.emit(`keydown_ESC`);
       break;
   }
-}, false);
+}, true);
 

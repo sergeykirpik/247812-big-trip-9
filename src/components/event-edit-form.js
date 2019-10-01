@@ -18,7 +18,7 @@ export class EventEditForm extends BaseComponent {
     const flatpickrOptions = {
       altInput: true,
       altFormat: `d.m.Y H:i`,
-      enableTime: true,
+      enableTime: false,
       [`time_24hr`]: true,
     };
 
@@ -48,7 +48,6 @@ export class EventEditForm extends BaseComponent {
     const startTime = this.element.querySelector(`#event-start-time-1`);
     const startTimePickr = flatpickr(startTime, Object.assign({
       defaultDate: this._data.startTime,
-      maxDate: this._data.endTime,
     }, flatpickrOptions));
 
     const endTime = this.element.querySelector(`#event-end-time-1`);
@@ -57,9 +56,14 @@ export class EventEditForm extends BaseComponent {
       minDate: this._data.startTime,
     }, flatpickrOptions));
 
-    startTimePickr.config.onChange.push((minDate) => {
-      endTimePickr.config.minDate = minDate;
+    startTimePickr.config.onChange.push((selectedDates) => {
+      if (endTimePickr.selectedDates[0] < selectedDates[0]) {
+        endTimePickr.selectedDates = selectedDates;
+      }
+      endTimePickr.config.minDate = selectedDates[0];
+
     });
+    window.startTimePickr = startTimePickr;
 
     const eventTypeIcon = form.querySelector(`.event__type-icon`);
     const eventTypeToggle = form.querySelector(`.event__type-toggle`);
@@ -84,7 +88,17 @@ export class EventEditForm extends BaseComponent {
 
     this.rollupBtn.addEventListener(`click`, () => this.dismiss());
 
-    eventEmmiter.on(`keydown_ESC`, () => this.dismiss());
+    eventEmmiter.on(`keydown_ESC`, () => {
+      if (startTimePickr.isOpen) {
+        startTimePickr.close();
+        return;
+      }
+      if (endTimePickr.isOpen) {
+        endTimePickr.close();
+        return;
+      }
+      this.dismiss();
+    });
 
     this.resetState();
   }
