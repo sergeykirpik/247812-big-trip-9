@@ -1,12 +1,13 @@
-import TripEventsSection from "../components/trip-events-sec";
 import {groupBy, rerender} from "../utils";
-import PointModel from "../models/point";
+import BaseComponent from "../base-component";
 import DayList from "../components/day-list";
 import NoPoints from "../components/no-points";
 import DayListHeader from "../components/day-list-header";
 import DayItem from "../components/day-item";
+
+import TripEventsSection from "../components/trip-events-sec";
+import PointModel from "../models/point";
 import EventListController from "./event-list-controller";
-import BaseComponent from "../base-component";
 import moment from "moment";
 import PointController from "./point-controller";
 import {dataProvider, FilterType, SortType} from "../services/data-provider";
@@ -36,8 +37,13 @@ export default class TripController extends BaseComponent {
 
     dataProvider.addOnDataChangedCallback(() => {
       this._data = dataProvider.points;
-      rerender(this);
+      this._rerender();
     });
+  }
+
+  _rerender() {
+    eventEmmiter.emit(`cleanUp`);
+    rerender(this);
   }
 
   get _filteredPoints() {
@@ -106,7 +112,7 @@ export default class TripController extends BaseComponent {
 
   onSort(method) {
     this._currentSort = method;
-    rerender(this);
+    this._rerender();
   }
 
   addNewPoint() {
@@ -128,11 +134,12 @@ export default class TripController extends BaseComponent {
       },
       isInEditMode: true
     });
-    rerender(this);
+    eventEmmiter.emit(`eventEditFormOpened`, null);
+    this._rerender();
   }
 
   applyFilter(filter) {
     this._currentFilter = filter;
-    rerender(this);
+    this._rerender();
   }
 }

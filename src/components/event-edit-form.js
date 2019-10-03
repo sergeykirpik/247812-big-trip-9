@@ -54,21 +54,21 @@ export default class EventEditForm extends BaseComponent {
     });
 
     const startTime = this.element.querySelector(`#event-start-time-1`);
-    const startTimePickr = flatpickr(startTime, Object.assign({
+    this._startTimePickr = flatpickr(startTime, Object.assign({
       defaultDate: this._data.startTime,
     }, flatpickrOptions));
 
     const endTime = this.element.querySelector(`#event-end-time-1`);
-    const endTimePickr = flatpickr(endTime, Object.assign({
+    this._endTimePickr = flatpickr(endTime, Object.assign({
       defaultDate: this._data.endTime,
       minDate: this._data.startTime,
     }, flatpickrOptions));
 
-    startTimePickr.config.onChange.push((selectedDates) => {
-      if (endTimePickr.selectedDates[0] < selectedDates[0]) {
-        endTimePickr.selectedDates = selectedDates;
+    this._startTimePickr.config.onChange.push((selectedDates) => {
+      if (this._endTimePickr.selectedDates[0] < selectedDates[0]) {
+        this._endTimePickr.selectedDates = selectedDates;
       }
-      endTimePickr.config.minDate = selectedDates[0];
+      this._endTimePickr.config.minDate = selectedDates[0];
 
     });
 
@@ -106,6 +106,11 @@ export default class EventEditForm extends BaseComponent {
     });
 
     this.resetState();
+
+    eventEmmiter.on(`cleanUp`, () => {
+      this._startTimePickr.destroy();
+      this._endTimePickr.destroy();
+    });
   }
 
   _updateOffersSection(type) {
@@ -158,6 +163,8 @@ export default class EventEditForm extends BaseComponent {
   }
 
   dismiss() {
+    this._startTimePickr.destroy();
+    this._endTimePickr.destroy();
     this._onDismiss();
   }
 

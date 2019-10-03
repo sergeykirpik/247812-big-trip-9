@@ -22,6 +22,8 @@ export default class PointController extends BaseComponent {
       });
     }
 
+
+
   }
 
   get element() {

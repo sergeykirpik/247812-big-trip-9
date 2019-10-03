@@ -18,8 +18,8 @@ export const SortType = {
 
 export const FilterType = {
   everything: (data) => data,
-  future: (data) => data.filter((it) => it.startTime > new Date()),
-  past: (data) => data.filter((it) => it.endTime < new Date()),
+  future: (data) => data.filter((it) => it.startTime.valueOf() > Date.now()),
+  past: (data) => data.filter((it) => it.endTime.valueOf() < Date.now()),
 };
 
 class DataProvider {
