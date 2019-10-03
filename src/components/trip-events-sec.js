@@ -1,6 +1,6 @@
-import {BaseComponent} from "../base-component";
+import BaseComponent from "../base-component";
 
-export class TripEventsSection extends BaseComponent {
+export default class TripEventsSection extends BaseComponent {
   get template() {
     return `
     <section class="trip-events">

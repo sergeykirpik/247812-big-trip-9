@@ -1,7 +1,7 @@
-import {Api} from "./api";
-import {RouteModel} from "../models/route";
-import {Store} from "./store";
-import {PointModel} from "../models/point";
+import Api from "./api";
+import RouteModel from "../models/route";
+import Store from "./store";
+import PointModel from "../models/point";
 
 const APPLICATION_STORAGE_KEY = `Big-Trip-Application`;
 

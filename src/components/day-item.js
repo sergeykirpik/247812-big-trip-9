@@ -1,7 +1,7 @@
-import {BaseComponent} from "../base-component.js";
+import BaseComponent from "../base-component.js";
 import moment from "moment";
 
-export class DayItem extends BaseComponent {
+export default class DayItem extends BaseComponent {
   get template() {
     const {dayCounter, dayDate} = this._data;
     return `

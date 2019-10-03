@@ -1,6 +1,6 @@
 import {createElement, render} from "./utils";
 
-export class BaseComponent {
+export default class BaseComponent {
   constructor(params) {
     params = params || {};
     this._element = null;

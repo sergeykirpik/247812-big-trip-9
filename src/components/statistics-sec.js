@@ -1,6 +1,6 @@
-import {BaseComponent} from "../base-component";
+import BaseComponent from "../base-component";
 
-export class StatisticsSection extends BaseComponent {
+export default class StatisticsSection extends BaseComponent {
   get template() {
     return `
     <section class="statistics">

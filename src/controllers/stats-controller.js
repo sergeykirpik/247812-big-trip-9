@@ -1,8 +1,8 @@
 import moment from "moment";
 import Chart from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
-import {StatisticsSection} from "../components/statistics-sec";
-import {BaseComponent} from "../base-component";
+import StatisticsSection from "../components/statistics-sec";
+import BaseComponent from "../base-component";
 import {dataProvider} from "../services/data-provider";
 
 const CHART_WIDTH = 900;
@@ -13,7 +13,7 @@ const rnd = (max) => Math.floor(Math.random() * max);
 
 const getRandomColor = () => `rgba(${rnd(128) + 128}, ${rnd(128) + 128}, ${rnd(128) + 128}, 0.5)`;
 
-export class StatsController extends BaseComponent {
+export default class StatsController extends BaseComponent {
 
   constructor() {
     super();

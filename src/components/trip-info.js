@@ -1,6 +1,6 @@
-import {BaseComponent} from "../base-component";
+import BaseComponent from "../base-component";
 
-export class TripInfo extends BaseComponent {
+export default class TripInfo extends BaseComponent {
   get template() {
     const {title, dates, cost} = this._data;
     return `

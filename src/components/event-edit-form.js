@@ -1,8 +1,8 @@
 import {capitalize, KeyCode} from "../utils.js";
 import flatpickr from 'flatpickr';
-import {BaseComponent} from "../base-component.js";
+import BaseComponent from "../base-component.js";
 import {eventEmmiter} from "../services/event-emmiter.js";
-import {PointModel} from "../models/point";
+import PointModel from "../models/point";
 
 const TransferType = [
   `taxi`, `bus`, `train`, `flight`, `ship`, `transport`, `drive`
@@ -12,7 +12,7 @@ const ActivityType = [
   `check-in`, `sightseeing`, `restaurant`,
 ];
 
-export class EventEditForm extends BaseComponent {
+export default class EventEditForm extends BaseComponent {
   constructor(params) {
     super(params);
 
@@ -26,7 +26,7 @@ export class EventEditForm extends BaseComponent {
     const flatpickrOptions = {
       altInput: true,
       altFormat: `d.m.Y H:i`,
-      enableTime: false,
+      enableTime: true,
       [`time_24hr`]: true,
     };
 

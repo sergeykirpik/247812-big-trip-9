@@ -1,14 +1,14 @@
-import {TripEventsSection} from "../components/trip-events-sec";
+import TripEventsSection from "../components/trip-events-sec";
 import {groupBy, rerender} from "../utils";
-import {PointModel} from "../models/point";
-import {DayList} from "../components/day-list";
-import {NoPoints} from "../components/no-points";
-import {DayListHeader} from "../components/day-list-header";
-import {DayItem} from "../components/day-item";
-import {EventListController} from "./event-list-controller";
-import {BaseComponent} from "../base-component";
+import PointModel from "../models/point";
+import DayList from "../components/day-list";
+import NoPoints from "../components/no-points";
+import DayListHeader from "../components/day-list-header";
+import DayItem from "../components/day-item";
+import EventListController from "./event-list-controller";
+import BaseComponent from "../base-component";
 import moment from "moment";
-import {PointController} from "./point-controller";
+import PointController from "./point-controller";
 import {dataProvider, FilterType, SortType} from "../services/data-provider";
 import {eventEmmiter} from "../services/event-emmiter";
 
@@ -23,7 +23,7 @@ Object.keys(SortType).forEach((key) => {
 
 columns.push({title: `offers`, sortable: false});
 
-export class TripController extends BaseComponent {
+export default class TripController extends BaseComponent {
   constructor() {
     super();
     this._data = dataProvider.points;

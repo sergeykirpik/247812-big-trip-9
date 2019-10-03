@@ -1,9 +1,9 @@
-import {EventList} from "../components/event-list";
-import {BaseComponent} from "../base-component";
-import {PointController} from "./point-controller";
-import {EventSlot} from "../components/event-slot";
+import EventList from "../components/event-list";
+import BaseComponent from "../base-component";
+import PointController from "./point-controller";
+import EventSlot from "../components/event-slot";
 
-export class EventListController extends BaseComponent {
+export default class EventListController extends BaseComponent {
   constructor(params) {
     super(params);
     this._items = this._data.map((it) => new PointController({data: it}));

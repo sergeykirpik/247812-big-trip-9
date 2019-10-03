@@ -1,11 +1,11 @@
-import {BaseComponent} from "../base-component.js";
+import BaseComponent from "../base-component.js";
 import moment from "moment";
 
 const getDateTime = (date) => moment(date).format();
 const getTime = (date) => moment(date).format(`HH:mm`);
 
 
-export class EventItem extends BaseComponent {
+export default class EventItem extends BaseComponent {
 
   get rollupBtn() {
     return this.element.querySelector(`.event__rollup-btn`);

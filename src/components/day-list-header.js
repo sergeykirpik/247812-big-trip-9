@@ -1,6 +1,6 @@
-import {BaseComponent} from "../base-component";
+import BaseComponent from "../base-component";
 
-export class DayListHeader extends BaseComponent {
+export default class DayListHeader extends BaseComponent {
   constructor(params) {
     super(params);
     const {onSort} = this._callbacks;

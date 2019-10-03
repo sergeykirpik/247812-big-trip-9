@@ -1,6 +1,6 @@
-import {BaseComponent} from "../base-component";
+import BaseComponent from "../base-component";
 
-export class EventList extends BaseComponent {
+export default class EventList extends BaseComponent {
   get template() {
     return `
     <ul class="trip-events__list">

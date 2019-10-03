@@ -1,6 +1,6 @@
-import {BaseComponent} from '../base-component.js';
+import BaseComponent from '../base-component.js';
 
-export class DayList extends BaseComponent {
+export default class DayList extends BaseComponent {
   get template() {
     return `
       <ul class="trip-days">

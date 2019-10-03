@@ -1,12 +1,12 @@
-import {BaseComponent} from "../base-component";
-import {EventItem} from "../components/event-item";
-import {EventEditForm} from "../components/event-edit-form";
+import BaseComponent from "../base-component";
+import EventItem from "../components/event-item";
+import EventEditForm from "../components/event-edit-form";
 import {render, unrender, Position} from "../utils";
-import {PointModel} from "../models/point";
+import PointModel from "../models/point";
 import {dataProvider} from "../services/data-provider";
 import {eventEmmiter} from "../services/event-emmiter";
 
-export class PointController extends BaseComponent {
+export default class PointController extends BaseComponent {
   constructor(params) {
     super(params);
     this._isInEditMode = params.isInEditMode || false;

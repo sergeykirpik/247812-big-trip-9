@@ -1,6 +1,6 @@
 import moment from "moment";
 
-export class RouteModel {
+export default class RouteModel {
   constructor(points) {
     this._points = points || [];
   }

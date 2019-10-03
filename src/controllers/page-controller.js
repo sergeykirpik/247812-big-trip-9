@@ -1,16 +1,16 @@
-import {TripInfo} from "../components/trip-info";
-import {NewEventButton} from "../components/new-event-btn";
-import {TripControls} from "../components/trip-controls";
-import {Menu} from "../components/menu";
-import {Filter} from "../components/filter";
+import TripInfo from "../components/trip-info";
+import NewEventButton from "../components/new-event-btn";
+import TripControls from "../components/trip-controls";
+import Menu from "../components/menu";
+import Filter from "../components/filter";
 
 import {render, unrender} from "../utils";
-import {TripController} from "./trip-controller";
-import {StatsController} from "./stats-controller";
+import TripController from "./trip-controller";
+import StatsController from "./stats-controller";
 import {dataProvider, FilterType} from "../services/data-provider";
 import {eventEmmiter} from "../services/event-emmiter";
 
-export class PageController {
+export default class PageController {
   constructor({tripHeaderContainer, tripBodyContainer}) {
 
     this._header = tripHeaderContainer;

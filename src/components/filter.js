@@ -1,7 +1,7 @@
 import {capitalize} from '../utils.js';
-import {BaseComponent} from '../base-component.js';
+import BaseComponent from '../base-component.js';
 
-export class Filter extends BaseComponent {
+export default class Filter extends BaseComponent {
   constructor(params) {
     super(params);
     this.element.addEventListener(`click`, (evt) => {

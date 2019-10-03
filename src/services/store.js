@@ -1,6 +1,6 @@
-import {PointModel} from "../models/point";
+import PointModel from "../models/point";
 
-export class Store {
+export default class Store {
   constructor(storeKey, storage) {
     this._storeKey = storeKey;
     this._storage = storage;

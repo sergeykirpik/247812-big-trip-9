@@ -13,7 +13,7 @@ const labels = {
   restaurant: `Restaurant in`,
 };
 
-export class PointModel {
+export default class PointModel {
   constructor({id, startTime, endTime, price, isFavorite, offers, type, destination}) {
     this.id = id || null;
     this.startTime = startTime;
@@ -55,7 +55,7 @@ export class PointModel {
     });
   }
 
-  static parsePoints(data) {
+  static parsePoints(data = []) {
     return data.map((it) => PointModel.parsePoint(it));
   }
 

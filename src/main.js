@@ -1,5 +1,5 @@
 import "../node_modules/flatpickr/dist/flatpickr.min.css";
-import {PageController} from "./controllers/page-controller";
+import PageController from "./controllers/page-controller";
 import {dataProvider} from "./services/data-provider";
 import {eventEmmiter} from "./services/event-emmiter";
 import {KeyCode} from "./utils";
