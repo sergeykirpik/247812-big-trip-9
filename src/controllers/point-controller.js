@@ -75,12 +75,17 @@ export default class PointController extends BaseComponent {
 
       eventEditForm.setSavingState();
       dataProvider[methodName](entry).then(() => this.dismiss()).catch((e) => {
-        const errors = JSON.parse(e.message).errors;
-        const field2Element = {
-          [`base_price`]: `event-price`,
-          [`destination`]: `event-destination`,
-        };
-        eventEditForm.setErrorState(errors.map((it) => field2Element[it.fieldName]));
+        try {
+          const errors = JSON.parse(e.message).errors;
+          const field2Element = {
+            [`base_price`]: `event-price`,
+            [`destination`]: `event-destination`,
+          };
+          eventEditForm.setErrorState(errors.map((it) => field2Element[it.fieldName]));
+        }
+        catch {
+          eventEditForm.setErrorState([]);
+        }
       });
     });
     eventEditForm.onDelete(() => {
