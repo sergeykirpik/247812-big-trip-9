@@ -64,8 +64,12 @@ class DataProvider {
     });
   }
 
-  editPoint(point) {
-    return this._proxy.editPoint(point).then(() => this.getPoints());
+  editPoint(point, autoUpdate = true) {
+    const result = this._proxy.editPoint(point);
+    if (autoUpdate) {
+      return result.then(() => this.getPoints());
+    }
+    return result;
   }
 
   addPoint(point) {

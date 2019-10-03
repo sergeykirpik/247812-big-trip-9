@@ -22,6 +22,7 @@ export default class EventEditForm extends BaseComponent {
     this._onDismiss = () => {};
     this._onSubmit = () => {};
     this._onDelete = () => {};
+    this._onFavorite = () => {};
 
     const flatpickrOptions = {
       altInput: true,
@@ -92,6 +93,9 @@ export default class EventEditForm extends BaseComponent {
     }));
 
     this.rollupBtn.addEventListener(`click`, () => this.dismiss());
+
+    const favoriteCheck = this.element.querySelector(`.event__favorite-checkbox`);
+    favoriteCheck.addEventListener(`change`, () => this._onFavorite(new FormData(form), favoriteCheck));
 
     eventEmmiter.on(`keydown_ESC`, () => {
       if (startTimePickr.isOpen) {
@@ -178,6 +182,10 @@ export default class EventEditForm extends BaseComponent {
 
   onDelete(handler) {
     this._onDelete = handler;
+  }
+
+  onFavorite(handler) {
+    this._onFavorite = handler;
   }
 
   get saveBtn() {

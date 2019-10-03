@@ -6,6 +6,8 @@ import PointModel from "../models/point";
 import {dataProvider} from "../services/data-provider";
 import {eventEmmiter} from "../services/event-emmiter";
 
+const DEBOUNCE_TIMEOUT = 1000;
+
 export default class PointController extends BaseComponent {
   constructor(params) {
     super(params);
@@ -21,9 +23,6 @@ export default class PointController extends BaseComponent {
         }
       });
     }
-
-
-
   }
 
   get element() {
@@ -45,6 +44,27 @@ export default class PointController extends BaseComponent {
     return eventItem;
   }
 
+  _convertFormDataToPoint(formData) {
+    const name = formData.get(`event-destination`);
+    const destination = dataProvider.destinations.find((it) => it.name === name);
+    const eventType = formData.get(`event-type`);
+    const offersForType = dataProvider.offers.find((it) => it.type === formData.get(`event-type`)).offers;
+
+    const acceptedOffers = formData.getAll(`event-offer`);
+    const offers = offersForType.map(({title, price}) => ({title, price, accepted: acceptedOffers.includes(title)}));
+    const entry = new PointModel({
+      id: this._data.id,
+      destination,
+      offers,
+      startTime: new Date(formData.get(`event-start-time`)),
+      endTime: new Date(formData.get(`event-end-time`)),
+      price: parseInt(formData.get(`event-price`), 10),
+      isFavorite: !!formData.get(`event-favorite`),
+      type: eventType,
+    });
+    return entry;
+  }
+
   _createForm() {
     const eventEditForm = new EventEditForm({
       data: this._data,
@@ -52,52 +72,62 @@ export default class PointController extends BaseComponent {
       offers: dataProvider.offers,
     });
 
+    const setErrorState = (e) => {
+      try {
+        const errors = JSON.parse(e.message).errors;
+        const field2Element = {
+          [`base_price`]: `event-price`,
+          [`destination`]: `event-destination`,
+        };
+        eventEditForm.setErrorState(errors.map((it) => field2Element[it.fieldName]));
+      }
+      catch {
+        eventEditForm.setErrorState([]);
+      }
+    };
+
     eventEditForm.onSubmit((formData) => {
-      const name = formData.get(`event-destination`);
-      const destination = dataProvider.destinations.find((it) => it.name === name);
-      const eventType = formData.get(`event-type`);
-      const offersForType = dataProvider.offers.find((it) => it.type === formData.get(`event-type`)).offers;
-
-      const acceptedOffers = formData.getAll(`event-offer`);
-      const offers = offersForType.map(({title, price}) => ({title, price, accepted: acceptedOffers.includes(title)}));
-      const entry = new PointModel({
-        id: this._data.id,
-        destination,
-        offers,
-        startTime: new Date(formData.get(`event-start-time`)),
-        endTime: new Date(formData.get(`event-end-time`)),
-        price: parseInt(formData.get(`event-price`), 10),
-        isFavorite: !!formData.get(`event-favorite`),
-        type: eventType,
-      });
-
+      const entry = this._convertFormDataToPoint(formData);
       const methodName = entry.id === null ? `addPoint` : `editPoint`;
-
       eventEditForm.setSavingState();
-      dataProvider[methodName](entry).then(() => this.dismiss()).catch((e) => {
-        try {
-          const errors = JSON.parse(e.message).errors;
-          const field2Element = {
-            [`base_price`]: `event-price`,
-            [`destination`]: `event-destination`,
-          };
-          eventEditForm.setErrorState(errors.map((it) => field2Element[it.fieldName]));
-        }
-        catch {
-          eventEditForm.setErrorState([]);
-        }
-      });
+      dataProvider[methodName](entry)
+        .then(() => {
+          eventEditForm.resetState();
+          this.dismiss();
+        })
+        .catch((e) => {
+          setErrorState(e);
+        });
     });
+
+    eventEditForm.onFavorite((formData, checkbox) => {
+      const entry = this._convertFormDataToPoint(formData);
+      eventEditForm.setSavingState();
+      checkbox.checked = !checkbox.checked;
+      dataProvider.editPoint(entry, false)
+        .then(() => {
+          this._data = entry;
+          setTimeout(() => {
+            checkbox.checked = !checkbox.checked;
+            eventEditForm.resetState();
+          }, DEBOUNCE_TIMEOUT);
+        }).catch((e) => {
+          setErrorState(e);
+        });
+    });
+
     eventEditForm.onDelete(() => {
       eventEditForm.setDeletingState();
       dataProvider.removePoint(this._data.id).catch(() => {
         eventEditForm.setErrorState([]);
       });
     });
+
     eventEditForm.onDismiss(() => {
       this._setNormalMode();
       this._callbacks.onDismiss();
     });
+
     this._eventEditForm = eventEditForm;
     return eventEditForm;
   }
