@@ -1,7 +1,7 @@
-import EventList from "../components/event-list";
 import BaseComponent from "../base-component";
-import PointController from "./point-controller";
+import EventList from "../components/event-list";
 import EventSlot from "../components/event-slot";
+import PointController from "./point-controller";
 
 export default class EventListController extends BaseComponent {
   constructor(params) {

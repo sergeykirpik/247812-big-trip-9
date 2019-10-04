@@ -14,7 +14,6 @@ const rnd = (max) => Math.floor(Math.random() * max);
 const getRandomColor = () => `rgba(${rnd(128) + 128}, ${rnd(128) + 128}, ${rnd(128) + 128}, 0.5)`;
 
 export default class StatsController extends BaseComponent {
-
   constructor() {
     super();
     this._data = [];
@@ -25,50 +24,11 @@ export default class StatsController extends BaseComponent {
     });
   }
 
-  _afterShow() {
-    this.updateStatistics();
-  }
-
   get element() {
     if (!this._element) {
       this._element = new StatisticsSection().element;
     }
     return this._element;
-  }
-
-  get _moneyStats() {
-    const result = this._data.reduce((acc, v) => {
-      if (!acc[v.type]) {
-        acc[v.type] = 0;
-      }
-      acc[v.type] += v.price;
-      return acc;
-    }, {});
-    return ({
-      labels: Object.keys(result).map((it) => it.toUpperCase()),
-      data: Object.values(result),
-    });
-  }
-
-  get _transportStats() {
-    const result = this._data.reduce((acc, v) => {
-      if (!acc[v.type]) {
-        acc[v.type] = 0;
-      }
-      acc[v.type] += 1;
-      return acc;
-    }, {});
-    return ({
-      labels: Object.keys(result).map((it) => it.toUpperCase()),
-      data: Object.values(result),
-    });
-  }
-
-  get _timeSpentStats() {
-    return ({
-      labels: this._data.map((p) => p.title.toUpperCase()),
-      data: this._data.map((p) => moment(p.endTime).diff(p.startTime, `hours`)),
-    });
   }
 
   updateStatistics() {
@@ -94,6 +54,45 @@ export default class StatsController extends BaseComponent {
     }, this._timeSpentStats));
 
     this._charts = [moneyChart, transportChart, timeSpentChart];
+  }
+
+  get _moneyStats() {
+    const result = this._data.reduce((acc, v) => {
+      if (!acc[v.type]) {
+        acc[v.type] = 0;
+      }
+      acc[v.type] += v.price;
+      return acc;
+    }, {});
+    return ({
+      labels: Object.keys(result).map((it) => it.toUpperCase()),
+      data: Object.values(result),
+    });
+  }
+
+  get _timeSpentStats() {
+    return ({
+      labels: this._data.map((p) => p.title.toUpperCase()),
+      data: this._data.map((p) => moment(p.endTime).diff(p.startTime, `hours`)),
+    });
+  }
+
+  get _transportStats() {
+    const result = this._data.reduce((acc, v) => {
+      if (!acc[v.type]) {
+        acc[v.type] = 0;
+      }
+      acc[v.type] += 1;
+      return acc;
+    }, {});
+    return ({
+      labels: Object.keys(result).map((it) => it.toUpperCase()),
+      data: Object.values(result),
+    });
+  }
+
+  _afterShow() {
+    this.updateStatistics();
   }
 
   _drawChart({ctx, title, labels, data, formatter}) {
@@ -153,5 +152,6 @@ export default class StatsController extends BaseComponent {
     chart.canvas.parentNode.style.height = `${Math.max(CHART_BAR_HEIGHT * labels.length, CHART_MIN_HEIGHT)}px`;
     return chart;
   }
+
 }
 

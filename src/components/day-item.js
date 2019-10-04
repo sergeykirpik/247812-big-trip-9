@@ -1,5 +1,5 @@
-import BaseComponent from "../base-component.js";
 import moment from "moment";
+import BaseComponent from "../base-component.js";
 
 export default class DayItem extends BaseComponent {
   get template() {

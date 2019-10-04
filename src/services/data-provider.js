@@ -1,20 +1,12 @@
 import Api from "./api";
 import RouteModel from "../models/route";
-import Store from "./store";
 import PointModel from "../models/point";
+import Store from "./store";
 
 const APPLICATION_STORAGE_KEY = `Big-Trip-Application`;
 
 const apiProxy = new Api();
 const storageProxy = new Store(APPLICATION_STORAGE_KEY, window.localStorage);
-
-export const SortType = {
-  event: (points) => points,
-  time: (points) => points.slice()
-    .sort((a, b) => b.duration - a.duration),
-  price: (points) => points.slice()
-    .sort((a, b) => b.price - a.price),
-};
 
 export const FilterType = {
   everything: (data) => data,
@@ -28,6 +20,14 @@ export const FilterType = {
   },
 };
 
+export const SortType = {
+  event: (points) => points,
+  time: (points) => points.slice()
+    .sort((a, b) => b.duration - a.duration),
+  price: (points) => points.slice()
+    .sort((a, b) => b.price - a.price),
+};
+
 class DataProvider {
   constructor() {
     this._destinations = [];
@@ -37,55 +37,16 @@ class DataProvider {
 
     this._onDataChangedCallbacks = [];
   }
+  get destinations() {
+    return this._destinations;
+  }
 
-  get _proxy() {
-    if (this.isOnline) {
-      return apiProxy;
-    }
-    return storageProxy;
+  get isLoading() {
+    return this._isLoading;
   }
 
   get isOnline() {
     return window.navigator.onLine;
-  }
-
-  addOnDataChangedCallback(callback) {
-    this._onDataChangedCallbacks.push(callback);
-  }
-
-  _notifyAll(keys) {
-    this._onDataChangedCallbacks.forEach((it) => it(keys));
-  }
-
-  getPoints() {
-    return this._proxy.getPoints().then((points) => {
-      this._route.setPoints(points);
-      this._notifyAll([`points`]);
-    });
-  }
-
-  editPoint(point, autoUpdate = true) {
-    const result = this._proxy.editPoint(point);
-    if (autoUpdate) {
-      return result.then(() => this.getPoints());
-    }
-    return result;
-  }
-
-  addPoint(point) {
-    return this._proxy.addPoint(point).then(() => this.getPoints());
-  }
-
-  removePoint(id) {
-    return this._proxy.removePoint(id).then(() => this.getPoints());
-  }
-
-  get route() {
-    return this._route;
-  }
-
-  get destinations() {
-    return this._destinations;
   }
 
   get offers() {
@@ -96,8 +57,31 @@ class DataProvider {
     return this._route.points;
   }
 
-  get isLoading() {
-    return this._isLoading;
+  get route() {
+    return this._route;
+  }
+
+  addOnDataChangedCallback(callback) {
+    this._onDataChangedCallbacks.push(callback);
+  }
+
+  addPoint(point) {
+    return this._proxy.addPoint(point).then(() => this.getPoints());
+  }
+
+  editPoint(point, autoUpdate = true) {
+    const result = this._proxy.editPoint(point);
+    if (autoUpdate) {
+      return result.then(() => this.getPoints());
+    }
+    return result;
+  }
+
+  getPoints() {
+    return this._proxy.getPoints().then((points) => {
+      this._route.setPoints(points);
+      this._notifyAll([`points`]);
+    });
   }
 
   load() {
@@ -115,12 +99,27 @@ class DataProvider {
     });
   }
 
+  removePoint(id) {
+    return this._proxy.removePoint(id).then(() => this.getPoints());
+  }
+
   sync() {
     if (this.isOnline) {
       storageProxy.getPoints().then((points) => apiProxy.sync(points));
       return Promise.resolve(true);
     }
     return Promise.resolve(false);
+  }
+
+  get _proxy() {
+    if (this.isOnline) {
+      return apiProxy;
+    }
+    return storageProxy;
+  }
+
+  _notifyAll(keys) {
+    this._onDataChangedCallbacks.forEach((it) => it(keys));
   }
 }
 

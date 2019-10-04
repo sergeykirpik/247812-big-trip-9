@@ -10,6 +10,7 @@ export default class Menu extends BaseComponent {
       }
     });
   }
+
   get template() {
     const {menuItems, activeItem} = this._data;
     return `

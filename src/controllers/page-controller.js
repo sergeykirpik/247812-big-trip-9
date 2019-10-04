@@ -1,14 +1,15 @@
+import {render, unrender} from "../utils";
+import {dataProvider, FilterType} from "../services/data-provider";
+import {eventEmmiter} from "../services/event-emmiter";
+
 import TripInfo from "../components/trip-info";
 import NewEventButton from "../components/new-event-btn";
 import TripControls from "../components/trip-controls";
 import Menu from "../components/menu";
 import Filter from "../components/filter";
 
-import {render, unrender} from "../utils";
-import TripController from "./trip-controller";
 import StatsController from "./stats-controller";
-import {dataProvider, FilterType} from "../services/data-provider";
-import {eventEmmiter} from "../services/event-emmiter";
+import TripController from "./trip-controller";
 
 export default class PageController {
   constructor({tripHeaderContainer, tripBodyContainer}) {
@@ -28,21 +29,23 @@ export default class PageController {
     this._currentFilter = `everything`;
   }
 
+  init() {
+    dataProvider.addOnDataChangedCallback(() => {
+      this._showPage(this._activePage);
+    });
+    Object.values(this._pages).forEach((page) => {
+      render(this._body, page);
+      page.hide();
+    });
+    this._showPage(this._activePage);
+  }
+
   _addNewPoint() {
     this._newEventBtn.element.disabled = true;
     this._tripController.addNewPoint();
     eventEmmiter.on(`newItemFormClosed`, () => {
       this._newEventBtn.element.disabled = false;
     });
-  }
-
-  _showPage(name) {
-    this._activePage = name;
-    Object.values(this._pages).forEach((page) => page.hide());
-    this._pages[name].show();
-    this._renderHeader();
-
-    this._filter.setVisibility(this._activePage === `table`);
   }
 
   _applyFilter(filter) {
@@ -77,14 +80,13 @@ export default class PageController {
     render(this._header, this._newEventBtn);
   }
 
-  init() {
-    dataProvider.addOnDataChangedCallback(() => {
-      this._showPage(this._activePage);
-    });
-    Object.values(this._pages).forEach((page) => {
-      render(this._body, page);
-      page.hide();
-    });
-    this._showPage(this._activePage);
+  _showPage(name) {
+    this._activePage = name;
+    Object.values(this._pages).forEach((page) => page.hide());
+    this._pages[name].show();
+    this._renderHeader();
+
+    this._filter.setVisibility(this._activePage === `table`);
   }
+
 }

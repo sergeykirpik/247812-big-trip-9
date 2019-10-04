@@ -1,10 +1,10 @@
+import {render, unrender, Position} from "../utils";
 import BaseComponent from "../base-component";
 import EventItem from "../components/event-item";
 import EventEditForm from "../components/event-edit-form";
-import {render, unrender, Position} from "../utils";
-import PointModel from "../models/point";
 import {dataProvider} from "../services/data-provider";
 import {eventEmmiter} from "../services/event-emmiter";
+import PointModel from "../models/point";
 
 const DEBOUNCE_TIMEOUT = 1000;
 
@@ -35,34 +35,10 @@ export default class PointController extends BaseComponent {
     return this._element;
   }
 
-  _createItem() {
-    const eventItem = new EventItem({data: this._data});
-    eventItem.rollupBtn.addEventListener(`click`, () => {
-      this._setEditMode();
-    });
-    this._eventItem = eventItem;
-    return eventItem;
-  }
-
-  _convertFormDataToPoint(formData) {
-    const name = formData.get(`event-destination`);
-    const destination = dataProvider.destinations.find((it) => it.name === name);
-    const eventType = formData.get(`event-type`);
-    const offersForType = dataProvider.offers.find((it) => it.type === formData.get(`event-type`)).offers;
-
-    const acceptedOffers = formData.getAll(`event-offer`);
-    const offers = offersForType.map(({title, price}) => ({title, price, accepted: acceptedOffers.includes(title)}));
-    const entry = new PointModel({
-      id: this._data.id,
-      destination,
-      offers,
-      startTime: new Date(formData.get(`event-start-time`)),
-      endTime: new Date(formData.get(`event-end-time`)),
-      price: parseInt(formData.get(`event-price`), 10),
-      isFavorite: !!formData.get(`event-favorite`),
-      type: eventType,
-    });
-    return entry;
+  dismiss() {
+    if (this._isInEditMode) {
+      this._eventEditForm.dismiss();
+    }
   }
 
   _createForm() {
@@ -132,16 +108,34 @@ export default class PointController extends BaseComponent {
     return eventEditForm;
   }
 
-  _setNormalMode() {
-    if (!this._isInEditMode) {
-      return;
-    }
-    this._isInEditMode = false;
-    this.removeElement();
-    if (this._data.id) {
-      render(this._eventEditForm.element, this, Position.AFTER_END);
-    }
-    unrender(this._eventEditForm);
+  _convertFormDataToPoint(formData) {
+    const name = formData.get(`event-destination`);
+    const destination = dataProvider.destinations.find((it) => it.name === name);
+    const eventType = formData.get(`event-type`);
+    const offersForType = dataProvider.offers.find((it) => it.type === formData.get(`event-type`)).offers;
+
+    const acceptedOffers = formData.getAll(`event-offer`);
+    const offers = offersForType.map(({title, price}) => ({title, price, accepted: acceptedOffers.includes(title)}));
+    const entry = new PointModel({
+      id: this._data.id,
+      destination,
+      offers,
+      startTime: new Date(formData.get(`event-start-time`)),
+      endTime: new Date(formData.get(`event-end-time`)),
+      price: parseInt(formData.get(`event-price`), 10),
+      isFavorite: !!formData.get(`event-favorite`),
+      type: eventType,
+    });
+    return entry;
+  }
+
+  _createItem() {
+    const eventItem = new EventItem({data: this._data});
+    eventItem.rollupBtn.addEventListener(`click`, () => {
+      this._setEditMode();
+    });
+    this._eventItem = eventItem;
+    return eventItem;
   }
 
   _setEditMode() {
@@ -161,9 +155,15 @@ export default class PointController extends BaseComponent {
     });
   }
 
-  dismiss() {
-    if (this._isInEditMode) {
-      this._eventEditForm.dismiss();
+  _setNormalMode() {
+    if (!this._isInEditMode) {
+      return;
     }
+    this._isInEditMode = false;
+    this.removeElement();
+    if (this._data.id) {
+      render(this._eventEditForm.element, this, Position.AFTER_END);
+    }
+    unrender(this._eventEditForm);
   }
 }

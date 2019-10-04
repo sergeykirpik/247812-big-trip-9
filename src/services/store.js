@@ -6,10 +6,16 @@ export default class Store {
     this._storage = storage;
   }
 
-  setItem(key, data) {
-    const storedObject = JSON.parse(this._storage.getItem(this._storeKey)) || {};
-    storedObject[key] = data;
-    this._storage.setItem(this._storeKey, JSON.stringify(storedObject));
+  addPoint(point) {
+    return this.getPoints().then((points) => {
+      point.id = Math.max(...points.map((it) => it.id)) + 1;
+      points.push(point);
+      this.setPoints(points);
+    });
+  }
+
+  getDestinations() {
+    return this.getItemAsync(`destinations`);
   }
 
   getItem(key) {
@@ -21,21 +27,13 @@ export default class Store {
     return Promise.resolve(this.getItem(key));
   }
 
-  getPoints() {
-    return this.getItemAsync(`points`).then((points) =>
-      Promise.resolve(PointModel.parsePoints(points)));
-  }
-
-  getDestinations() {
-    return this.getItemAsync(`destinations`);
-  }
-
   getOffers() {
     return this.getItemAsync(`offers`);
   }
 
-  setPoints(points) {
-    this.setItem(`points`, points.map((p) => PointModel.raw(p)));
+  getPoints() {
+    return this.getItemAsync(`points`).then((points) =>
+      Promise.resolve(PointModel.parsePoints(points)));
   }
 
   editPoint(point) {
@@ -54,12 +52,13 @@ export default class Store {
     });
   }
 
-  addPoint(point) {
-    return this.getPoints().then((points) => {
-      point.id = Math.max(...points.map((it) => it.id)) + 1;
-      points.push(point);
-      this.setPoints(points);
-    });
+  setItem(key, data) {
+    const storedObject = JSON.parse(this._storage.getItem(this._storeKey)) || {};
+    storedObject[key] = data;
+    this._storage.setItem(this._storeKey, JSON.stringify(storedObject));
   }
 
+  setPoints(points) {
+    this.setItem(`points`, points.map((p) => PointModel.raw(p)));
+  }
 }

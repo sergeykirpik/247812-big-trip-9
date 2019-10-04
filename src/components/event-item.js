@@ -1,9 +1,8 @@
-import BaseComponent from "../base-component.js";
 import moment from "moment";
+import BaseComponent from "../base-component.js";
 
 const getDateTime = (date) => moment(date).format();
 const getTime = (date) => moment(date).format(`HH:mm`);
-
 
 export default class EventItem extends BaseComponent {
 

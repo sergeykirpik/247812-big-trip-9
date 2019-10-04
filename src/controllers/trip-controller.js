@@ -2,17 +2,16 @@ import {groupBy, rerender} from "../utils";
 import BaseComponent from "../base-component";
 import DayList from "../components/day-list";
 import NoPoints from "../components/no-points";
-import DayListHeader from "../components/day-list-header";
-import DayItem from "../components/day-item";
-
-import TripEventsSection from "../components/trip-events-sec";
-import PointModel from "../models/point";
-import EventListController from "./event-list-controller";
 import moment from "moment";
-import PointController from "./point-controller";
 import {dataProvider, FilterType, SortType} from "../services/data-provider";
 import {eventEmmiter} from "../services/event-emmiter";
+import DayListHeader from "../components/day-list-header";
+import DayItem from "../components/day-item";
+import TripEventsSection from "../components/trip-events-sec";
 
+import EventListController from "./event-list-controller";
+import PointController from "./point-controller";
+import PointModel from "../models/point";
 
 const columns = [];
 

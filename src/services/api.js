@@ -12,6 +12,12 @@ const checkStatus = (response) => {
   });
 };
 
+const del = (resourse) => {
+  const headers = new Headers({Authorization: `Basic ${API_KEY}`});
+  return fetch(`${END_POINT}/${resourse}`, {headers, method: `DELETE`})
+    .then(checkStatus);
+};
+
 const get = (resourse) => {
   const headers = new Headers({Authorization: `Basic ${API_KEY}`});
   return fetch(`${END_POINT}/${resourse}`, {headers})
@@ -32,13 +38,6 @@ const post = (resource, data) => {
     .then(checkStatus)
     .then(toJSON);
 };
-
-const del = (resourse) => {
-  const headers = new Headers({Authorization: `Basic ${API_KEY}`});
-  return fetch(`${END_POINT}/${resourse}`, {headers, method: `DELETE`})
-    .then(checkStatus);
-};
-
 
 const toJSON = (response) => response.json();
 

@@ -1,15 +1,15 @@
-import {capitalize, KeyCode} from "../utils.js";
 import flatpickr from 'flatpickr';
+import {capitalize, KeyCode} from "../utils.js";
 import BaseComponent from "../base-component.js";
 import {eventEmmiter} from "../services/event-emmiter.js";
 import PointModel from "../models/point";
 
-const TransferType = [
-  `taxi`, `bus`, `train`, `flight`, `ship`, `transport`, `drive`
-];
-
 const ActivityType = [
   `check-in`, `sightseeing`, `restaurant`,
+];
+
+const TransferType = [
+  `taxi`, `bus`, `train`, `flight`, `ship`, `transport`, `drive`
 ];
 
 export default class EventEditForm extends BaseComponent {
@@ -98,12 +98,12 @@ export default class EventEditForm extends BaseComponent {
     favoriteCheck.addEventListener(`change`, () => this._onFavorite(new FormData(form), favoriteCheck));
 
     eventEmmiter.on(`keydown_ESC`, () => {
-      if (startTimePickr.isOpen) {
-        startTimePickr.close();
+      if (this._startTimePickr.isOpen) {
+        this._startTimePickr.close();
         return;
       }
-      if (endTimePickr.isOpen) {
-        endTimePickr.close();
+      if (this._endTimePickr.isOpen) {
+        this._endTimePickr.close();
         return;
       }
       this.dismiss();
@@ -117,145 +117,20 @@ export default class EventEditForm extends BaseComponent {
     });
   }
 
-  _updateOffersSection(type) {
-    const section = this.element.querySelector(`.event__section--offers`);
-    const container = section.querySelector(`.event__available-offers`);
-
-    const offersIndex = this._offers.findIndex((it) => it.type === type);
-    this._data.offers = this._offers[offersIndex].offers;
-
-    section.classList.toggle(`visually-hidden`, this._data.offers.length === 0);
-
-    const template = `${this._data.offers.map((v, index) =>
-      `<div class="event__offer-selector">
-        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${index}" type="checkbox" name="event-offer" value="${v.title}">
-        <label class="event__offer-label" for="event-offer-${index}">
-          <span class="event__offer-title">${v.title}</span>
-          &plus;
-          &euro;&nbsp;<span class="event__offer-price">${v.price}</span>
-        </label>
-      </div>`).join(``)}`;
-
-    container.innerHTML = template;
-  }
-
-  _updateDestinationSection(destinationName) {
-    const eventDetailsSec = this.element.querySelector(`.event__details`);
-    const destinationSec = eventDetailsSec.querySelector(`.event__section--destination`);
-    eventDetailsSec.classList.toggle(`visually-hidden`, !destinationName);
-    destinationSec.classList.toggle(`visually-hidden`, !destinationName);
-    if (!destinationName) {
-      return;
-    }
-    const idx = this._destinations.findIndex((it) => it.name === destinationName);
-    if (idx < 0) {
-      return;
-    }
-    const destination = this._destinations[idx];
-    destinationSec.querySelector(`.event__destination-description`)
-      .textContent = destination.description;
-
-    this._data.destination = destination;
-
-    const photosTape = destinationSec.querySelector(`.event__photos-tape`);
-
-    const template = `${destination.pictures.map((it) =>
-      `<img class="event__photo" src="${it.src}" alt="${it.description}">`).join(``)}
-    `.trim();
-
-    photosTape.innerHTML = template;
-  }
-
-  dismiss() {
-    this._startTimePickr.destroy();
-    this._endTimePickr.destroy();
-    this._onDismiss();
-  }
-
-  onDismiss(handler) {
-    this._onDismiss = handler;
-  }
-
-  onSubmit(handler) {
-    this._onSubmit = handler;
-  }
-
-  onDelete(handler) {
-    this._onDelete = handler;
-  }
-
-  onFavorite(handler) {
-    this._onFavorite = handler;
-  }
-
-  get saveBtn() {
-    return this.element.querySelector(`.event__save-btn`);
+  get favoriteBtn() {
+    return this.element.querySelector(`.event__favorite-btn`);
   }
 
   get resetBtn() {
     return this.element.querySelector(`.event__reset-btn`);
   }
 
-  get favoriteBtn() {
-    return this.element.querySelector(`.event__favorite-btn`);
-  }
-
   get rollupBtn() {
     return this.element.querySelector(`.event__rollup-btn`);
   }
 
-  setEnabled(v) {
-    for (const it of this.element.querySelectorAll(`button`)) {
-      it.disabled = !v;
-    }
-    for (const it of this.element.querySelectorAll(`input`)) {
-      it.disabled = !v;
-    }
-  }
-
-  resetState() {
-    this.setEnabled(true);
-    this.element.classList.remove(`error-outline`);
-    for (const el of this.element.elements) {
-      el.classList.remove(`error-field`);
-    }
-    this.saveBtn.textContent = `Save`;
-    this.resetBtn.textContent = `Delete`;
-
-    if (this._data.id === null) {
-      this.resetBtn.textContent = `Cancel`;
-      this.favoriteBtn.classList.add(`visually-hidden`);
-      this.rollupBtn.style.display = `none`;
-    }
-  }
-
-  setSavingState() {
-    this.resetState();
-    this.saveBtn.textContent = `Saving...`;
-    this.setEnabled(false);
-  }
-
-  setDeletingState() {
-    this.resetState();
-    this.resetBtn.textContent = `Deleting...`;
-    this.setEnabled(false);
-  }
-
-  setErrorState(errorFields) {
-    this.resetState();
-    this.element.classList.add(`error-outline`);
-    this.element.classList.add(`shake`);
-    setTimeout(() => this.element.classList.remove(`shake`), 1000);
-    this.saveBtn.textContent = `Save`;
-
-    for (const el of this.element.elements) {
-      el.classList.remove(`error-field`);
-    }
-
-    for (const fieldName of errorFields) {
-      const el = this.element.elements[fieldName];
-      el.classList.add(`error-field`);
-    }
+  get saveBtn() {
+    return this.element.querySelector(`.event__save-btn`);
   }
 
   get template() {
@@ -374,4 +249,130 @@ export default class EventEditForm extends BaseComponent {
     </form>
   `.trim();
   }
+
+  dismiss() {
+    this._startTimePickr.destroy();
+    this._endTimePickr.destroy();
+    this._onDismiss();
+  }
+
+  onDelete(handler) {
+    this._onDelete = handler;
+  }
+
+  onDismiss(handler) {
+    this._onDismiss = handler;
+  }
+
+  onFavorite(handler) {
+    this._onFavorite = handler;
+  }
+
+  onSubmit(handler) {
+    this._onSubmit = handler;
+  }
+
+  resetState() {
+    this.setEnabled(true);
+    this.element.classList.remove(`error-outline`);
+    for (const el of this.element.elements) {
+      el.classList.remove(`error-field`);
+    }
+    this.saveBtn.textContent = `Save`;
+    this.resetBtn.textContent = `Delete`;
+
+    if (this._data.id === null) {
+      this.resetBtn.textContent = `Cancel`;
+      this.favoriteBtn.classList.add(`visually-hidden`);
+      this.rollupBtn.style.display = `none`;
+    }
+  }
+
+  setDeletingState() {
+    this.resetState();
+    this.resetBtn.textContent = `Deleting...`;
+    this.setEnabled(false);
+  }
+
+  setEnabled(v) {
+    for (const it of this.element.querySelectorAll(`button`)) {
+      it.disabled = !v;
+    }
+    for (const it of this.element.querySelectorAll(`input`)) {
+      it.disabled = !v;
+    }
+  }
+
+  setErrorState(errorFields) {
+    this.resetState();
+    this.element.classList.add(`error-outline`);
+    this.element.classList.add(`shake`);
+    setTimeout(() => this.element.classList.remove(`shake`), 1000);
+    this.saveBtn.textContent = `Save`;
+
+    for (const el of this.element.elements) {
+      el.classList.remove(`error-field`);
+    }
+
+    for (const fieldName of errorFields) {
+      const el = this.element.elements[fieldName];
+      el.classList.add(`error-field`);
+    }
+  }
+
+  setSavingState() {
+    this.resetState();
+    this.saveBtn.textContent = `Saving...`;
+    this.setEnabled(false);
+  }
+
+  _updateDestinationSection(destinationName) {
+    const eventDetailsSec = this.element.querySelector(`.event__details`);
+    const destinationSec = eventDetailsSec.querySelector(`.event__section--destination`);
+    eventDetailsSec.classList.toggle(`visually-hidden`, !destinationName);
+    destinationSec.classList.toggle(`visually-hidden`, !destinationName);
+    if (!destinationName) {
+      return;
+    }
+    const idx = this._destinations.findIndex((it) => it.name === destinationName);
+    if (idx < 0) {
+      return;
+    }
+    const destination = this._destinations[idx];
+    destinationSec.querySelector(`.event__destination-description`)
+      .textContent = destination.description;
+
+    this._data.destination = destination;
+
+    const photosTape = destinationSec.querySelector(`.event__photos-tape`);
+
+    const template = `${destination.pictures.map((it) =>
+      `<img class="event__photo" src="${it.src}" alt="${it.description}">`).join(``)}
+    `.trim();
+
+    photosTape.innerHTML = template;
+  }
+
+  _updateOffersSection(type) {
+    const section = this.element.querySelector(`.event__section--offers`);
+    const container = section.querySelector(`.event__available-offers`);
+
+    const offersIndex = this._offers.findIndex((it) => it.type === type);
+    this._data.offers = this._offers[offersIndex].offers;
+
+    section.classList.toggle(`visually-hidden`, this._data.offers.length === 0);
+
+    const template = `${this._data.offers.map((v, index) =>
+      `<div class="event__offer-selector">
+        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${index}" type="checkbox" name="event-offer" value="${v.title}">
+        <label class="event__offer-label" for="event-offer-${index}">
+          <span class="event__offer-title">${v.title}</span>
+          &plus;
+          &euro;&nbsp;<span class="event__offer-price">${v.price}</span>
+        </label>
+      </div>`).join(``)}`;
+
+    container.innerHTML = template;
+  }
+
 }

@@ -5,16 +5,22 @@ export default class RouteModel {
     this._points = points || [];
   }
 
-  setPoints(points) {
-    this._points = points;
+  get cost() {
+    return this._points.reduce((acc, it) => acc + it.total, 0);
+  }
+
+  get dates() {
+    if (this._points.length === 0) {
+      return ``;
+    }
+    return [
+      moment(this._points[0].startTime).format(`MMM D`),
+      moment(this._points[this._points.length - 1].endTime).format(`MMM D`),
+    ].join(` &mdash; `);
   }
 
   get points() {
     return this._points;
-  }
-
-  get cost() {
-    return this._points.reduce((acc, it) => acc + it.total, 0);
   }
 
   get title() {
@@ -30,15 +36,8 @@ export default class RouteModel {
     return this._points.map((it) => it.destination.name).join(` &mdash; `);
   }
 
-  get dates() {
-    if (this._points.length === 0) {
-      return ``;
-    }
-    return [
-      moment(this._points[0].startTime).format(`MMM D`),
-      moment(this._points[this._points.length - 1].endTime).format(`MMM D`),
-    ].join(` &mdash; `);
+  setPoints(points) {
+    this._points = points;
   }
-
 }
 

@@ -9,16 +9,25 @@ export default class BaseComponent {
     this._callbacks = params.callbacks || {};
   }
 
-  _afterShow() {
-    // overriden in accestors
-  }
-
   get element() {
     if (!this._element) {
       this._element = createElement(this.template);
       this._children.forEach((component) => render(this._element, component));
     }
     return this._element;
+  }
+
+  get template() {
+    return `<div></div>`;
+  }
+
+  hide() {
+    this.element.classList.add(`visually-hidden`);
+  }
+
+  removeElement() {
+    this._element = null;
+    this._children.forEach((component) => component.removeElement());
   }
 
   setVisibility(isVisible) {
@@ -34,17 +43,8 @@ export default class BaseComponent {
     this._afterShow();
   }
 
-  hide() {
-    this.element.classList.add(`visually-hidden`);
-  }
-
-  get template() {
-    return `<div></div>`;
-  }
-
-  removeElement() {
-    this._element = null;
-    this._children.forEach((component) => component.removeElement());
+  _afterShow() {
+    // overriden in accestors
   }
 
 }

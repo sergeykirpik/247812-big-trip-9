@@ -11,10 +11,6 @@ export default class Filter extends BaseComponent {
     });
   }
 
-  _checked(filter) {
-    return (filter === this._data.currentFilter) ? `checked` : ``;
-  }
-
   get template() {
     const {filterItems} = this._data;
     return `
@@ -30,4 +26,9 @@ export default class Filter extends BaseComponent {
       </form>
     </div>`.trim();
   }
+
+  _checked(filter) {
+    return (filter === this._data.currentFilter) ? `checked` : ``;
+  }
+
 }
