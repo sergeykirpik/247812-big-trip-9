@@ -56,8 +56,7 @@ export default class PointController extends BaseComponent {
           [`destination`]: `event-destination`,
         };
         eventEditForm.setErrorState(errors.map((it) => field2Element[it.fieldName]));
-      }
-      catch {
+      } catch (err) {
         eventEditForm.setErrorState([]);
       }
     };

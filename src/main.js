@@ -11,6 +11,7 @@ const pageController = new PageController({
 pageController.init();
 
 dataProvider.sync().then(() => dataProvider.load());
+// dataProvider.load();
 
 document.addEventListener(`keydown`, (evt) => {
   switch (evt.keyCode) {

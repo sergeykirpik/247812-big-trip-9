@@ -59,7 +59,10 @@ export default class PageController {
     unrender(this._newEventBtn, false);
 
     this._filter = new Filter({
-      data: {filterItems: Object.keys(FilterType), currentFilter: this._currentFilter},
+      data: {
+        filterItems: Object.keys(FilterType).filter((ft) => FilterType[ft](dataProvider.points).length > 0),
+        currentFilter: this._currentFilter
+      },
       callbacks: {onFilter: (filter) => this._applyFilter(filter)}
     });
 

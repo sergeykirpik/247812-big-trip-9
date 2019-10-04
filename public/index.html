@@ -31,8 +31,8 @@
     <script src="bundle.js"></script>
     <script>
       if (`serviceWorker` in navigator) {
-        console.log(`Don't forget to register ServiceWorker!`);
-        //navigator.serviceWorker.register(`sw.js`);
+        // console.log(`Don't forget to register ServiceWorker!`);
+        navigator.serviceWorker.register(`sw.js`);
       }
     </script>
   </body>
